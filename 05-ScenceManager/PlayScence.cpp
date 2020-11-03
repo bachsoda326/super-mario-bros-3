@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 #include <fstream>
 
 #include "PlayScence.h"
@@ -7,6 +7,7 @@
 #include "Sprites.h"
 #include "Portal.h"
 #include "TileMap.h"
+#include "Camera.h"
 
 using namespace std;
 
@@ -34,6 +35,10 @@ CPlayScene::CPlayScene(int id, LPCWSTR filePath):
 #define OBJECT_TYPE_GOOMBA	2
 #define OBJECT_TYPE_KOOPAS	3
 #define OBJECT_TYPE_BOX	4
+#define OBJECT_TYPE_GROUND	5
+#define OBJECT_TYPE_QUESTION_BRICK	6
+#define OBJECT_TYPE_WARPPIPE	7
+#define OBJECT_TYPE_BREAKABLE_BRICK	9
 
 #define OBJECT_TYPE_PORTAL	50
 
@@ -158,6 +163,8 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		break;
 	case OBJECT_TYPE_GOOMBA: obj = new CGoomba(); break;
 	case OBJECT_TYPE_BRICK: obj = new CBrick(); break;
+	case OBJECT_TYPE_QUESTION_BRICK: obj = new CQuestionBrick(); break;
+	case OBJECT_TYPE_BREAKABLE_BRICK: obj = new CBreakableBrick(); break;
 	case OBJECT_TYPE_KOOPAS: obj = new CKoopas(); break;
 	case OBJECT_TYPE_BOX:
 		{
@@ -166,6 +173,20 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 			obj = new CBox(r, b);
 		}
 		break;	
+	case OBJECT_TYPE_WARPPIPE:
+		{
+			float r = atof(tokens[4].c_str());
+			float b = atof(tokens[5].c_str());
+			obj = new CWarpPipe(r, b);
+		}
+	break;
+	case OBJECT_TYPE_GROUND:
+		{
+			float r = atof(tokens[4].c_str());
+			float b = atof(tokens[5].c_str());
+			obj = new CGround(r, b);
+		}
+		break;
 	case OBJECT_TYPE_PORTAL:
 		{	
 			float r = atof(tokens[4].c_str());
@@ -302,6 +323,50 @@ void CPlayScene::Unload()
 	player = NULL;
 
 	DebugOut(L"[INFO] Scene %s unloaded! \n", sceneFilePath);
+}
+
+void CPlayScene::UpdateCamera(int mapWidth, int mapHeight)
+{
+	//tính fps của game
+	/*DWORD endRender = GetTickCount();
+	if (endRender - beginRender > 0 && endRender - beginRender < 1000)
+		ifps = 1000 / (endRender - beginRender);
+	else
+		ifps = 1000;
+	beginRender = endRender;*/
+
+	// test CCamera move when Mario is not on center screen
+	//mCamera->SetPosition(mPlayer->GetPosition() + D3DXVECTOR3(100,0,0));
+	float x, y;
+	player->GetPosition(x, y);
+	CCamera::GetInstance()->SetPosition(x, y);
+
+	if (CCamera::GetInstance()->GetBound().left < 0)
+	{
+		//vi position cua CCamera::GetInstance() ma chinh giua CCamera::GetInstance()
+		//luc nay o vi tri goc ben trai cua the gioi thuc
+		CCamera::GetInstance()->SetPosition(CCamera::GetInstance()->GetWidth() / 2, CCamera::GetInstance()->GetPosition().y);
+	}
+
+	if (CCamera::GetInstance()->GetBound().right > mapWidth)
+	{
+		//luc nay cham goc ben phai cua the gioi thuc
+		CCamera::GetInstance()->SetPosition(mapWidth - CCamera::GetInstance()->GetWidth() / 2,
+			CCamera::GetInstance()->GetPosition().y);
+	}
+
+	if (CCamera::GetInstance()->GetBound().top < 0)
+	{
+		//luc nay cham goc tren the gioi thuc
+		CCamera::GetInstance()->SetPosition(CCamera::GetInstance()->GetPosition().x, CCamera::GetInstance()->GetHeight() / 2);
+	}
+
+	if (CCamera::GetInstance()->GetBound().bottom > mapHeight)
+	{
+		//luc nay cham day cua the gioi thuc
+		CCamera::GetInstance()->SetPosition(CCamera::GetInstance()->GetPosition().x,
+			mapHeight - CCamera::GetInstance()->GetHeight() / 2);
+	}
 }
 
 void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)

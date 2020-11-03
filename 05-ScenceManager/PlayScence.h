@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Game.h"
 #include "Textures.h"
 #include "Scence.h"
@@ -8,6 +8,10 @@
 #include "Goomba.h"
 #include "Koopas.h"
 #include "Box.h"
+#include "Ground.h"
+#include "QuestionBrick.h"
+#include "BreakableBrick.h"
+#include "WarpPipe.h"
 #include "TileMap.h"
 
 
@@ -35,6 +39,9 @@ public:
 	virtual void Update(DWORD dt);
 	virtual void Render();
 	virtual void Unload();
+
+	// Cập nhật vị trí camera khi đụng biên map và khi Mario di chuyển // Chưa dùng đến
+	void UpdateCamera(int mapWidth, int mapHeight);
 
 	CMario * GetPlayer() { return player; } 
 
