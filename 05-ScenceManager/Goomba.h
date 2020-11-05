@@ -1,5 +1,10 @@
 #pragma once
 #include "GameObject.h"
+#include "Box.h"
+#include "Ground.h"
+#include "WarpPipe.h"
+#include "Koopas.h"
+#include "Brick.h"
 
 #define GOOMBA_WALKING_SPEED 0.05f;
 
@@ -12,6 +17,8 @@
 
 #define GOOMBA_ANI_WALKING 0
 #define GOOMBA_ANI_DIE 1
+
+#define GOOMBA_GRAVITY			0.002f
 
 class CGoomba : public CGameObject
 {

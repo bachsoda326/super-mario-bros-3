@@ -29,7 +29,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	// Simple fall down
 	vy += MARIO_GRAVITY * dt;
 
-	if (vy < -0.3f)
+	if (vy <= -0.28f)
 	{
 		vy = -0.28f;
 		canJumpHigher = false;
@@ -68,7 +68,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 		// how to push back Mario if collides with a moving objects, what if Mario is pushed this way into another object?
 		//if (rdx != 0 && rdx!=dx)
-		//	x += nx*abs(rdx); 
+		//	x += nx*abs(rdx);
 
 		// block every object first!
 		/*x += min_tx*dx + nx*0.4f;
@@ -83,6 +83,13 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			canJumpHigher = true;
 		}
 
+		x += min_tx * dx + nx * 0.4f;
+		y += min_ty * dy + ny * 0.4f;
+
+		if (nx != 0) 
+			vx = 0;
+		if (ny != 0) 
+			vy = 0;		
 
 		//
 		// Collision logic with other objects
@@ -93,8 +100,10 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 			if (dynamic_cast<CBox*>(e->obj))
 			{
-				x += dx;
-				if (e->ny == -1)
+				if (e->nx != 0)
+					x += dx;
+				
+				/*if (e->ny == -1)
 				{
 					y += min_ty * dy + ny * 0.4f;
 					vy = 0;
@@ -102,17 +111,17 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				else if (e->ny == 1)
 				{
 					y += dy;
-				}
+				}*/
 			}
-			else
+			/*else
 			{
 				x += min_tx * dx + nx * 0.4f;
 				y += min_ty * dy + ny * 0.4f;
 
 				if (nx != 0) vx = 0;
 				if (ny != 0) vy = 0;
-			}
-			if (dynamic_cast<CGoomba*>(e->obj)) // if e->obj is Goomba 
+			}*/
+			else if (dynamic_cast<CGoomba*>(e->obj)) // if e->obj is Goomba 
 			{
 				CGoomba* goomba = dynamic_cast<CGoomba*>(e->obj);
 
@@ -141,17 +150,51 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						}
 					}
 				}
-			} // if Goomba
+			} // if Koopas
+			else if (dynamic_cast<CKoopas*>(e->obj)) // if e->obj is CKoopas 
+			{
+				CKoopas* koopas = dynamic_cast<CKoopas*>(e->obj);
+
+				// jump on top >> kill CKoopas, can kick or throw
+				if (e->ny < 0)
+				{
+					if (koopas->GetState() == KOOPAS_STATE_WALKING)
+					{
+						koopas->SetState(KOOPAS_STATE_HIDE);
+						vy = -MARIO_JUMP_DEFLECT_SPEED;
+					}
+					else if (koopas->GetState() == KOOPAS_STATE_HIDE)
+					{
+						koopas->SetState(KOOPAS_STATE_SPIN);
+						vy = -MARIO_JUMP_DEFLECT_SPEED;
+					}
+				}
+				else if (e->nx != 0)
+				{
+					if (untouchable == 0)
+					{
+						if (koopas->GetState() == KOOPAS_STATE_WALKING)
+						{
+							if (level > MARIO_LEVEL_SMALL)
+							{
+								level = MARIO_LEVEL_SMALL;
+								StartUntouchable();
+							}
+							else
+								SetState(MARIO_STATE_DIE);
+						}
+					}
+				}
+			} // if Koopas
 			else if (dynamic_cast<CPortal*>(e->obj))
 			{
 				CPortal* p = dynamic_cast<CPortal*>(e->obj);
 				CGame::GetInstance()->SwitchScene(p->GetSceneId());
 			}
 		}
-	}
-
-	// clean up collision events
-	for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
+		// clean up collision events
+		for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
+	}	
 }
 
 void CMario::Render()

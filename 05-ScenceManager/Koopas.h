@@ -1,21 +1,34 @@
 #pragma once
 
 #include "GameObject.h"
+#include "Box.h"
+#include "Ground.h"
+#include "WarpPipe.h"
+#include "Brick.h"
+#include "Goomba.h"
 
 #define KOOPAS_WALKING_SPEED 0.03f;
+#define KOOPAS_SPIN_SPEED 0.15f;
 
-#define KOOPAS_BBOX_WIDTH 17
+#define KOOPAS_BBOX_WIDTH 16
 #define KOOPAS_BBOX_HEIGHT 27
-#define KOOPAS_BBOX_HEIGHT_DIE 17
+#define KOOPAS_BBOX_HEIGHT_HIDE 17
 
 #define KOOPAS_STATE_WALKING 100
-#define KOOPAS_STATE_DIE 200
+#define KOOPAS_STATE_HIDE 200
+#define KOOPAS_STATE_SPIN 300
+#define KOOPAS_STATE_DIE 400
 
 #define KOOPAS_ANI_WALKING_LEFT 0
 #define KOOPAS_ANI_WALKING_RIGHT 1
 #define KOOPAS_ANI_SPIN_LEFT 2
 #define KOOPAS_ANI_SPIN_RIGHT 3
-#define KOOPAS_ANI_DIE 4
+#define KOOPAS_ANI_HIDE 4
+
+#define KOOPAS_GRAVITY			0.002f
+
+#define KOOPAS_GREEN 1
+#define KOOPAS_RED 2
 
 class CKoopas : public CGameObject
 {
@@ -24,6 +37,9 @@ class CKoopas : public CGameObject
 	virtual void Render();
 
 public:
-	CKoopas();
+	int type;
+	float xMin, xMax;
+
+	CKoopas(int type, float min = -1, float max = -1);
 	virtual void SetState(int state);
 };
