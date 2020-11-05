@@ -51,7 +51,7 @@ void CSampleKeyHander::OnKeyDown(int KeyCode)
 	switch (KeyCode)
 	{
 	case DIK_SPACE:
-		mario->SetState(MARIO_STATE_JUMP);
+		mario->SetState(MARIO_STATE_JUMP_HIGH_LEFT);
 		break;
 	}
 }

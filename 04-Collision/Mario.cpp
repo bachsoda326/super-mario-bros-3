@@ -141,8 +141,8 @@ void CMario::SetState(int state)
 		vx = -MARIO_WALKING_SPEED;
 		nx = -1;
 		break;
-	case MARIO_STATE_JUMP: 
-		vy = -MARIO_JUMP_SPEED_Y;
+	case MARIO_STATE_JUMP_HIGH_LEFT: 
+		vy = -MARIO_JUMP_HIGH_SPEED_Y;
 	case MARIO_STATE_IDLE: 
 		vx = 0;
 		break;

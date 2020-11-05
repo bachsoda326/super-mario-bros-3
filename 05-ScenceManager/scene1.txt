@@ -82,7 +82,7 @@ map1-2.txt	30
 20034	235	16	251	32	10
 20035	217	16	233	32	10
 
-#Super Mario Left					
+#BIG Super Mario Left					
 20036	524	88	540	120	10
 20037	542	88	558	120	10
 20038	560	88	576	120	10
@@ -116,7 +116,7 @@ map1-2.txt	30
 20066	732	130	748	154	10
 20067	948	122	972	146	10
 20068	974	122	990	154	10
-#Super Mario Right					
+#BIG Super Mario Right					
 20069	505	88	521	120	10
 20070	487	88	503	120	10
 20071	469	88	485	120	10
@@ -492,7 +492,7 @@ ani_id	sprite1_id	time1	sprite2_id	time2
 #SHIRINK RIGHT				
 10066	20099	100	20019	100
 
-#FRIE MARIO																
+#FIRE MARIO																
 #IDLE LEFT																
 10067	20102	100
 #WALK LEFT																
@@ -558,7 +558,7 @@ ani_id	sprite1_id	time1	sprite2_id	time2
 # SPIN RIGHT																
 10098	20156	100	20157	100	20158	100	20159	100	20160	100	20161	100	20162	100	20163	100
 
-#FIRE MARIO																
+#RACOON MARIO																
 #IDLE LEFT																
 10099	20166	100
 #WALK LEFT
@@ -662,7 +662,7 @@ ani_id	sprite1_id	time1	sprite2_id	time2
 # MARIO
 1	400	401	402	403	500	501	502	503	599
 
-#mario	idle		walk		slide		jump		skid		run		run jump	hold		kick		swim		swim input	climb		pipe	die	idle		walk		duck		slide		jump		skid		throw		run		run jump	hold		kick		swim idle	swim input	climb		pipe	door	spin		bonk		look up		GROW		SHRINK		idle		walk		duck		slide		jump		skid		throw		run		run jump	hold		kick		swim idle	swim input	climb		pipe	door	spin		idle		walk		wag		duck		slide		jump		skid		throw		run		run jump	fly		hold		kick		swim idle	swim input	climb		pipe	door	spin	
+#mario	idle S		walk S		slide S		jump S		skid S		run S		run jump S	hold S		kick S		swim S		swim input S	climb S		pipe S	die S	idle B		walk B		duck B		slide B		jump B		skid B		throw B		run B		run jump B	hold B		kick B		swim idle B	swim input B	climb B		pipe B	door B	spin B		bonk B		look up	B	GROW B		SHRINK B	idle F		walk F		duck F		slide F		jump F		skid F		throw F		run F		run jump F	hold F		kick F		swim idle F	swim input F	climb F		pipe F	door F	spin F		idle R 		walk R		wag R		duck R		slide R 	jump R		skid R		throw R		run R		run jump R	fly R		hold R		kick R		swim idle R	swim input R	climb R		pipe R	door R	spin R	
 2	10001	10015	10002	10016	10003	10017	10004	10018	10005	10019	10006	10020	10007	10021	10008	10022	10009	10023	10010	10024	10011	10025	10012	10026	10013	10014	10027	10045	10028	10046	10029	10047	10030	10048	10031	10049	10032	10050	10033	10051	10034	10052	10035	10053	10036	10054	10037	10055	10038	10056	10039	10057	10040	10058	10062	10041	10042	10059	10043	10060	10044	10061	10063	10064	10065	10066	10067	10084	10068	10085	10069	10086	10070	10087	10071	10088	10072	10089	10073	10090	10074	10091	10075	10092	10076	10093	10077	10094	10078	10095	10079	10096	10080	10097	10081	10082	10083	10098	10099	10118	10100	10119	10101	10120	10102	10121	10103	10122	10104	10123	10105	10124	10106	10125	10107	10126	10108	10127	10109	10128	10110	10129	10111	10130	10112	10131	10113	10132	10114	10133	10115	10116	10117	10134
 
 # BRICK
@@ -685,7 +685,7 @@ ani_id	sprite1_id	time1	sprite2_id	time2
 # type	x	y	ani_set_id	extra_settings per object type
 # type: 0 = Mario , 1 = Brick, 2 = Goomba, 4 = Box
 # MARIO
-0	1748	300	1
+0	1748	300	2
 
 # GROUND
 5	0	416	24	622	434	0
