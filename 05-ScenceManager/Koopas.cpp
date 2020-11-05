@@ -25,7 +25,7 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 	// TO-DO: make sure Koopas can interact with the world and to each of them too!
 	// 
 
-	x += dx;
+	/*x += dx;
 	y += dy;
 
 	if (vx < 0 && x < 0) {
@@ -34,7 +34,7 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 
 	if (vx > 0 && x > 290) {
 		x = 290; vx = -vx;
-	}
+	}*/
 }
 
 void CKoopas::Render()

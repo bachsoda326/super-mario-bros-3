@@ -385,7 +385,7 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 		if (!mario->canJump)
 			break;
 		else {
-			mario->SetState(MARIO_STATE_JUMP_HIGH_LEFT);
+			/*mario->SetState(MARIO_STATE_JUMP_HIGH_LEFT);*/
 			mario->canJump = false;
 		}
 		break;
@@ -412,5 +412,10 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 	else if (mario->canJump)
 		mario->SetState(MARIO_STATE_IDLE);
 	if (game->IsKeyDown(DIK_S))
-		mario->SetState(MARIO_STATE_JUMP_HIGH_LEFT);
+	{
+		if (mario->nx > 0)
+			mario->SetState(MARIO_STATE_JUMP_HIGH_RIGHT);
+		else 
+			mario->SetState(MARIO_STATE_JUMP_HIGH_LEFT);
+	}
 }

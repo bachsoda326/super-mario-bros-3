@@ -181,6 +181,8 @@ void CMario::Render()
 				ani = MARIO_ANI_BIG_WALKING_RIGHT;
 			if (state == MARIO_STATE_JUMP_HIGH_LEFT)
 				ani = MARIO_ANI_BIG_JUMP_LEFT;
+			if (state == MARIO_STATE_JUMP_HIGH_RIGHT)
+				ani = MARIO_ANI_BIG_JUMP_RIGHT;
 		}
 	if (level == MARIO_LEVEL_RACCOON)
 	{
