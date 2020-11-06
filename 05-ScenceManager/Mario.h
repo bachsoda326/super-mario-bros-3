@@ -196,6 +196,7 @@ class CMario : public CGameObject
 	float start_y; 
 public: 
 	bool canJump = true;
+	bool canRepeatJump = false;
 	bool canJumpHigher = true;
 
 	CMario(float x = 0.0f, float y = 0.0f);

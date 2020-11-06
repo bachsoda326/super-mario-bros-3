@@ -7,8 +7,8 @@ CCamera::CCamera()
 {
 	position = D3DXVECTOR3(0, 0, 0);
 
-	width = SCREEN_WIDTH;
-	height = SCREEN_HEIGHT;
+	width = CGame::GetInstance()->GetScreenWidth();
+	height = CGame::GetInstance()->GetScreenHeight();
 }
 
 CCamera* CCamera::GetInstance()
@@ -25,6 +25,45 @@ void CCamera::SetPosition(D3DXVECTOR3 pos)
 void CCamera::SetPosition(float x, float y)
 {
 	SetPosition(D3DXVECTOR3(x, y, 0));
+}
+
+void CCamera::SetMapSize(int width, int height)
+{
+	mapWidth = width;
+	mapHeight = height;
+}
+
+void CCamera::Update(CMario* player)
+{
+	// Update camera to follow mario
+	float cx, cy;
+	player->GetPosition(cx, cy);
+	SetPosition(cx, cy);
+
+	if (GetBound().left < 0)
+	{
+		//vi position cua Camera::GetInstance() ma chinh giua Camera::GetInstance()
+		//luc nay o vi tri goc ben trai cua the gioi thuc
+		SetPosition(GetWidth() / 2, GetPosition().y);
+	}
+
+	if (GetBound().right > mapWidth)
+	{
+		//luc nay cham goc ben phai cua the gioi thuc
+		SetPosition(mapWidth - GetWidth() / 2, GetPosition().y);
+	}
+
+	if (GetBound().top < 0)
+	{
+		//luc nay cham goc tren the gioi thuc
+		SetPosition(GetPosition().x, GetHeight() / 2);
+	}
+
+	if (GetBound().bottom > mapHeight / 2)
+	{
+		//luc nay cham day cua the gioi thuc
+		SetPosition(GetPosition().x, mapHeight - GetHeight() / 2);
+	}
 }
 
 D3DXVECTOR3 CCamera::GetPosition()

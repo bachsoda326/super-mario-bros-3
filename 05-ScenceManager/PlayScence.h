@@ -22,7 +22,7 @@ protected:
 
 	vector<LPGAMEOBJECT> objects;
 
-	TileMap* map;
+	CTileMap* map;
 
 	void _ParseSection_TEXTURES(string line);
 	void _ParseSection_SPRITES(string line);
@@ -53,7 +53,7 @@ class CPlayScenceKeyHandler : public CScenceKeyHandler
 public: 
 	virtual void KeyState(BYTE *states);
 	virtual void OnKeyDown(int KeyCode);
-	virtual void OnKeyUp(int KeyCode) {};
+	virtual void OnKeyUp(int KeyCode);
 	CPlayScenceKeyHandler(CScene *s) :CScenceKeyHandler(s) {};
 };
 

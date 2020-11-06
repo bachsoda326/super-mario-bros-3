@@ -11,6 +11,7 @@
 #include <dinput.h>
 
 #include "Scence.h"
+#include "Camera.h"
 
 using namespace std;
 

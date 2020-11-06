@@ -167,7 +167,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	case OBJECT_TYPE_BREAKABLE_BRICK: obj = new CBreakableBrick(); break;
 	case OBJECT_TYPE_KOOPAS: 
 	{
-		int type = atof(tokens[4].c_str());
+		int type = atoi(tokens[4].c_str());
 		if (type == 2) 
 		{
 			float min = atof(tokens[5].c_str());
@@ -228,7 +228,10 @@ void CPlayScene::_ParseSection_MAP(string line)
 	if (tokens.size() < 2) return;
 
 	int idTex = atoi(tokens[1].c_str());
-	map = new TileMap(idTex, tokens[0]);
+	float mapWidth = atoi(tokens[2].c_str());
+	float mapHeight = atoi(tokens[3].c_str());
+	map = new CTileMap(idTex, tokens[0]);
+	CCamera::GetInstance()->SetMapSize(mapWidth, mapHeight);
 }
 
 void CPlayScene::Load()
@@ -315,6 +318,8 @@ void CPlayScene::Update(DWORD dt)
 	cy -= game->GetScreenHeight() / 2;
 
 	CGame::GetInstance()->SetCamPos(cx, cy);
+
+	CCamera::GetInstance()->Update(player);
 }
 
 void CPlayScene::Render()
@@ -388,18 +393,14 @@ void CPlayScene::UpdateCamera(int mapWidth, int mapHeight)
 
 void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 {
-	//DebugOut(L"[INFO] KeyDown: %d\n", KeyCode);
+	DebugOut(L"[KEYDOWN] KeyDown: %d\n", KeyCode);
 
 	CMario* mario = ((CPlayScene*)scence)->GetPlayer();
 	switch (KeyCode)
 	{
 	case DIK_S:
-		if (!mario->canJump)
-			break;
-		else {
-			/*mario->SetState(MARIO_STATE_JUMP_HIGH_LEFT);*/
-			mario->canJump = false;
-		}
+		//mario->canRepeatJump = false;
+		mario->canJump = false;
 		break;
 	case DIK_X:
 		mario->SetState(MARIO_STATE_JUMP_SHORT_LEFT);
@@ -410,8 +411,28 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 	}
 }
 
+void CPlayScenceKeyHandler::OnKeyUp(int KeyCode)
+{
+	/*DebugOut(L"[KEYUP] KeyUp: %d\n", KeyCode);
+
+	CGame* game = CGame::GetInstance();
+	CMario* mario = ((CPlayScene*)scence)->GetPlayer();
+
+	switch (KeyCode)
+	{
+	case DIK_X:		
+		break;
+	case DIK_S:
+		mario->canJump = false;
+		mario->canRepeatJump = true;
+		break;
+	}*/
+}
+
 void CPlayScenceKeyHandler::KeyState(BYTE* states)
 {
+	//DebugOut(L"[KEYSTATE] KeyState: %d\n", states);
+
 	CGame* game = CGame::GetInstance();
 	CMario* mario = ((CPlayScene*)scence)->GetPlayer();
 

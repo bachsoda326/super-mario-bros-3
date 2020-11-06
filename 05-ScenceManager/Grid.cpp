@@ -49,10 +49,10 @@ Cell& CGrid::GetCell(D3DXVECTOR3& posObj)
 void CGrid::CalcColliableObjs(CCamera* camera, vector<LPGAMEOBJECT>& coObjs)
 {
 	// tính vị trí topleft và botright của camera
-	int xTopLeftCamera = camera->GetPosition().x - SCREEN_WIDTH / 2;
-	int yTopLeftCamera = camera->GetPosition().y - SCREEN_HEIGHT / 2;
-	int xBotRightCamera = camera->GetPosition().x + SCREEN_WIDTH / 2;
-	int yBotRightCamera = camera->GetPosition().y + SCREEN_HEIGHT / 2;
+	int xTopLeftCamera = camera->GetPosition().x - CGame::GetInstance()->GetScreenWidth() / 2;
+	int yTopLeftCamera = camera->GetPosition().y - CGame::GetInstance()->GetScreenHeight() / 2;
+	int xBotRightCamera = camera->GetPosition().x + CGame::GetInstance()->GetScreenWidth() / 2;
+	int yBotRightCamera = camera->GetPosition().y + CGame::GetInstance()->GetScreenHeight() / 2;
 	// tính vị trí topleft và botright của cell
 	int xTopLeftCell = xTopLeftCamera / cellSize;
 	int yTopLeftCell = yTopLeftCamera / cellSize;

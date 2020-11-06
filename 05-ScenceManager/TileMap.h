@@ -5,9 +5,9 @@
 
 using namespace std;
 
-#define CELL_SIZE 200
+#define CELL_SIZE 150
 
-class TileMap
+class CTileMap
 {
 private:	
 	// listSprites (ảnh) tương ứng vs các tiles
@@ -20,8 +20,8 @@ private:
 	int id;
 
 public:
-	TileMap(int idTex, string txtMapPath);
-	~TileMap();
+	CTileMap(int idTex, string txtMapPath);
+	~CTileMap();
 
 	void Render(CMario* player);
 };

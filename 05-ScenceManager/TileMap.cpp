@@ -3,7 +3,7 @@
 #include <fstream>
 #include "Game.h"
 
-TileMap::TileMap(int idTex, string txtMapPath)
+CTileMap::CTileMap(int idTex, string txtMapPath)
 {
 	fstream fs;
 	fs.open(txtMapPath);
@@ -43,11 +43,11 @@ TileMap::TileMap(int idTex, string txtMapPath)
 }
 
 
-TileMap::~TileMap()
+CTileMap::~CTileMap()
 {
 }
 
-void TileMap::Render(CMario* player)
+void CTileMap::Render(CMario* player)
 {	
 	CGame* game = CGame::GetInstance();
 	float cx, cy;
