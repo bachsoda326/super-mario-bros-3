@@ -1,7 +1,11 @@
 #pragma once
 #include "GameObject.h"
+#include "Goomba.h"
+#include "MushRoom.h"
+#include "Leaf.h"
 
-#define MARIO_WALKING_SPEED		0.12f 
+
+#define MARIO_WALKING_SPEED		0.1f 
 //0.1f
 #define MARIO_JUMP_HIGH_SPEED_Y		0.05f
 #define MARIO_JUMP_SHORT_SPEED_Y	0.27f
@@ -10,12 +14,12 @@
 #define MARIO_DIE_DEFLECT_SPEED	 0.5f
 
 #define MARIO_STATE_IDLE				0
-#define MARIO_STATE_WALKING_LEFT		100
-#define MARIO_STATE_WALKING_RIGHT		200
-#define MARIO_STATE_JUMP_HIGH_LEFT		300
-#define MARIO_STATE_JUMP_HIGH_RIGHT		400
-#define MARIO_STATE_JUMP_SHORT_LEFT		500
-#define MARIO_STATE_JUMP_SHORT_RIGHT	600
+#define MARIO_STATE_WALKING				100
+#define MARIO_STATE_JUMP_HIGH			200
+#define MARIO_STATE_JUMP_SHORT			300
+#define MARIO_STATE_PREPARE_RUN			400
+#define MARIO_STATE_RUN					500
+#define MARIO_STATE_HOLD				600
 #define MARIO_STATE_DIE					700
 
 //#define MARIO_ANI_BIG_IDLE_RIGHT		0
@@ -171,6 +175,8 @@
 #define MARIO_ANI_RACCOON_DOOR				131
 #define MARIO_ANI_RACCOON_SPIN_LEFT			132
 #define MARIO_ANI_RACCOON_SPIN_RIGHT		133
+#define MARIO_ANI_BIG_PREPARE_RUN_LEFT		134
+#define MARIO_ANI_BIG_PREPARE_RUN_RIGHT		135
 
 #define	MARIO_LEVEL_SMALL	1
 #define	MARIO_LEVEL_BIG		2
@@ -184,6 +190,7 @@
 #define MARIO_SMALL_BBOX_HEIGHT 16
 
 #define MARIO_UNTOUCHABLE_TIME 5000
+#define MARIO_RUN_TIME 3000
 
 
 class CMario : public CGameObject
@@ -195,9 +202,13 @@ class CMario : public CGameObject
 	float start_x;			// initial position of Mario at scene
 	float start_y; 
 public: 
+	DWORD run_start;
+
 	bool canJump = true;
-	bool canRepeatJump = false;
+	bool canRepeatJump = true;
 	bool canJumpHigher = true;
+
+	CKoopas	*koopas;
 
 	CMario(float x = 0.0f, float y = 0.0f);
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT> *colliable_objects = NULL);
@@ -207,6 +218,7 @@ public:
 	void SetLevel(int l) { level = l; }
 	void StartUntouchable() { untouchable = 1; untouchable_start = GetTickCount(); }
 
+	void SetKoopas(CKoopas* koopas) { this->koopas = koopas; };
 	void Reset();
 
 	virtual void GetBoundingBox(float &left, float &top, float &right, float &bottom);

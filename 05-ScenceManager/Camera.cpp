@@ -1,5 +1,4 @@
 #include "Camera.h"
-#include "Constants.h"
 
 CCamera* CCamera::__instance = NULL;
 

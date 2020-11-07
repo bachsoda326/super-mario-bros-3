@@ -12,6 +12,8 @@
 #include "QuestionBrick.h"
 #include "BreakableBrick.h"
 #include "WarpPipe.h"
+#include "MushRoom.h"
+#include "Leaf.h"
 #include "TileMap.h"
 
 

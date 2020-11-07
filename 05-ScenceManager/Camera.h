@@ -1,7 +1,8 @@
 ﻿#pragma once
 #include <d3dx9.h>
-#include "Mario.h"
 #include "Game.h"
+#include "Mario.h"
+#include "Constants.h"
 
 class CCamera
 {
