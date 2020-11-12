@@ -61,6 +61,11 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		SetState(MARIO_STATE_KICK);
 	}
 
+	if ((GetTickCount() - tail_start) < 210)
+	{
+		SetState(MARIO_STATE_TAIL);
+	}
+
 	/*if (GetTickCount() - run_start > MARIO_RUN_TIME)
 	{
 		if (run_start != 0)
@@ -168,7 +173,13 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				}
 				else if (e->nx != 0)
 				{
-					if (untouchable == 0)
+					if (state == MARIO_STATE_TAIL && goomba->state != GOOMBA_STATE_DIE_REVERSE)
+					{
+						goomba->vx = -nx * 0.1f;
+						goomba->vy = -0.2f;
+						goomba->SetState(GOOMBA_STATE_DIE_REVERSE);
+					}
+					else if (untouchable == 0)
 					{
 						if (goomba->GetState() != GOOMBA_STATE_DIE)
 						{
@@ -214,6 +225,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						{
 							if (koopas->GetState() == KOOPAS_STATE_WALKING)
 							{
+								//koopas->vx = nx * vx;
 								if (level > MARIO_LEVEL_SMALL)
 								{
 									level = MARIO_LEVEL_SMALL;
@@ -512,7 +524,7 @@ void CMario::Render()
 	int alpha = 255;
 	if (untouchable) alpha = 128;
 
-	animation_set->at(ani)->Render(x, y, alpha);
+	animation_set->at(ani)->Render(x, y, false, alpha);
 
 	RenderBoundingBox();
 }
@@ -559,12 +571,6 @@ void CMario::SetState(int state)
 
 void CMario::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 {
-	if (level == MARIO_LEVEL_RACCOON && nx > 0)
-		left = x + 8;
-	//left = x + 10;
-	else
-		left = x;
-
 	if (state == MARIO_STATE_DUCK)
 		top = y + MARIO_BIG_BBOX_HEIGHT - MARIO_BIG_BBOX_HEIGHT_DUCK;
 	else
@@ -572,7 +578,16 @@ void CMario::GetBoundingBox(float& left, float& top, float& right, float& bottom
 
 	if (level == MARIO_LEVEL_BIG || level == MARIO_LEVEL_RACCOON || level == MARIO_LEVEL_FIRE)
 	{
-		right = left + MARIO_BIG_BBOX_WIDTH;
+		if (state == MARIO_STATE_TAIL)
+		{
+			left = x - 8;
+			right = x + MARIO_BIG_BBOX_WIDTH + 8;
+		}
+		else
+		{
+			left = x;
+			right = left + MARIO_BIG_BBOX_WIDTH;
+		}
 		if (state == MARIO_STATE_DUCK)
 			bottom = top + MARIO_BIG_BBOX_HEIGHT_DUCK;
 		else
@@ -580,6 +595,7 @@ void CMario::GetBoundingBox(float& left, float& top, float& right, float& bottom
 	}
 	else
 	{
+		left = x;
 		right = left + MARIO_SMALL_BBOX_WIDTH;
 		bottom = top + MARIO_SMALL_BBOX_HEIGHT;
 	}

@@ -20,26 +20,20 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	CGameObject::Update(dt, coObjects);
 
-	//
-	// TO-DO: make sure Goomba can interact with the world and to each of them too!
-	// 
-
-	/*x += dx;
-	y += dy;
-
-	if (vx < 0 && x < 0) {
-		x = 0; vx = -vx;
-	}
-
-	if (vx > 0 && x > 290) {
-		x = 290; vx = -vx;
-	}*/
-
 	// Simple fall down
 	vy += GOOMBA_GRAVITY * dt;
 
-	if (this->state == GOOMBA_STATE_DIE && GetTickCount() - die_start > 300) {
-		this->isDie = true;
+	if (this->state == GOOMBA_STATE_DIE && GetTickCount() - die_start > 300)
+		this->isDie = true;	
+
+	if (state == GOOMBA_STATE_DIE_REVERSE)
+	{
+		x += dx;
+		y += dy;
+
+		if (GetTickCount() - die_start > 1000)
+			this->isDie = true;
+		return;
 	}
 
 	vector<LPCOLLISIONEVENT> coEvents;
@@ -91,6 +85,7 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				if (e->nx != 0)
 				{
 					vx = -vx;
+					x += min_tx * dx + nx * 0.4f;
 				}
 			}
 		}
@@ -106,8 +101,11 @@ void CGoomba::Render()
 	if (state == GOOMBA_STATE_DIE) {
 		ani = GOOMBA_ANI_DIE;
 	}
+	else if (state == GOOMBA_STATE_DIE_REVERSE) {
+		ani = GOOMBA_ANI_WALKING;
+	}
 
-	animation_set->at(ani)->Render(x, y);
+	animation_set->at(ani)->Render(x, y, yReverse);
 
 	RenderBoundingBox();
 }
@@ -121,6 +119,10 @@ void CGoomba::SetState(int state)
 		y += GOOMBA_BBOX_HEIGHT - GOOMBA_BBOX_HEIGHT_DIE;
 		vx = 0;
 		vy = 0;
+		die_start = GetTickCount();
+		break;
+	case GOOMBA_STATE_DIE_REVERSE:		
+		yReverse = true;
 		die_start = GetTickCount();
 		break;
 	case GOOMBA_STATE_WALKING:

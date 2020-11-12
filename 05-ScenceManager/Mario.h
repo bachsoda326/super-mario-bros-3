@@ -153,8 +153,8 @@
 #define MARIO_ANI_FIRE_SPIN_RIGHT			97
 #define MARIO_ANI_FIRE_PREPARE_RUN_LEFT		142
 #define MARIO_ANI_FIRE_PREPARE_RUN_RIGHT	143
-#define MARIO_ANI_FIRE_IDLE_HOLD_LEFT		148
-#define MARIO_ANI_FIRE_IDLE_HOLD_RIGHT		149
+#define MARIO_ANI_FIRE_IDLE_HOLD_LEFT		150
+#define MARIO_ANI_FIRE_IDLE_HOLD_RIGHT		151
 
 //ANIMATION RACCOON MARIO
 #define MARIO_ANI_RACCOON_IDLE_LEFT			98
@@ -197,8 +197,8 @@
 #define MARIO_ANI_RACCOON_TAIL_RIGHT		137
 #define MARIO_ANI_RACCOON_PREPARE_RUN_LEFT	140
 #define MARIO_ANI_RACCOON_PREPARE_RUN_RIGHT	141
-#define MARIO_ANI_RACCOON_IDLE_HOLD_LEFT	150
-#define MARIO_ANI_RACCOON_IDLE_HOLD_RIGHT	151
+#define MARIO_ANI_RACCOON_IDLE_HOLD_LEFT	148
+#define MARIO_ANI_RACCOON_IDLE_HOLD_RIGHT	149
 
 
 #define	MARIO_LEVEL_SMALL	1
@@ -229,12 +229,14 @@ public:
 	DWORD run_start;
 	DWORD kick_start;
 	DWORD skid_start;
+	DWORD tail_start;
 
 	bool isOnGround = false;
 	bool canJump = true;
 	bool canRepeatJump = true;
 	bool canJumpHigher = true;
 	bool canHold = false;
+	bool canAttack = true;
 	//bool canDuck = false;
 
 	CKoopas	*koopas;

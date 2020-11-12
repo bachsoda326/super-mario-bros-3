@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 #include <fstream>
 
 #include "Game.h"
@@ -63,17 +63,35 @@ void CGame::Init(HWND hWnd)
 /*
 	Utility function to wrap LPD3DXSPRITE::Draw 
 */
-void CGame::Draw(float x, float y, LPDIRECT3DTEXTURE9 texture, int left, int top, int right, int bottom, int alpha)
+void CGame::Draw(float x, float y, LPDIRECT3DTEXTURE9 texture, int left, int top, int right, int bottom, int xD, int yD, bool yReverse, int alpha)
 {
 	//D3DXVECTOR3 p(floor(x - cam_x), floor(y - cam_y), 0);
-	D3DXVECTOR3 p(floor(x - CCamera::GetInstance()->GetPosition().x + GetScreenWidth() / 2), floor(y - CCamera::GetInstance()->GetPosition().y + GetScreenHeight() / 2), 0);
+	float xNew = floor(x - xD - CCamera::GetInstance()->GetPosition().x + GetScreenWidth() / 2);
+	float yNew = floor(y - yD - CCamera::GetInstance()->GetPosition().y + GetScreenHeight() / 2);
+	D3DXVECTOR3 p(xNew, yNew, 0);
 	
 	RECT r;
 	r.left = left;
 	r.top = top;
 	r.right = right;
 	r.bottom = bottom;
-	spriteHandler->Draw(texture, &r, NULL, &p, D3DCOLOR_ARGB(alpha, 255, 255, 255));
+		
+	if (yReverse)
+	{
+		D3DXVECTOR2 scale(1, -1);
+		D3DXVECTOR2 center = D3DXVECTOR2(xNew + (right - left) / 2, yNew + (bottom - top) / 2);
+		D3DXMATRIX oldMatrix, newMatrix;
+
+		spriteHandler->GetTransform(&oldMatrix);
+
+		D3DXMatrixTransformation2D(&newMatrix, &center, 0.0f, &scale, NULL, 0.0f, NULL);
+
+		spriteHandler->SetTransform(&newMatrix);
+		spriteHandler->Draw(texture, &r, NULL, &p, D3DCOLOR_ARGB(alpha, 255, 255, 255));
+		spriteHandler->SetTransform(&oldMatrix);
+	}
+	else
+		spriteHandler->Draw(texture, &r, NULL, &p, D3DCOLOR_ARGB(alpha, 255, 255, 255));
 }
 
 int CGame::IsKeyDown(int KeyCode)

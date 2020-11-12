@@ -37,7 +37,7 @@ CTileMap::CTileMap(int idTex, string txtMapPath)
 		left = xIndex * 16;
 		top = yIndex * 16;
 		// tạo sprite tương ứng vs các tile từ texture map
-		sprite = new CSprite(i, left, top, left + 16, top + 16, texture);
+		sprite = new CSprite(i, left, top, left + 16, top + 16, 0, 0, texture);
 		listSprites.push_back(sprite);
 	}
 }

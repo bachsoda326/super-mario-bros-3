@@ -99,7 +99,7 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		}
 		else
 			x += dx;
-		if (ny != 0) 
+		if (ny < 0) 
 		{
 			y += min_ty * dy + ny * 0.4f;
 			vy = 0; 
@@ -121,7 +121,12 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				if (state == KOOPAS_STATE_SPIN)
 				{
 					CGoomba* goomba = dynamic_cast<CGoomba*>(e->obj);
-					goomba->SetState(GOOMBA_STATE_DIE);
+					if (goomba->state != GOOMBA_STATE_DIE_REVERSE)
+					{
+						goomba->vx = -nx * 0.1f;
+						goomba->vy = -0.2f;
+						goomba->SetState(GOOMBA_STATE_DIE_REVERSE);
+					}
 				}
 			}
 			if (dynamic_cast<CGround*>(e->obj) || dynamic_cast<CWarpPipe*>(e->obj) || dynamic_cast<CBrick*>(e->obj))

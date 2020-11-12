@@ -74,13 +74,13 @@ void CPlayScene::_ParseSection_SPRITES(string line)
 	int r = atoi(tokens[3].c_str());
 	int b = atoi(tokens[4].c_str());
 	int texID = atoi(tokens[5].c_str());
-	/*int xD = 0;
+	int xD = 0;
 	int yD = 0;
-	if (tokens.size() > 6)
+	if (tokens.size() > 7)
 	{
 		xD = atoi(tokens[6].c_str());
 		yD = atoi(tokens[7].c_str());
-	}*/
+	}
 
 	LPDIRECT3DTEXTURE9 tex = CTextures::GetInstance()->Get(texID);
 	if (tex == NULL)
@@ -89,7 +89,7 @@ void CPlayScene::_ParseSection_SPRITES(string line)
 		return;
 	}
 
-	CSprites::GetInstance()->Add(ID, l, t, r, b, tex);
+	CSprites::GetInstance()->Add(ID, l, t, r, b, xD, yD, tex);
 }
 
 void CPlayScene::_ParseSection_ANIMATIONS(string line)
@@ -420,8 +420,16 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 		break;
 	case DIK_A:
 		mario->canHold = true;
+
 		if (mario->GetLevel() == MARIO_LEVEL_RACCOON)
-			mario->SetState(MARIO_STATE_TAIL);
+		{
+			if (mario->canAttack)
+			{
+				mario->tail_start = GetTickCount();
+				mario->SetState(MARIO_STATE_TAIL);
+				mario->canAttack = false;
+			}
+		}
 		break;
 		/*case DIK_X:
 			mario->SetState(MARIO_STATE_JUMP_SHORT);
@@ -463,6 +471,8 @@ void CPlayScenceKeyHandler::OnKeyUp(int KeyCode)
 		mario->canRepeatJump = true;
 		break;
 	case DIK_A:
+		mario->canAttack = true;
+
 		if (mario->state == MARIO_STATE_HOLD)
 		{
 			mario->canHold = false;
@@ -571,7 +581,7 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 		/*else if (mario->vy == 0)
 			mario->SetState(MARIO_STATE_WALKING);*/
 	}
-	else if (mario->vy == 0 && mario->state != MARIO_STATE_TAIL)
+	else if (mario->vy == 0)
 	{
 		if (mario->nx > 0)
 		{

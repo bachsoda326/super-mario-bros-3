@@ -14,11 +14,12 @@
 
 #define GOOMBA_STATE_WALKING 100
 #define GOOMBA_STATE_DIE 200
+#define GOOMBA_STATE_DIE_REVERSE 300
 
 #define GOOMBA_ANI_WALKING 0
 #define GOOMBA_ANI_DIE 1
 
-#define GOOMBA_GRAVITY			0.002f
+#define GOOMBA_GRAVITY			0.001f
 
 class CGoomba : public CGameObject
 {
