@@ -10,7 +10,7 @@
 
 #define GOOMBA_BBOX_WIDTH 17
 #define GOOMBA_BBOX_HEIGHT 16
-#define GOOMBA_BBOX_HEIGHT_DIE 10
+#define GOOMBA_BBOX_HEIGHT_DIE 9
 
 #define GOOMBA_STATE_WALKING 100
 #define GOOMBA_STATE_DIE 200
@@ -27,6 +27,8 @@ class CGoomba : public CGameObject
 	virtual void Render();
 
 public: 	
+	DWORD die_start;
+
 	CGoomba();
 	virtual void SetState(int state);
 };

@@ -74,6 +74,13 @@ void CPlayScene::_ParseSection_SPRITES(string line)
 	int r = atoi(tokens[3].c_str());
 	int b = atoi(tokens[4].c_str());
 	int texID = atoi(tokens[5].c_str());
+	/*int xD = 0;
+	int yD = 0;
+	if (tokens.size() > 6)
+	{
+		xD = atoi(tokens[6].c_str());
+		yD = atoi(tokens[7].c_str());
+	}*/
 
 	LPDIRECT3DTEXTURE9 tex = CTextures::GetInstance()->Get(texID);
 	if (tex == NULL)
@@ -302,12 +309,14 @@ void CPlayScene::Update(DWORD dt)
 	vector<LPGAMEOBJECT> coObjects;
 	for (size_t i = 1; i < objects.size(); i++)
 	{
-		coObjects.push_back(objects[i]);
+		if (!objects[i]->isDie)
+			coObjects.push_back(objects[i]);
 	}
 
 	for (size_t i = 0; i < objects.size(); i++)
 	{
-		objects[i]->Update(dt, &coObjects);
+		if (!objects[i]->isDie)
+			objects[i]->Update(dt, &coObjects);
 	}
 
 	// skip the rest if scene was already unloaded (Mario::Update might trigger PlayScene::Unload)
@@ -334,7 +343,10 @@ void CPlayScene::Render()
 	}
 
 	for (int i = 0; i < objects.size(); i++)
-		objects[i]->Render();
+	{
+		if (!objects[i]->isDie)
+			objects[i]->Render();
+	}
 }
 
 /*
@@ -406,11 +418,31 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 		mario->canRepeatJump = false;
 		//mario->canJump = false;
 		break;
+	case DIK_A:
+		mario->canHold = true;
+		if (mario->GetLevel() == MARIO_LEVEL_RACCOON)
+			mario->SetState(MARIO_STATE_TAIL);
+		break;
 		/*case DIK_X:
 			mario->SetState(MARIO_STATE_JUMP_SHORT);
 			break;*/
+	/*case DIK_DOWN:
+		mario->canDuck = true;
+		break;*/
 	case DIK_R:
 		mario->Reset();
+		break;
+	case DIK_1:
+		mario->SetLevel(MARIO_LEVEL_SMALL);
+		break;
+	case DIK_2:
+		mario->SetLevel(MARIO_LEVEL_BIG);
+		break;
+	case DIK_3:
+		mario->SetLevel(MARIO_LEVEL_RACCOON);
+		break;
+	case DIK_4:
+		mario->SetLevel(MARIO_LEVEL_FIRE);
 		break;
 	}
 }
@@ -433,11 +465,19 @@ void CPlayScenceKeyHandler::OnKeyUp(int KeyCode)
 	case DIK_A:
 		if (mario->state == MARIO_STATE_HOLD)
 		{
+			mario->canHold = false;
 			if (mario->koopas != NULL)
 			{
+				mario->kick_start = GetTickCount();
 				mario->koopas->SetState(KOOPAS_STATE_SPIN);
 				mario->koopas->vx = mario->nx * KOOPAS_SPIN_SPEED;
+				mario->koopas = NULL;
 			}
+		}
+		else if (mario->state == MARIO_STATE_PREPARE_RUN || mario->state == MARIO_STATE_RUN)
+		{
+			mario->SetState(MARIO_STATE_WALKING);
+			mario->vx = mario->nx * MARIO_WALKING_SPEED;
 		}
 		break;
 	}
@@ -455,71 +495,108 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 	if (game->IsKeyDown(DIK_RIGHT))
 	{
 		mario->nx = 1;
-		if (mario->vx < MARIO_WALKING_SPEED)
-			mario->vx += 0.005f;
+		if (mario->state != MARIO_STATE_DUCK)
+			if (mario->vx < MARIO_WALKING_SPEED)
+				mario->vx += 0.005f;
 
+		// Phanh
+		if (mario->vx < 0 && mario->vx < -0.07f && mario->isOnGround)
+			mario->SetState(MARIO_STATE_SKID);
+		else if (mario->vx >= 0 && mario->vy == 0 && state != MARIO_STATE_PREPARE_RUN && state != MARIO_STATE_RUN)
+			mario->SetState(MARIO_STATE_WALKING);
 		if (game->IsKeyDown(DIK_A))
 		{
 			if (state != MARIO_STATE_RUN)
-				mario->vx = 1.5 * mario->nx * MARIO_WALKING_SPEED;
+			{
+				if (mario->vx < mario->nx * MARIO_PREPARE_RUN_SPEED)
+					mario->vx += 0.001f;
+			}
 
 			if (state == MARIO_STATE_WALKING)
 			{
-				mario->run_start = GetTickCount();
-				mario->SetState(MARIO_STATE_PREPARE_RUN);
+				if (mario->vx >= mario->nx * MARIO_PREPARE_RUN_SPEED)
+				{
+					mario->run_start = GetTickCount();
+					mario->SetState(MARIO_STATE_PREPARE_RUN);
+				}
 			}
 			else if (state == MARIO_STATE_PREPARE_RUN && GetTickCount() - mario->run_start >= MARIO_RUN_TIME / 3)
 			{
 				mario->SetState(MARIO_STATE_RUN);
 			}
 		} 
-		else if (mario->vy == 0)
+		/*else if (mario->vy == 0)
+		{
 			mario->SetState(MARIO_STATE_WALKING);
+			mario->vx = MARIO_WALKING_SPEED;
+		}*/
 	}
 	else if (game->IsKeyDown(DIK_LEFT))
 	{
 		mario->nx = -1;
-		if (mario->vx > -MARIO_WALKING_SPEED)
-			mario->vx -= 0.005f;
+		if (mario->state != MARIO_STATE_DUCK)
+			if (mario->vx > -MARIO_WALKING_SPEED)
+				mario->vx -= 0.005f;
+
+		// Phanh
+		if (mario->vx > 0 && mario->vx > 0.07f && mario->isOnGround)
+			mario->SetState(MARIO_STATE_SKID);
+		else if (mario->vx <= 0 && mario->vy == 0 && state != MARIO_STATE_PREPARE_RUN && state != MARIO_STATE_RUN)
+			mario->SetState(MARIO_STATE_WALKING);
 
 		if (game->IsKeyDown(DIK_A))
 		{
+			/*if (state != MARIO_STATE_RUN)
+				mario->vx = 1.5 * mario->nx * MARIO_WALKING_SPEED;*/
+
 			if (state != MARIO_STATE_RUN)
-				mario->vx = 1.5 * mario->nx * MARIO_WALKING_SPEED;
+			{
+				if (mario->vx > mario->nx * MARIO_PREPARE_RUN_SPEED)
+					mario->vx -= 0.001f;
+			}
 
 			if (state == MARIO_STATE_WALKING)
 			{
-				mario->run_start = GetTickCount();
-				mario->SetState(MARIO_STATE_PREPARE_RUN);
+				if (mario->vx <= mario->nx * MARIO_PREPARE_RUN_SPEED)
+				{
+					mario->run_start = GetTickCount();
+					mario->SetState(MARIO_STATE_PREPARE_RUN);
+				}
 			}
 			else if (state == MARIO_STATE_PREPARE_RUN && GetTickCount() - mario->run_start >= MARIO_RUN_TIME / 3)
 			{
 				mario->SetState(MARIO_STATE_RUN);
 			}
 		}
-		else if (mario->vy == 0)
-			mario->SetState(MARIO_STATE_WALKING);
+		/*else if (mario->vy == 0)
+			mario->SetState(MARIO_STATE_WALKING);*/
 	}
-	else if (mario->vy == 0)
+	else if (mario->vy == 0 && mario->state != MARIO_STATE_TAIL)
 	{
 		if (mario->nx > 0)
 		{
 			mario->SetState(MARIO_STATE_WALKING);
 			mario->vx -= 0.01f;
-			if (mario->vx < 0)
+			if (mario->vx <= 0)
 				mario->SetState(MARIO_STATE_IDLE);
 		}		
 		if (mario->nx < 0)
 		{
 			mario->SetState(MARIO_STATE_WALKING);
 			mario->vx += 0.01f;
-			if (mario->vx > 0)
+			if (mario->vx >= 0)
 				mario->SetState(MARIO_STATE_IDLE);
 		}
 		//mario->SetState(MARIO_STATE_IDLE);
 	}
 	if (game->IsKeyDown(DIK_S) && mario->canJump)
+	{
 		mario->SetState(MARIO_STATE_JUMP_HIGH);
+	}
+	if (game->IsKeyDown(DIK_DOWN) && mario->isOnGround && mario->GetLevel() != MARIO_LEVEL_SMALL)
+	{
+		mario->SetState(MARIO_STATE_DUCK);
+	}
 	if (game->IsKeyDown(DIK_A) && state == MARIO_STATE_HOLD)
 	{
 		mario->SetState(MARIO_STATE_HOLD);

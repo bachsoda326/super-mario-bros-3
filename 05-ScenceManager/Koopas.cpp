@@ -91,11 +91,19 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 		if (state == KOOPAS_STATE_HOLD)
 		{
-			if (nx != 0) vx = 0;
+			if (nx != 0)
+			{
+				x += min_tx * dx + nx * 0.4f;
+				vx = 0;
+			}
 		}
 		else
 			x += dx;
-		if (ny != 0) vy = 0;
+		if (ny != 0) 
+		{
+			y += min_ty * dy + ny * 0.4f;
+			vy = 0; 
+		}
 
 		//
 		// Collision logic with other objects
@@ -108,7 +116,14 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			{
 				x += dx;
 			}*/
-
+			if (dynamic_cast<CGoomba*>(e->obj))
+			{
+				if (state == KOOPAS_STATE_SPIN)
+				{
+					CGoomba* goomba = dynamic_cast<CGoomba*>(e->obj);
+					goomba->SetState(GOOMBA_STATE_DIE);
+				}
+			}
 			if (dynamic_cast<CGround*>(e->obj) || dynamic_cast<CWarpPipe*>(e->obj) || dynamic_cast<CBrick*>(e->obj))
 			{
 				if (e->nx != 0)
@@ -118,8 +133,11 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						/*x += min_tx * dx + nx * 0.4f;
 						vx = 0;*/
 					}
-					else 
+					else
+					{
+						x += min_tx * dx + nx * 0.4f;
 						vx = -vx;
+					}
 				}
 			}
 			if (type == KOOPAS_RED)

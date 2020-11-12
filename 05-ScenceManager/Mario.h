@@ -6,6 +6,8 @@
 
 
 #define MARIO_WALKING_SPEED		0.1f 
+#define MARIO_PREPARE_RUN_SPEED		0.15f
+#define MARIO_RUN_SPEED		0.2f 
 //0.1f
 #define MARIO_JUMP_HIGH_SPEED_Y		0.05f
 #define MARIO_JUMP_SHORT_SPEED_Y	0.27f
@@ -15,12 +17,16 @@
 
 #define MARIO_STATE_IDLE				0
 #define MARIO_STATE_WALKING				100
-#define MARIO_STATE_JUMP_HIGH			200
-#define MARIO_STATE_JUMP_SHORT			300
-#define MARIO_STATE_PREPARE_RUN			400
-#define MARIO_STATE_RUN					500
-#define MARIO_STATE_HOLD				600
-#define MARIO_STATE_DIE					700
+#define MARIO_STATE_JUMP_HIGH			101
+#define MARIO_STATE_JUMP_SHORT			102
+#define MARIO_STATE_PREPARE_RUN			103
+#define MARIO_STATE_RUN					104
+#define MARIO_STATE_HOLD				105
+#define MARIO_STATE_TAIL				106
+#define MARIO_STATE_KICK				107
+#define MARIO_STATE_SKID				108
+#define MARIO_STATE_DUCK				109
+#define MARIO_STATE_DIE					999
 
 //#define MARIO_ANI_BIG_IDLE_RIGHT		0
 //#define MARIO_ANI_BIG_IDLE_LEFT			1
@@ -61,6 +67,10 @@
 #define MARIO_ANI_SMALL_CLIMB_RIGHT			23
 #define MARIO_ANI_SMALL_PIPE				24
 #define MARIO_ANI_SMALL_DIE					25
+#define MARIO_ANI_SMALL_PREPARE_RUN_LEFT	138
+#define MARIO_ANI_SMALL_PREPARE_RUN_RIGHT	139
+#define MARIO_ANI_SMALL_IDLE_HOLD_LEFT		144
+#define MARIO_ANI_SMALL_IDLE_HOLD_RIGHT		145
 
 // ANIMATION BIG MARIO
 #define MARIO_ANI_BIG_IDLE_LEFT				26
@@ -103,6 +113,10 @@
 #define MARIO_ANI_BIG_GROW_RIGHT			63
 #define MARIO_ANI_BIG_SHRINK_LEFT			64
 #define MARIO_ANI_BIG_SHRINK_RIGHT			65
+#define MARIO_ANI_BIG_PREPARE_RUN_LEFT		134
+#define MARIO_ANI_BIG_PREPARE_RUN_RIGHT		135
+#define MARIO_ANI_BIG_IDLE_HOLD_LEFT		146
+#define MARIO_ANI_BIG_IDLE_HOLD_RIGHT		147
 
 //ANIMATION FIRE MARIO
 #define MARIO_ANI_FIRE_IDLE_LEFT			66
@@ -137,6 +151,10 @@
 #define MARIO_ANI_FIRE_DOOR					95
 #define MARIO_ANI_FIRE_SPIN_LEFT			96
 #define MARIO_ANI_FIRE_SPIN_RIGHT			97
+#define MARIO_ANI_FIRE_PREPARE_RUN_LEFT		142
+#define MARIO_ANI_FIRE_PREPARE_RUN_RIGHT	143
+#define MARIO_ANI_FIRE_IDLE_HOLD_LEFT		148
+#define MARIO_ANI_FIRE_IDLE_HOLD_RIGHT		149
 
 //ANIMATION RACCOON MARIO
 #define MARIO_ANI_RACCOON_IDLE_LEFT			98
@@ -175,8 +193,13 @@
 #define MARIO_ANI_RACCOON_DOOR				131
 #define MARIO_ANI_RACCOON_SPIN_LEFT			132
 #define MARIO_ANI_RACCOON_SPIN_RIGHT		133
-#define MARIO_ANI_BIG_PREPARE_RUN_LEFT		134
-#define MARIO_ANI_BIG_PREPARE_RUN_RIGHT		135
+#define MARIO_ANI_RACCOON_TAIL_LEFT			136
+#define MARIO_ANI_RACCOON_TAIL_RIGHT		137
+#define MARIO_ANI_RACCOON_PREPARE_RUN_LEFT	140
+#define MARIO_ANI_RACCOON_PREPARE_RUN_RIGHT	141
+#define MARIO_ANI_RACCOON_IDLE_HOLD_LEFT	150
+#define MARIO_ANI_RACCOON_IDLE_HOLD_RIGHT	151
+
 
 #define	MARIO_LEVEL_SMALL	1
 #define	MARIO_LEVEL_BIG		2
@@ -185,6 +208,7 @@
 
 #define MARIO_BIG_BBOX_WIDTH  15
 #define MARIO_BIG_BBOX_HEIGHT 27
+#define MARIO_BIG_BBOX_HEIGHT_DUCK 18
 
 #define MARIO_SMALL_BBOX_WIDTH  16
 #define MARIO_SMALL_BBOX_HEIGHT 16
@@ -203,10 +227,15 @@ class CMario : public CGameObject
 	float start_y; 
 public: 
 	DWORD run_start;
+	DWORD kick_start;
+	DWORD skid_start;
 
+	bool isOnGround = false;
 	bool canJump = true;
 	bool canRepeatJump = true;
 	bool canJumpHigher = true;
+	bool canHold = false;
+	//bool canDuck = false;
 
 	CKoopas	*koopas;
 
@@ -216,6 +245,7 @@ public:
 
 	void SetState(int state);
 	void SetLevel(int l) { level = l; }
+	int GetLevel() { return level; }
 	void StartUntouchable() { untouchable = 1; untouchable_start = GetTickCount(); }
 
 	void SetKoopas(CKoopas* koopas) { this->koopas = koopas; };

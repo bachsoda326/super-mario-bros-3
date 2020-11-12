@@ -57,6 +57,7 @@ public:
 	int nx;	 
 
 	int state;
+	bool isDie = false;
 
 	DWORD dt; 
 

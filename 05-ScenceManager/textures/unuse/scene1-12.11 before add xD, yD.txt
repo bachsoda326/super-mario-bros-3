@@ -13,7 +13,7 @@
 [MAP]
 map1-1.txt	30	2816	432
 
-# id	left	top	right	bottom	texture_id	xD	yD
+# id	left	top	right	bottom	texture_id
 [SPRITES]
 # BIG MARIO 
 # idle right
@@ -414,8 +414,6 @@ ani_id	sprite1_id	time1	sprite2_id	time2
 10006	20004	5	20005	5
 #RUN JUMP LEFT				
 10007	20006	100
-#IDLE HOLD LEFT
-11050	20009	100
 #HOLD LEFT
 10008	20009	100	20010	100
 #KICK LEFT				
@@ -446,8 +444,6 @@ ani_id	sprite1_id	time1	sprite2_id	time2
 10020	20022	5	20023	5
 #RUN JUMP RIGHT				
 10021	20024	100
-#IDLE HOLD RIGHT
-11051	20027	100
 #HOLD RIGHT				
 10022	20027	100	20028	100
 #KICK RIGHT				
@@ -480,8 +476,6 @@ ani_id	sprite1_id	time1	sprite2_id	time2
 10034	20041	5	20042	5	20043	5
 #RUN JUMP LEFT						
 10035	20044	100
-#IDLE HOLD LEFT						
-12050	20048	100
 #HOLD LEFT						
 10036	20048	100	20049	100	20050	100
 #KICK						
@@ -520,8 +514,6 @@ ani_id	sprite1_id	time1	sprite2_id	time2
 10052	20074	5	20075	5	20076	5
 #RUN JUMP RIGHT						
 10053	20077	100
-#IDLE HOLD RIGHT						
-12051	20081	100
 #HOLD RIGHT						
 10054	20081	100	20082	100	20083	100
 #KICK RIGHT						
@@ -570,8 +562,6 @@ ani_id	sprite1_id	time1	sprite2_id	time2
 10074	20107	5	20108	5	20109	5
 #RUN JUMP LEFT																
 10075	20110	100
-#IDLE HOLD LEFT																
-14050	20114	100
 #HOLD LEFT																
 10076	20114	100	20115	100	20116	100
 #KICK LEFT																
@@ -608,8 +598,6 @@ ani_id	sprite1_id	time1	sprite2_id	time2
 10091	20139	5	20140	5	20141	5
 #RUN JUMP RIGHT																
 10092	20142	100
-#IDLE HOLD RIGHT																
-14051	20146	100
 #HOLD RIGHT																
 10093	20146	100	20147	100	20148	100
 #KICK RIGHT																
@@ -648,8 +636,6 @@ ani_id	sprite1_id	time1	sprite2_id	time2
 10108	20176	100
 #FLY LEFT																
 10109	20178	100	20177	100	20176	100
-#IDLE HOLD LEFT																
-13050	20183	100
 #HOLD LEFT																
 10110	20183	100	20184	100	20185	100
 #KICK LEFT																
@@ -693,8 +679,6 @@ ani_id	sprite1_id	time1	sprite2_id	time2
 10127	20211	100
 #FLY RIGHT																
 10128	20213	100	20212	100	20211	100
-#IDLE HOLD RIGHT																
-13051	20218	100
 #HOLD RIGHT																
 10129	20218	100	20219	100	20220	100
 #KICK RIGHT																
@@ -769,8 +753,8 @@ ani_id	sprite1_id	time1	sprite2_id	time2
 # MARIO
 1	400	401	402	403	500	501	502	503	599
 
-#mario	idle S		walk S		slide S		jump S		skid S		run S		run jump S	hold S		kick S		swim S		swim input S	climb S		pipe S	die S	idle B		walk B		duck B		slide B		jump B		skid B		throw B		run B		run jump B	hold B		kick B		swim idle B	swim input B	climb B		pipe B	door B	spin B		bonk B		look up	B	GROW B		SHRINK B	idle F		walk F		duck F		slide F		jump F		skid F		throw F		run F		run jump F	hold F		kick F		swim idle F	swim input F	climb F		pipe F	door F	spin F		idle R 		walk R		wag R		duck R		slide R 	jump R		skid R		throw R		run R		run jump R	fly R		hold R		kick R		swim idle R	swim input R	climb R		pipe R	door R	spin R		pre run B	tail R		pre run S	pre run R	pre run F	idle hold S	idle hold B	idle hold R	idle hold F
-2	10001	10015	10002	10016	10003	10017	10004	10018	10005	10019	10006	10020	10007	10021	10008	10022	10009	10023	10010	10024	10011	10025	10012	10026	10013	10014	10027	10045	10028	10046	10029	10047	10030	10048	10031	10049	10032	10050	10033	10051	10034	10052	10035	10053	10036	10054	10037	10055	10038	10056	10039	10057	10040	10058	10062	10041	10042	10059	10043	10060	10044	10061	10063	10064	10065	10066	10067	10084	10068	10085	10069	10086	10070	10087	10071	10088	10072	10089	10073	10090	10074	10091	10075	10092	10076	10093	10077	10094	10078	10095	10079	10096	10080	10097	10081	10082	10083	10098	10099	10118	10100	10119	10101	10120	10102	10121	10103	10122	10104	10123	10105	10124	10106	10125	10107	10126	10108	10127	10109	10128	10110	10129	10111	10130	10112	10131	10113	10132	10114	10133	10115	10116	10117	10134	10200	10201	10135	10136	11000	11001	13000	13001	14000	14001	11050	11051	12050	12051	13050	13051	14050	14051	
+#mario	idle S		walk S		slide S		jump S		skid S		run S		run jump S	hold S		kick S		swim S		swim input S	climb S		pipe S	die S	idle B		walk B		duck B		slide B		jump B		skid B		throw B		run B		run jump B	hold B		kick B		swim idle B	swim input B	climb B		pipe B	door B	spin B		bonk B		look up	B	GROW B		SHRINK B	idle F		walk F		duck F		slide F		jump F		skid F		throw F		run F		run jump F	hold F		kick F		swim idle F	swim input F	climb F		pipe F	door F	spin F		idle R 		walk R		wag R		duck R		slide R 	jump R		skid R		throw R		run R		run jump R	fly R		hold R		kick R		swim idle R	swim input R	climb R		pipe R	door R	spin R		pre run B	tail R		pre run S	pre run R	pre run F
+2	10001	10015	10002	10016	10003	10017	10004	10018	10005	10019	10006	10020	10007	10021	10008	10022	10009	10023	10010	10024	10011	10025	10012	10026	10013	10014	10027	10045	10028	10046	10029	10047	10030	10048	10031	10049	10032	10050	10033	10051	10034	10052	10035	10053	10036	10054	10037	10055	10038	10056	10039	10057	10040	10058	10062	10041	10042	10059	10043	10060	10044	10061	10063	10064	10065	10066	10067	10084	10068	10085	10069	10086	10070	10087	10071	10088	10072	10089	10073	10090	10074	10091	10075	10092	10076	10093	10077	10094	10078	10095	10079	10096	10080	10097	10081	10082	10083	10098	10099	10118	10100	10119	10101	10120	10102	10121	10103	10122	10104	10123	10105	10124	10106	10125	10107	10126	10108	10127	10109	10128	10110	10129	10111	10130	10112	10131	10113	10132	10114	10133	10115	10116	10117	10134	10200	10201	10135	10136	11000	11001	13000	13001	14000	14001
 
 # BRICK
 #normal brick

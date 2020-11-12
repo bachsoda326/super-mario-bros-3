@@ -38,6 +38,10 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	// Simple fall down
 	vy += GOOMBA_GRAVITY * dt;
 
+	if (this->state == GOOMBA_STATE_DIE && GetTickCount() - die_start > 300) {
+		this->isDie = true;
+	}
+
 	vector<LPCOLLISIONEVENT> coEvents;
 	vector<LPCOLLISIONEVENT> coEventsResult;
 
@@ -64,7 +68,11 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		y += min_ty * dy + ny * 0.4f;*/
 
 
-		if (ny != 0) vy = 0;
+		if (ny != 0) 
+		{ 
+			y += min_ty * dy + ny * 0.4f;
+			vy = 0; 
+		}
 
 		//
 		// Collision logic with other objects
@@ -113,6 +121,7 @@ void CGoomba::SetState(int state)
 		y += GOOMBA_BBOX_HEIGHT - GOOMBA_BBOX_HEIGHT_DIE;
 		vx = 0;
 		vy = 0;
+		die_start = GetTickCount();
 		break;
 	case GOOMBA_STATE_WALKING:
 		vx = -GOOMBA_WALKING_SPEED;
