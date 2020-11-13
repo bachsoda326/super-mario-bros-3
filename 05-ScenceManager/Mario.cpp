@@ -204,22 +204,31 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				//}
 				// jump on top >> kill CKoopas, can kick or throw
 				if (e->ny < 0)
-				{
-					if (koopas->GetState() == KOOPAS_STATE_WALKING)
-					{
-						koopas->SetState(KOOPAS_STATE_HIDE);
-						vy = -MARIO_JUMP_DEFLECT_SPEED;
-					}
-					else if (koopas->GetState() == KOOPAS_STATE_HIDE)
+				{					
+					if (koopas->GetState() == KOOPAS_STATE_HIDE)
 					{
 						koopas->SetState(KOOPAS_STATE_SPIN);
 						koopas->vx = this->nx * KOOPAS_SPIN_SPEED;
 						vy = -MARIO_JUMP_DEFLECT_SPEED;
 					}
+					else
+					{
+						koopas->vx = 0;
+						koopas->vy = 0;
+						koopas->SetState(KOOPAS_STATE_HIDE);
+						vy = -MARIO_JUMP_DEFLECT_SPEED;
+					}
 				}
 				else if (e->nx != 0)
 				{
-					if (koopas->GetState() == KOOPAS_STATE_WALKING)
+					if (state == MARIO_STATE_TAIL)
+					{
+						koopas->vx = -nx * 0.07f;
+						koopas->vy = -0.5f;
+						koopas->yReverse = true;
+						koopas->SetState(KOOPAS_STATE_HIDE);
+					}
+					else if (koopas->GetState() == KOOPAS_STATE_WALKING)
 					{
 						if (untouchable == 0)
 						{

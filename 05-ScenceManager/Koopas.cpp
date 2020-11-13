@@ -39,21 +39,6 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	CGameObject::Update(dt, coObjects);
 
-	//
-	// TO-DO: make sure Goomba can interact with the world and to each of them too!
-	// 
-
-	/*x += dx;
-	y += dy;
-
-	if (vx < 0 && x < 0) {
-		x = 0; vx = -vx;
-	}
-
-	if (vx > 0 && x > 290) {
-		x = 290; vx = -vx;
-	}*/
-
 	// Simple fall down
 	if (state != KOOPAS_STATE_HOLD)
 		vy += KOOPAS_GRAVITY * dt;
@@ -102,7 +87,12 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		if (ny < 0) 
 		{
 			y += min_ty * dy + ny * 0.4f;
-			vy = 0; 
+			vy = 0;
+
+			if (state == KOOPAS_STATE_HIDE && yReverse == true)
+			{
+				vx = 0;
+			}
 		}
 
 		//
@@ -180,7 +170,7 @@ void CKoopas::Render()
 	else if (vx > 0) ani = KOOPAS_ANI_WALKING_RIGHT;
 	else if (vx <= 0) ani = KOOPAS_ANI_WALKING_LEFT;
 
-	animation_set->at(ani)->Render(x, y);
+	animation_set->at(ani)->Render(x, y, yReverse);
 
 	RenderBoundingBox();
 }
@@ -195,14 +185,14 @@ void CKoopas::SetState(int state)
 			vx = 0;
 			vy = 0;
 			break;*/
-	case KOOPAS_STATE_HIDE:
-		//y += KOOPAS_BBOX_HEIGHT - KOOPAS_BBOX_HEIGHT_HIDE + 1;
-		vx = 0;
-		vy = 0;
-		break;
-		/*case KOOPAS_STATE_SPIN:
-			vx = -KOOPAS_SPIN_SPEED;
-			break;*/
+	//case KOOPAS_STATE_HIDE:
+	//	//y += KOOPAS_BBOX_HEIGHT - KOOPAS_BBOX_HEIGHT_HIDE + 1;
+	//	vx = 0;
+	//	vy = 0;
+	//	break;
+	//	/*case KOOPAS_STATE_SPIN:
+	//		vx = -KOOPAS_SPIN_SPEED;
+	//		break;*/
 	case KOOPAS_STATE_WALKING:
 		vx = -KOOPAS_WALKING_SPEED;
 		break;

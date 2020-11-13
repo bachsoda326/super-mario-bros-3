@@ -419,6 +419,7 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 		//mario->canJump = false;
 		break;
 	case DIK_A:
+		// can fix TH rua lat ngc
 		mario->canHold = true;
 
 		if (mario->GetLevel() == MARIO_LEVEL_RACCOON)
@@ -444,12 +445,18 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 		mario->SetLevel(MARIO_LEVEL_SMALL);
 		break;
 	case DIK_2:
+		if (mario->GetLevel() == MARIO_LEVEL_SMALL)
+			mario->y -= MARIO_BIG_BBOX_HEIGHT - MARIO_SMALL_BBOX_HEIGHT;
 		mario->SetLevel(MARIO_LEVEL_BIG);
 		break;
 	case DIK_3:
+		if (mario->GetLevel() == MARIO_LEVEL_SMALL)
+			mario->y -= MARIO_BIG_BBOX_HEIGHT - MARIO_SMALL_BBOX_HEIGHT;
 		mario->SetLevel(MARIO_LEVEL_RACCOON);
 		break;
 	case DIK_4:
+		if (mario->GetLevel() == MARIO_LEVEL_SMALL)
+			mario->y -= MARIO_BIG_BBOX_HEIGHT - MARIO_SMALL_BBOX_HEIGHT;
 		mario->SetLevel(MARIO_LEVEL_FIRE);
 		break;
 	}
