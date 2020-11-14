@@ -309,20 +309,20 @@ void CPlayScene::Update(DWORD dt)
 	vector<LPGAMEOBJECT> coObjects;
 	for (size_t i = 1; i < objects.size(); i++)
 	{
-		if (!objects[i]->isDie)
+		if (!objects[i]->isDie || !objects[i]->isDead)
 			coObjects.push_back(objects[i]);
 	}
 
 	for (size_t i = 0; i < objects.size(); i++)
 	{
-		if (!objects[i]->isDie)
+		if (!objects[i]->isDead)
 			objects[i]->Update(dt, &coObjects);
 	}
 
 	// skip the rest if scene was already unloaded (Mario::Update might trigger PlayScene::Unload)
 	if (player == NULL) return;
 
-	// Update camera to follow mario
+	// Update camera to follow mario */// FORGET: NHỚ BỎ CHỖ NÀY SAU VÌ ĐÃ CÓ CAMERA MỚI
 	float cx, cy;
 	player->GetPosition(cx, cy);
 
@@ -344,7 +344,7 @@ void CPlayScene::Render()
 
 	for (int i = 0; i < objects.size(); i++)
 	{
-		if (!objects[i]->isDie)
+		if (!objects[i]->isDead)
 			objects[i]->Render();
 	}
 }
@@ -417,9 +417,27 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 	case DIK_S:
 		mario->canRepeatJump = false;
 		//mario->canJump = false;
+		if (mario->GetLevel() == MARIO_LEVEL_RACCOON)
+		{	
+			if (mario->state == MARIO_STATE_RUNJUMP)
+			{
+				if (mario->isOnGround)
+				{
+					mario->fly_limit_start = GetTickCount();
+					DebugOut(L"[START]");
+				}
+				mario->fly_start = GetTickCount();
+				mario->SetState(MARIO_STATE_FLY);
+				DebugOut(L"[FLY]");
+			}
+			else if (!mario->isOnGround && mario->vy >= 0)
+			{
+				mario->wag_start = GetTickCount();
+				mario->SetState(MARIO_STATE_WAG);
+			}
+		}
 		break;
 	case DIK_A:
-		// can fix TH rua lat ngc
 		mario->canHold = true;
 
 		if (mario->GetLevel() == MARIO_LEVEL_RACCOON)
@@ -432,12 +450,12 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 			}
 		}
 		break;
-		/*case DIK_X:
-			mario->SetState(MARIO_STATE_JUMP_SHORT);
+	case DIK_X:
+		mario->SetState(MARIO_STATE_JUMP_SHORT);
+		break;
+		/*case DIK_DOWN:
+			mario->canDuck = true;
 			break;*/
-	/*case DIK_DOWN:
-		mario->canDuck = true;
-		break;*/
 	case DIK_R:
 		mario->Reset();
 		break;
@@ -479,10 +497,10 @@ void CPlayScenceKeyHandler::OnKeyUp(int KeyCode)
 		break;
 	case DIK_A:
 		mario->canAttack = true;
+		mario->canHold = false;
 
 		if (mario->state == MARIO_STATE_HOLD)
 		{
-			mario->canHold = false;
 			if (mario->koopas != NULL)
 			{
 				mario->kick_start = GetTickCount();
@@ -512,7 +530,7 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 	if (game->IsKeyDown(DIK_RIGHT))
 	{
 		mario->nx = 1;
-		if (mario->state != MARIO_STATE_DUCK)
+		if (state != MARIO_STATE_DUCK)
 			if (mario->vx < MARIO_WALKING_SPEED)
 				mario->vx += 0.005f;
 
@@ -526,7 +544,7 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 			if (state != MARIO_STATE_RUN)
 			{
 				if (mario->vx < mario->nx * MARIO_PREPARE_RUN_SPEED)
-					mario->vx += 0.001f;
+					mario->vx += 0.0015f;
 			}
 
 			if (state == MARIO_STATE_WALKING)
@@ -541,7 +559,7 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 			{
 				mario->SetState(MARIO_STATE_RUN);
 			}
-		} 
+		}
 		/*else if (mario->vy == 0)
 		{
 			mario->SetState(MARIO_STATE_WALKING);
@@ -551,7 +569,7 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 	else if (game->IsKeyDown(DIK_LEFT))
 	{
 		mario->nx = -1;
-		if (mario->state != MARIO_STATE_DUCK)
+		if (state != MARIO_STATE_DUCK)
 			if (mario->vx > -MARIO_WALKING_SPEED)
 				mario->vx -= 0.005f;
 
@@ -569,7 +587,7 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 			if (state != MARIO_STATE_RUN)
 			{
 				if (mario->vx > mario->nx * MARIO_PREPARE_RUN_SPEED)
-					mario->vx -= 0.001f;
+					mario->vx -= 0.0015f;
 			}
 
 			if (state == MARIO_STATE_WALKING)
@@ -588,7 +606,11 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 		/*else if (mario->vy == 0)
 			mario->SetState(MARIO_STATE_WALKING);*/
 	}
-	else if (mario->vy == 0)
+	/*else if (!mario->isOnGround)
+	{
+		mario->SetState(MARIO_STATE_JUMP_HIGH);
+	}*/
+	else if (mario->vy == 0 && mario->isOnGround)
 	{
 		if (mario->nx > 0)
 		{
@@ -596,7 +618,7 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 			mario->vx -= 0.01f;
 			if (mario->vx <= 0)
 				mario->SetState(MARIO_STATE_IDLE);
-		}		
+		}
 		if (mario->nx < 0)
 		{
 			mario->SetState(MARIO_STATE_WALKING);
@@ -605,10 +627,15 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 				mario->SetState(MARIO_STATE_IDLE);
 		}
 		//mario->SetState(MARIO_STATE_IDLE);
-	}
+	}	
 	if (game->IsKeyDown(DIK_S) && mario->canJump)
 	{
-		mario->SetState(MARIO_STATE_JUMP_HIGH);
+		if (mario->canJumpHigher)
+			mario->vy -= MARIO_JUMP_HIGH_SPEED_Y;
+		if (abs(mario->vx) == MARIO_RUN_SPEED)
+			mario->SetState(MARIO_STATE_RUNJUMP);
+		else
+			mario->SetState(MARIO_STATE_JUMP_HIGH);
 	}
 	if (game->IsKeyDown(DIK_DOWN) && mario->isOnGround && mario->GetLevel() != MARIO_LEVEL_SMALL)
 	{
@@ -629,9 +656,9 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 		}
 	}
 	/*if (game->IsKeyDown(DIK_A))
-	{		
+	{
 		if (state != MARIO_STATE_IDLE && mario->vx != 0)
-		{	
+		{
 			mario->vx = 1.5 * mario->nx * MARIO_WALKING_SPEED;
 
 			if (state == MARIO_STATE_WALKING)

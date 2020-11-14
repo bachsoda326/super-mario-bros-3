@@ -58,6 +58,7 @@ public:
 
 	int state;
 	bool isDie = false;
+	bool isDead = false;
 	bool yReverse = false;
 
 	DWORD dt; 

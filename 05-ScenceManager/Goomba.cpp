@@ -24,7 +24,7 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	vy += GOOMBA_GRAVITY * dt;
 
 	if (this->state == GOOMBA_STATE_DIE && GetTickCount() - die_start > 300)
-		this->isDie = true;	
+		this->isDead = true;
 
 	if (state == GOOMBA_STATE_DIE_REVERSE)
 	{
@@ -32,7 +32,7 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		y += dy;
 
 		if (GetTickCount() - die_start > 1000)
-			this->isDie = true;
+			this->isDead = true;
 		return;
 	}
 
@@ -62,10 +62,10 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		y += min_ty * dy + ny * 0.4f;*/
 
 
-		if (ny != 0) 
-		{ 
+		if (ny < 0)
+		{
 			y += min_ty * dy + ny * 0.4f;
-			vy = 0; 
+			vy = 0;
 		}
 
 		//
@@ -75,18 +75,17 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		{
 			LPCOLLISIONEVENT e = coEventsResult[i];
 
-			if (dynamic_cast<CBox*>(e->obj) || dynamic_cast<CGoomba*>(e->obj) || dynamic_cast<CKoopas*>(e->obj))
+			if (dynamic_cast<CBox*>(e->obj))
 			{
 				if (e->nx != 0)
 					x += dx;
 			}
-			if (dynamic_cast<CGround*>(e->obj) || dynamic_cast<CWarpPipe*>(e->obj) || dynamic_cast<CBrick*>(e->obj))
+			/*if (dynamic_cast<CGround*>(e->obj) || dynamic_cast<CWarpPipe*>(e->obj) || dynamic_cast<CBrick*>(e->obj))*/
+
+			else if (e->nx != 0)
 			{
-				if (e->nx != 0)
-				{
-					vx = -vx;
-					x += min_tx * dx + nx * 0.4f;
-				}
+				vx = -vx;
+				x += min_tx * dx + nx * 0.4f;
 			}
 		}
 
@@ -119,10 +118,12 @@ void CGoomba::SetState(int state)
 		y += GOOMBA_BBOX_HEIGHT - GOOMBA_BBOX_HEIGHT_DIE;
 		vx = 0;
 		vy = 0;
+		isDie = true;
 		die_start = GetTickCount();
 		break;
-	case GOOMBA_STATE_DIE_REVERSE:		
+	case GOOMBA_STATE_DIE_REVERSE:
 		yReverse = true;
+		isDie = true;
 		die_start = GetTickCount();
 		break;
 	case GOOMBA_STATE_WALKING:

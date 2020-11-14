@@ -21,11 +21,14 @@
 #define MARIO_STATE_JUMP_SHORT			102
 #define MARIO_STATE_PREPARE_RUN			103
 #define MARIO_STATE_RUN					104
-#define MARIO_STATE_HOLD				105
-#define MARIO_STATE_TAIL				106
+#define MARIO_STATE_RUNJUMP			105
+#define MARIO_STATE_FLY					106
 #define MARIO_STATE_KICK				107
 #define MARIO_STATE_SKID				108
 #define MARIO_STATE_DUCK				109
+#define MARIO_STATE_WAG					110
+#define MARIO_STATE_HOLD				111
+#define MARIO_STATE_TAIL				112
 #define MARIO_STATE_DIE					999
 
 //#define MARIO_ANI_BIG_IDLE_RIGHT		0
@@ -230,6 +233,9 @@ public:
 	DWORD kick_start;
 	DWORD skid_start;
 	DWORD tail_start;
+	DWORD wag_start;
+	DWORD fly_start;
+	DWORD fly_limit_start;
 
 	bool isOnGround = false;
 	bool canJump = true;
