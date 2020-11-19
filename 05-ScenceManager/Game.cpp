@@ -92,6 +92,16 @@ void CGame::Draw(float x, float y, LPDIRECT3DTEXTURE9 texture, int left, int top
 	}
 	else
 		spriteHandler->Draw(texture, &r, NULL, &p, D3DCOLOR_ARGB(alpha, 255, 255, 255));
+	/*{
+		D3DXVECTOR2 scale(1, 1);
+		D3DXMATRIX newMatrix;
+		D3DXVECTOR2 spritePosition = D3DXVECTOR2(xNew, yNew);
+		D3DXVECTOR2 center = D3DXVECTOR2(8, 8);
+		D3DXMatrixTransformation2D(&newMatrix, &center, 0.0f, &scale, NULL, 0.0f, &spritePosition);
+
+		spriteHandler->SetTransform(&newMatrix);
+		spriteHandler->Draw(texture, &r, NULL, NULL, D3DCOLOR_ARGB(alpha, 255, 255, 255));
+	}*/
 }
 
 int CGame::IsKeyDown(int KeyCode)
