@@ -17,4 +17,6 @@ void CLeaf::GetBoundingBox(float& l, float& t, float& r, float& b)
 	t = y;
 	r = x + LEAF_BBOX_WIDTH;
 	b = y + LEAF_BBOX_HEIGHT;
+
+	CGameObject::GetBoundingBox(l, t, r, b);
 }

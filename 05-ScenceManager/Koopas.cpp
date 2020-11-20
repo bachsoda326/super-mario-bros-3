@@ -33,6 +33,8 @@ void CKoopas::GetBoundingBox(float& left, float& top, float& right, float& botto
 		bottom = y + KOOPAS_BBOX_HEIGHT_HIDE;
 	else
 		bottom = y + KOOPAS_BBOX_HEIGHT;
+
+	CGameObject::GetBoundingBox(left, top, right, bottom);
 }
 
 void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
@@ -42,10 +44,20 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	// Simple fall down
 	if (state != KOOPAS_STATE_HOLD)
 		vy += KOOPAS_GRAVITY * dt;
-	/*else
-	{
 
-	}*/
+	if (y + KOOPAS_BBOX_HEIGHT_HIDE > 432)
+	{
+		isDie = true;
+		isDead = true;
+	}	
+
+	if (state == KOOPAS_STATE_DIE)
+	{
+		x += dx;
+		y += dy;
+		
+		return;
+	}	
 
 	vector<LPCOLLISIONEVENT> coEvents;
 	vector<LPCOLLISIONEVENT> coEventsResult;
@@ -71,20 +83,10 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		// TODO: This is a very ugly designed function!!!!
 		FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny, rdx, rdy);
 
-		/*x += min_tx * dx + nx * 0.4f;
-		y += min_ty * dy + ny * 0.4f;*/
-
-		if (state == KOOPAS_STATE_HOLD)
-		{
-			if (nx != 0)
-			{
-				x += min_tx * dx + nx * 0.4f;
-				vx = 0;
-			}
-		}
-		else
-			x += dx;
-		if (ny < 0) 
+		x += min_tx * dx + nx * 0.1f;
+		y += min_ty * dy + ny * 0.1f;
+				
+		/*if (ny < 0 ) 
 		{
 			y += min_ty * dy + ny * 0.4f;
 			vy = 0;
@@ -93,7 +95,7 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			{
 				vx = 0;
 			}
-		}
+		}*/
 
 		//
 		// Collision logic with other objects
@@ -102,11 +104,23 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		{
 			LPCOLLISIONEVENT e = coEventsResult[i];
 
-			/*if (dynamic_cast<CBox*>(e->obj) || dynamic_cast<CGoomba*>(e->obj) || dynamic_cast<CKoopas*>(e->obj))
+			if (ny < 0 && e->obj != NULL)
 			{
-				x += dx;
-			}*/
-			if (dynamic_cast<CGoomba*>(e->obj))
+				vy = 0;
+				y = e->obj->y - (bottom - top);
+
+				if (state == KOOPAS_STATE_HIDE && yReverse == true)
+				{
+					vx = 0;
+				}
+			}
+
+			if (dynamic_cast<CBox*>(e->obj))
+			{
+				if (e->nx != 0)
+					x += dx;
+			}
+			else if (dynamic_cast<CGoomba*>(e->obj))
 			{
 				if (state == KOOPAS_STATE_SPIN)
 				{
@@ -119,20 +133,11 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					}
 				}
 			}
-			if (dynamic_cast<CGround*>(e->obj) || dynamic_cast<CWarpPipe*>(e->obj) || dynamic_cast<CBrick*>(e->obj))
+			else if (dynamic_cast<CGround*>(e->obj) || dynamic_cast<CWarpPipe*>(e->obj) || dynamic_cast<CBrick*>(e->obj))
 			{
 				if (e->nx != 0)
 				{
-					if (state == KOOPAS_STATE_HOLD)
-					{
-						/*x += min_tx * dx + nx * 0.4f;
-						vx = 0;*/
-					}
-					else
-					{
-						x += min_tx * dx + nx * 0.4f;
-						vx = -vx;
-					}
+					vx = -vx;
 				}
 			}
 			if (type == KOOPAS_RED)
@@ -161,11 +166,12 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 void CKoopas::Render()
 {
 	int ani = KOOPAS_ANI_WALKING_LEFT;
-	if (state == KOOPAS_STATE_HIDE || state == KOOPAS_STATE_HOLD) {
+	if (state == KOOPAS_STATE_HIDE || state == KOOPAS_STATE_HOLD || state == KOOPAS_STATE_DIE) {
 		ani = KOOPAS_ANI_HIDE;
 	}
 	else if (state == KOOPAS_STATE_SPIN) {
-		ani = KOOPAS_ANI_SPIN_LEFT;
+		if (vx > 0) ani = KOOPAS_ANI_SPIN_RIGHT;
+		else if (vx <= 0) ani = KOOPAS_ANI_SPIN_LEFT;
 	}
 	else if (vx > 0) ani = KOOPAS_ANI_WALKING_RIGHT;
 	else if (vx <= 0) ani = KOOPAS_ANI_WALKING_LEFT;
@@ -180,11 +186,11 @@ void CKoopas::SetState(int state)
 	CGameObject::SetState(state);
 	switch (state)
 	{
-		/*case KOOPAS_STATE_DIE:
-			y += KOOPAS_BBOX_HEIGHT - KOOPAS_BBOX_HEIGHT_HIDE + 1;
-			vx = 0;
-			vy = 0;
-			break;*/
+		case KOOPAS_STATE_DIE:
+			yReverse = true;
+			isDie = true;
+			//die_start = GetTickCount();
+			break;
 	//case KOOPAS_STATE_HIDE:
 	//	//y += KOOPAS_BBOX_HEIGHT - KOOPAS_BBOX_HEIGHT_HIDE + 1;
 	//	vx = 0;

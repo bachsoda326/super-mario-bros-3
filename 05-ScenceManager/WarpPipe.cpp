@@ -17,4 +17,6 @@ void CWarpPipe::GetBoundingBox(float& l, float& t, float& r, float& b)
 	t = y;
 	r = right;
 	b = bottom;
+
+	CGameObject::GetBoundingBox(l, t, r, b);
 }

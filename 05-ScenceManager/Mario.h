@@ -3,13 +3,14 @@
 #include "Goomba.h"
 #include "MushRoom.h"
 #include "Leaf.h"
+#include "Bullet.h"
 
 
 #define MARIO_WALKING_SPEED		0.1f 
 #define MARIO_PREPARE_RUN_SPEED		0.15f
 #define MARIO_RUN_SPEED		0.2f 
 //0.1f
-#define MARIO_JUMP_HIGH_SPEED_Y		0.05f
+#define MARIO_JUMP_HIGH_SPEED_Y		0.02f
 #define MARIO_JUMP_SHORT_SPEED_Y	0.27f
 #define MARIO_JUMP_DEFLECT_SPEED 0.4f
 #define MARIO_GRAVITY			0.001f
@@ -21,14 +22,17 @@
 #define MARIO_STATE_JUMP_SHORT			102
 #define MARIO_STATE_PREPARE_RUN			103
 #define MARIO_STATE_RUN					104
-#define MARIO_STATE_RUNJUMP			105
+#define MARIO_STATE_RUNJUMP				105
 #define MARIO_STATE_FLY					106
 #define MARIO_STATE_KICK				107
 #define MARIO_STATE_SKID				108
 #define MARIO_STATE_DUCK				109
 #define MARIO_STATE_WAG					110
-#define MARIO_STATE_HOLD				111
+#define MARIO_STATE_IDLE_HOLD			111
 #define MARIO_STATE_TAIL				112
+#define MARIO_STATE_SHOT				113
+#define MARIO_STATE_JUMP_SHOT			114
+#define MARIO_STATE_RUNJUMP_SHOT		114
 #define MARIO_STATE_DIE					999
 
 //#define MARIO_ANI_BIG_IDLE_RIGHT		0
@@ -233,6 +237,7 @@ public:
 	DWORD kick_start;
 	DWORD skid_start;
 	DWORD tail_start;
+	DWORD fire_start;
 	DWORD wag_start;
 	DWORD fly_start;
 	DWORD fly_limit_start;
@@ -242,9 +247,11 @@ public:
 	bool canRepeatJump = true;
 	bool canJumpHigher = true;
 	bool canHold = false;
+	bool isHold = false;
 	bool canAttack = true;
 	//bool canDuck = false;
 
+	vector<CBullet*> *bullets;
 	CKoopas	*koopas;
 
 	CMario(float x = 0.0f, float y = 0.0f);

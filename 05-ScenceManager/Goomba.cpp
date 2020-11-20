@@ -14,6 +14,8 @@ void CGoomba::GetBoundingBox(float& left, float& top, float& right, float& botto
 		bottom = y + GOOMBA_BBOX_HEIGHT_DIE;
 	else
 		bottom = y + GOOMBA_BBOX_HEIGHT;
+
+	CGameObject::GetBoundingBox(left, top, right, bottom);
 }
 
 void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
@@ -23,8 +25,14 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	// Simple fall down
 	vy += GOOMBA_GRAVITY * dt;
 
-	if (this->state == GOOMBA_STATE_DIE && GetTickCount() - die_start > 300)
-		this->isDead = true;
+	if (y + GOOMBA_BBOX_HEIGHT > 432)
+	{
+		isDie = true;
+		isDead = true;
+	}	
+
+	if (state == GOOMBA_STATE_DIE && GetTickCount() - die_start > 300)
+		isDead = true;
 
 	if (state == GOOMBA_STATE_DIE_REVERSE)
 	{
@@ -32,7 +40,7 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		y += dy;
 
 		if (GetTickCount() - die_start > 1000)
-			this->isDead = true;
+			isDead = true;
 		return;
 	}
 
@@ -58,15 +66,15 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		// TODO: This is a very ugly designed function!!!!
 		FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny, rdx, rdy);
 
-		/*x += min_tx * dx + nx * 0.4f;
-		y += min_ty * dy + ny * 0.4f;*/
+		x += min_tx * dx + nx * 0.1f;
+		y += min_ty * dy + ny * 0.1f;
 
 
-		if (ny < 0)
+		/*if (ny < 0)
 		{
 			y += min_ty * dy + ny * 0.4f;
 			vy = 0;
-		}
+		}*/
 
 		//
 		// Collision logic with other objects
@@ -74,6 +82,12 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		for (UINT i = 0; i < coEventsResult.size(); i++)
 		{
 			LPCOLLISIONEVENT e = coEventsResult[i];
+
+			if (ny < 0 && e->obj != NULL)
+			{
+				vy = 0;
+				y = e->obj->y - (bottom - top);				
+			}
 
 			if (dynamic_cast<CBox*>(e->obj))
 			{
@@ -85,7 +99,7 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			else if (e->nx != 0)
 			{
 				vx = -vx;
-				x += min_tx * dx + nx * 0.4f;
+				/*x += min_tx * dx + nx * 0.4f;*/
 			}
 		}
 

@@ -17,4 +17,6 @@ void CMushRoom::GetBoundingBox(float& l, float& t, float& r, float& b)
 	t = y;
 	r = x + MUSHROOM_BBOX_WIDTH;
 	b = y + MUSHROOM_BBOX_HEIGHT;
+
+	CGameObject::GetBoundingBox(l, t, r, b);
 }

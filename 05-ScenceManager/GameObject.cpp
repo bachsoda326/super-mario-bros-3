@@ -1,4 +1,4 @@
-#include <d3dx9.h>
+﻿#include <d3dx9.h>
 #include <algorithm>
 
 
@@ -57,6 +57,24 @@ LPCOLLISIONEVENT CGameObject::SweptAABBEx(LPGAMEOBJECT coO)
 	return e;
 }
 
+void CGameObject::ExceptionalCase(CGameObject* obj2, LPCOLLISIONEVENT& coEvent)
+{
+	if (right > obj2->left && left < obj2->right)
+	{
+		//Should check again with condition >= top && <= top + i
+		if ((int)bottom == (int)obj2->top && vy > 0)
+		{			
+			coEvent->t = 0.0f;
+			coEvent->ny = -1.0f;
+			coEvent->nx = 0.0f;
+			return;
+		}
+	}
+	//TH đứng trên 2 brick
+	if (coEvent->nx != 0 && (right < obj2->left || left > obj2->right) && bottom == obj2->top)
+		coEvent->nx = 0.0f;
+}
+
 /*
 	Calculate potential collisions with the list of colliable objects 
 	
@@ -70,8 +88,9 @@ void CGameObject::CalcPotentialCollisions(
 	for (UINT i = 0; i < coObjects->size(); i++)
 	{
 		LPCOLLISIONEVENT e = SweptAABBEx(coObjects->at(i));
+		ExceptionalCase(coObjects->at(i), e);
 
-		if (e->t > 0 && e->t <= 1.0f)
+		if (e->t >= 0 && e->t <= 1.0f)
 			coEvents.push_back(e);
 		else
 			delete e;

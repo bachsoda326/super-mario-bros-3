@@ -54,6 +54,8 @@ public:
 	float vx;
 	float vy;
 
+	float left, top, right, bottom;
+
 	int nx;	 
 
 	int state;
@@ -78,6 +80,7 @@ public:
 	void SetAnimationSet(LPANIMATION_SET ani_set) { animation_set = ani_set; }
 
 	LPCOLLISIONEVENT SweptAABBEx(LPGAMEOBJECT coO);
+	void ExceptionalCase(CGameObject* obj2, LPCOLLISIONEVENT& coEvent);
 	void CalcPotentialCollisions(vector<LPGAMEOBJECT> *coObjects, vector<LPCOLLISIONEVENT> &coEvents);
 	void FilterCollision(
 		vector<LPCOLLISIONEVENT> &coEvents, 
@@ -91,7 +94,13 @@ public:
 
 	CGameObject();
 
-	virtual void GetBoundingBox(float &left, float &top, float &right, float &bottom) = 0;
+	virtual void GetBoundingBox(float& left, float& top, float& right, float& bottom) 
+	{
+		this->left = left;
+		this->top = top;
+		this->right = right;
+		this->bottom = bottom;
+	}
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects = NULL);
 	virtual void Render() = 0;
 	virtual void SetState(int state) { this->state = state; }
