@@ -580,7 +580,7 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 				mario->vx += 0.005f;
 
 		// Phanh
-		if (mario->vx < 0 && mario->vx < -0.07f && mario->isOnGround)
+		if (mario->vx < 0 && mario->vx < -0.07f && mario->isOnGround && !mario->isHold)
 			mario->SetState(MARIO_STATE_SKID);
 		else if (mario->vx >= 0 && mario->vy == 0 && state != MARIO_STATE_PREPARE_RUN && state != MARIO_STATE_RUN)
 			mario->SetState(MARIO_STATE_WALKING);
@@ -600,7 +600,7 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 					mario->SetState(MARIO_STATE_PREPARE_RUN);
 				}
 			}
-			else if (state == MARIO_STATE_PREPARE_RUN && GetTickCount() - mario->run_start >= MARIO_RUN_TIME / 3)
+			else if (state == MARIO_STATE_PREPARE_RUN && !mario->isHold && GetTickCount() - mario->run_start >= MARIO_RUN_TIME / 3)
 			{
 				mario->SetState(MARIO_STATE_RUN);
 			}
@@ -619,7 +619,7 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 				mario->vx -= 0.005f;
 			
 		// Phanh
-		if (mario->vx > 0 && mario->vx > 0.07f && mario->isOnGround)
+		if (mario->vx > 0 && mario->vx > 0.07f && mario->isOnGround && !mario->isHold)
 			mario->SetState(MARIO_STATE_SKID);
 		else if (mario->vx <= 0 && mario->vy == 0 && state != MARIO_STATE_PREPARE_RUN && state != MARIO_STATE_RUN)
 			mario->SetState(MARIO_STATE_WALKING);
@@ -643,7 +643,7 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 					mario->SetState(MARIO_STATE_PREPARE_RUN);
 				}
 			}
-			else if (state == MARIO_STATE_PREPARE_RUN && GetTickCount() - mario->run_start >= MARIO_RUN_TIME / 3)
+			else if (state == MARIO_STATE_PREPARE_RUN && !mario->isHold && GetTickCount() - mario->run_start >= MARIO_RUN_TIME / 3)
 			{
 				mario->SetState(MARIO_STATE_RUN);
 			}
@@ -682,7 +682,7 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 		else
 			mario->SetState(MARIO_STATE_JUMP_HIGH);
 	}
-	if (game->IsKeyDown(DIK_DOWN) && mario->isOnGround && mario->GetLevel() != MARIO_LEVEL_SMALL)
+	if (game->IsKeyDown(DIK_DOWN) && mario->isOnGround && mario->GetLevel() != MARIO_LEVEL_SMALL && !mario->isHold)
 	{
 		mario->SetState(MARIO_STATE_DUCK);
 	}

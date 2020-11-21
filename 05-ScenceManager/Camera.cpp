@@ -58,8 +58,8 @@ void CCamera::Update(CMario* player)
 		SetPosition(GetPosition().x, GetHeight() / 2);
 	}
 
-	/*if (GetBound().bottom > 400)*/
-	if (GetBound().bottom > mapHeight / 2)
+	if (GetBound().bottom > 300)
+	/*if (GetBound().bottom > mapHeight / 2)*/
 	{
 		//luc nay cham day cua the gioi thuc
 		SetPosition(GetPosition().x, mapHeight - GetHeight() / 2);

@@ -66,8 +66,8 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		// TODO: This is a very ugly designed function!!!!
 		FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny, rdx, rdy);
 
-		x += min_tx * dx + nx * 0.1f;
-		y += min_ty * dy + ny * 0.1f;
+		/*x += min_tx * dx + nx * 0.1f;
+		y += min_ty * dy + ny * 0.1f;*/
 
 
 		/*if (ny < 0)
@@ -89,18 +89,28 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				y = e->obj->y - (bottom - top);				
 			}
 
-			if (dynamic_cast<CBox*>(e->obj))
+			/*if (dynamic_cast<CBox*>(e->obj))
 			{
 				if (e->nx != 0)
 					x += dx;
-			}
+			}*/
 			/*if (dynamic_cast<CGround*>(e->obj) || dynamic_cast<CWarpPipe*>(e->obj) || dynamic_cast<CBrick*>(e->obj))*/
 
-			else if (e->nx != 0)
+			if (e->nx != 0)
 			{
-				vx = -vx;
-				/*x += min_tx * dx + nx * 0.4f;*/
+				if (dynamic_cast<CGround*>(e->obj) || dynamic_cast<CWarpPipe*>(e->obj) || dynamic_cast<CBrick*>(e->obj) || dynamic_cast<CGoomba*>(e->obj))
+					vx = -vx;
+				else if (dynamic_cast<CKoopas*>(e->obj))
+				{
+					CKoopas* koopas = dynamic_cast<CKoopas*>(e->obj);
+					if (koopas->state != KOOPAS_STATE_SPIN && koopas->state != KOOPAS_STATE_HOLD)
+						vx = -vx;
+				}
+				else if (dynamic_cast<CBox*>(e->obj))
+					x += dx;
 			}
+			else
+				x += dx;
 		}
 
 		// clean up collision events

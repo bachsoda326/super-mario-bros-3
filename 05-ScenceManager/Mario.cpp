@@ -33,8 +33,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	CGameObject::Update(dt);
 
 	// Simple fall down
-	/*if (state != MARIO_STATE_FLY)*/
-		vy += MARIO_GRAVITY * dt;
+	vy += MARIO_GRAVITY * dt;
 
 	if (vy <= -0.2f)
 	{
@@ -43,6 +42,12 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	}
 
 	if (x <= 5) x = 5;
+
+	if (koopas != NULL && koopas->state == KOOPAS_STATE_DIE)
+	{
+		koopas = NULL;
+		isHold = false;
+	}
 
 	vector<LPCOLLISIONEVENT> coEvents;
 	vector<LPCOLLISIONEVENT> coEventsResult;
@@ -216,7 +221,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					}
 					else if (untouchable == 0)
 					{
-						/*if (goomba->GetState() != GOOMBA_STATE_DIE)
+						if (goomba->GetState() != GOOMBA_STATE_DIE)
 						{
 							if (level > MARIO_LEVEL_SMALL)
 							{
@@ -225,7 +230,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 							}
 							else
 								SetState(MARIO_STATE_DIE);
-						}*/
+						}
 					}
 				}
 			} // if Koopas
@@ -263,21 +268,28 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						koopas->yReverse = true;
 						koopas->SetState(KOOPAS_STATE_HIDE);
 					}
-					else if (koopas->GetState() == KOOPAS_STATE_WALKING)
+					else if (koopas->GetState() == KOOPAS_STATE_WALKING || koopas->GetState() == KOOPAS_STATE_SPIN)
 					{
 						if (untouchable == 0)
 						{
-							if (koopas->GetState() == KOOPAS_STATE_WALKING)
+							//if (koopas->GetState() == KOOPAS_STATE_WALKING)
+							//{
+							//	//koopas->vx = nx * vx;
+							//	if (level > MARIO_LEVEL_SMALL)
+							//	{
+							//		level = MARIO_LEVEL_SMALL;
+							//		StartUntouchable();
+							//	}
+							//	else
+							//		SetState(MARIO_STATE_DIE);
+							//}
+							if (level > MARIO_LEVEL_SMALL)
 							{
-								//koopas->vx = nx * vx;
-								/*if (level > MARIO_LEVEL_SMALL)
-								{
-									level = MARIO_LEVEL_SMALL;
-									StartUntouchable();
-								}
-								else
-									SetState(MARIO_STATE_DIE);*/
+								level = MARIO_LEVEL_SMALL;
+								StartUntouchable();
 							}
+							else
+								SetState(MARIO_STATE_DIE);
 						}
 					}
 					else if (koopas->GetState() == KOOPAS_STATE_HIDE)
@@ -371,8 +383,16 @@ void CMario::Render()
 		}
 		if (state == MARIO_STATE_JUMP_HIGH || state == MARIO_STATE_JUMP_SHORT)
 		{
-			if (nx > 0) ani = MARIO_ANI_BIG_JUMP_RIGHT;
-			else ani = MARIO_ANI_BIG_JUMP_LEFT;
+			if (isHold)
+			{
+				if (nx > 0) ani = MARIO_ANI_BIG_JUMP_HOLD_RIGHT;
+				else ani = MARIO_ANI_BIG_JUMP_HOLD_LEFT;
+			}
+			else 
+			{
+				if (nx > 0) ani = MARIO_ANI_BIG_JUMP_RIGHT;
+				else ani = MARIO_ANI_BIG_JUMP_LEFT;
+			}
 		}
 		if (state == MARIO_STATE_RUN)
 		{
@@ -381,8 +401,16 @@ void CMario::Render()
 		}
 		if (state == MARIO_STATE_PREPARE_RUN)
 		{
-			if (nx > 0) ani = MARIO_ANI_BIG_PREPARE_RUN_RIGHT;
-			else ani = MARIO_ANI_BIG_PREPARE_RUN_LEFT;
+			if (isHold)
+			{
+				if (nx > 0) ani = MARIO_ANI_BIG_RUN_HOLD_RIGHT;
+				else ani = MARIO_ANI_BIG_RUN_HOLD_LEFT;
+			}
+			else
+			{
+				if (nx > 0) ani = MARIO_ANI_BIG_PREPARE_RUN_RIGHT;
+				else ani = MARIO_ANI_BIG_PREPARE_RUN_LEFT;
+			}
 		}
 		if (state == MARIO_STATE_RUNJUMP)
 		{
@@ -448,8 +476,16 @@ void CMario::Render()
 		}
 		if (state == MARIO_STATE_JUMP_HIGH || state == MARIO_STATE_JUMP_SHORT)
 		{
-			if (nx > 0) ani = MARIO_ANI_RACCOON_JUMP_RIGHT;
-			else ani = MARIO_ANI_RACCOON_JUMP_LEFT;
+			if (isHold)
+			{
+				if (nx > 0) ani = MARIO_ANI_RACCOON_JUMP_HOLD_RIGHT;
+				else ani = MARIO_ANI_RACCOON_JUMP_HOLD_LEFT;
+			}
+			else
+			{
+				if (nx > 0) ani = MARIO_ANI_RACCOON_JUMP_RIGHT;
+				else ani = MARIO_ANI_RACCOON_JUMP_LEFT;
+			}
 		}
 		if (state == MARIO_STATE_RUN)
 		{
@@ -458,8 +494,16 @@ void CMario::Render()
 		}
 		if (state == MARIO_STATE_PREPARE_RUN)
 		{
-			if (nx > 0) ani = MARIO_ANI_RACCOON_PREPARE_RUN_RIGHT;
-			else ani = MARIO_ANI_RACCOON_PREPARE_RUN_LEFT;
+			if (isHold)
+			{
+				if (nx > 0) ani = MARIO_ANI_RACCOON_RUN_HOLD_RIGHT;
+				else ani = MARIO_ANI_RACCOON_RUN_HOLD_LEFT;
+			}
+			else
+			{
+				if (nx > 0) ani = MARIO_ANI_RACCOON_PREPARE_RUN_RIGHT;
+				else ani = MARIO_ANI_RACCOON_PREPARE_RUN_LEFT;
+			}
 		}
 		if (state == MARIO_STATE_RUNJUMP)
 		{
@@ -540,8 +584,16 @@ void CMario::Render()
 		}
 		if (state == MARIO_STATE_JUMP_HIGH || state == MARIO_STATE_JUMP_SHORT)
 		{
-			if (nx > 0) ani = MARIO_ANI_FIRE_JUMP_RIGHT;
-			else ani = MARIO_ANI_FIRE_JUMP_LEFT;
+			if (isHold)
+			{
+				if (nx > 0) ani = MARIO_ANI_FIRE_JUMP_HOLD_RIGHT;
+				else ani = MARIO_ANI_FIRE_JUMP_HOLD_LEFT;
+			}
+			else
+			{
+				if (nx > 0) ani = MARIO_ANI_FIRE_JUMP_RIGHT;
+				else ani = MARIO_ANI_FIRE_JUMP_LEFT;
+			}
 		}
 		if (state == MARIO_STATE_RUN)
 		{
@@ -550,8 +602,16 @@ void CMario::Render()
 		}
 		if (state == MARIO_STATE_PREPARE_RUN)
 		{
-			if (nx > 0) ani = MARIO_ANI_FIRE_PREPARE_RUN_RIGHT;
-			else ani = MARIO_ANI_FIRE_PREPARE_RUN_LEFT;
+			if (isHold)
+			{
+				if (nx > 0) ani = MARIO_ANI_FIRE_RUN_HOLD_RIGHT;
+				else ani = MARIO_ANI_FIRE_RUN_HOLD_LEFT;
+			}
+			else
+			{
+				if (nx > 0) ani = MARIO_ANI_FIRE_PREPARE_RUN_RIGHT;
+				else ani = MARIO_ANI_FIRE_PREPARE_RUN_LEFT;
+			}
 		}
 		if (state == MARIO_STATE_RUNJUMP || state == MARIO_STATE_JUMP_SHOT)
 		{
@@ -622,8 +682,16 @@ void CMario::Render()
 		}
 		if (state == MARIO_STATE_JUMP_HIGH || state == MARIO_STATE_JUMP_SHORT)
 		{
-			if (nx > 0) ani = MARIO_ANI_SMALL_JUMP_RIGHT;
-			else ani = MARIO_ANI_SMALL_JUMP_LEFT;
+			if (isHold)
+			{
+				if (nx > 0) ani = MARIO_ANI_SMALL_JUMP_HOLD_RIGHT;
+				else ani = MARIO_ANI_SMALL_JUMP_HOLD_LEFT;
+			}
+			else
+			{
+				if (nx > 0) ani = MARIO_ANI_SMALL_JUMP_RIGHT;
+				else ani = MARIO_ANI_SMALL_JUMP_LEFT;
+			}
 		}
 		if (state == MARIO_STATE_RUN)
 		{
@@ -632,8 +700,16 @@ void CMario::Render()
 		}
 		if (state == MARIO_STATE_PREPARE_RUN)
 		{
-			if (nx > 0) ani = MARIO_ANI_SMALL_PREPARE_RUN_RIGHT;
-			else ani = MARIO_ANI_SMALL_PREPARE_RUN_LEFT;
+			if (isHold)
+			{
+				if (nx > 0) ani = MARIO_ANI_SMALL_RUN_HOLD_RIGHT;
+				else ani = MARIO_ANI_SMALL_RUN_HOLD_LEFT;
+			}
+			else
+			{
+				if (nx > 0) ani = MARIO_ANI_SMALL_PREPARE_RUN_RIGHT;
+				else ani = MARIO_ANI_SMALL_PREPARE_RUN_LEFT;
+			}
 		}
 		if (state == MARIO_STATE_RUNJUMP)
 		{

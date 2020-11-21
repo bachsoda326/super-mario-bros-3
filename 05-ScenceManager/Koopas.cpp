@@ -42,7 +42,7 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	CGameObject::Update(dt, coObjects);
 
 	// Simple fall down
-	if (state != KOOPAS_STATE_HOLD)
+	/*if (state != KOOPAS_STATE_HOLD)*/
 		vy += KOOPAS_GRAVITY * dt;
 
 	if (y + KOOPAS_BBOX_HEIGHT_HIDE > 432)
@@ -50,6 +50,9 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		isDie = true;
 		isDead = true;
 	}	
+
+	if (state == KOOPAS_STATE_HOLD)
+		vy = 0;
 
 	if (state == KOOPAS_STATE_DIE)
 	{
@@ -120,9 +123,9 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				if (e->nx != 0)
 					x += dx;
 			}
-			else if (dynamic_cast<CGoomba*>(e->obj))
+			if (dynamic_cast<CGoomba*>(e->obj))
 			{
-				if (state == KOOPAS_STATE_SPIN)
+				if (state == KOOPAS_STATE_SPIN || state == KOOPAS_STATE_HOLD)
 				{
 					CGoomba* goomba = dynamic_cast<CGoomba*>(e->obj);
 					if (goomba->state != GOOMBA_STATE_DIE_REVERSE)
@@ -130,6 +133,33 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						goomba->vx = -nx * 0.1f;
 						goomba->vy = -0.2f;
 						goomba->SetState(GOOMBA_STATE_DIE_REVERSE);
+					}
+
+					if (state == KOOPAS_STATE_HOLD)
+					{
+						vx = -nx * 0.07f;
+						vy = -0.2f;
+						SetState(KOOPAS_STATE_DIE);
+					}
+				}
+			}
+			else if (dynamic_cast<CKoopas*>(e->obj))
+			{
+				if (state == KOOPAS_STATE_SPIN)
+				{
+					CKoopas* koopas = dynamic_cast<CKoopas*>(e->obj);
+					if (!koopas->isDie)
+					{
+						koopas->vx = -nx * 0.07f;
+						koopas->vy = -0.2f;
+						koopas->SetState(KOOPAS_STATE_DIE);
+					}
+
+					if (state == KOOPAS_STATE_HOLD)
+					{
+						vx = -nx * 0.07f;
+						vy = -0.2f;
+						SetState(KOOPAS_STATE_DIE);
 					}
 				}
 			}
