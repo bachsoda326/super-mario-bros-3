@@ -39,8 +39,8 @@ class CKoopas : public CGameObject
 
 public:
 	int type;
-	float xMin, xMax;
+	/*float xMin, xMax;*/
 
-	CKoopas(int type, float min = -1, float max = -1);
+	CKoopas(int type);
 	virtual void SetState(int state);
 };

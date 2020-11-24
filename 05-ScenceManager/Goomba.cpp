@@ -21,7 +21,9 @@ void CGoomba::GetBoundingBox(float& left, float& top, float& right, float& botto
 void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	CGameObject::Update(dt, coObjects);
-
+		
+	x += dx;
+	y += dy;
 	// Simple fall down
 	vy += GOOMBA_GRAVITY * dt;
 
@@ -36,8 +38,8 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 	if (state == GOOMBA_STATE_DIE_REVERSE)
 	{
-		x += dx;
-		y += dy;
+		/*x += dx;
+		y += dy;*/
 
 		if (GetTickCount() - die_start > 1000)
 			isDead = true;
@@ -54,18 +56,20 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	// No collision occured, proceed normally
 	if (coEvents.size() == 0)
 	{
-		x += dx;
-		y += dy;
+		/*x += dx;
+		y += dy;*/
 	}
 	else
 	{
+		/*x += dx;
+		y += dy;*/
 		float min_tx, min_ty, nx = 0, ny;
 		float rdx = 0;
 		float rdy = 0;
 
 		// TODO: This is a very ugly designed function!!!!
 		FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny, rdx, rdy);
-
+		
 		/*x += min_tx * dx + nx * 0.1f;
 		y += min_ty * dy + ny * 0.1f;*/
 
@@ -85,8 +89,7 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 			if (ny < 0 && e->obj != NULL)
 			{
-				vy = 0;
-				y = e->obj->y - (bottom - top);				
+				PreventMoveY(e->obj);
 			}
 
 			/*if (dynamic_cast<CBox*>(e->obj))
@@ -99,18 +102,29 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			if (e->nx != 0)
 			{
 				if (dynamic_cast<CGround*>(e->obj) || dynamic_cast<CWarpPipe*>(e->obj) || dynamic_cast<CBrick*>(e->obj) || dynamic_cast<CGoomba*>(e->obj))
+				{
+					PreventMoveX(nx, e->obj);
 					vx = -vx;
+				}
 				else if (dynamic_cast<CKoopas*>(e->obj))
 				{
 					CKoopas* koopas = dynamic_cast<CKoopas*>(e->obj);
 					if (koopas->state != KOOPAS_STATE_SPIN && koopas->state != KOOPAS_STATE_HOLD)
-						vx = -vx;
+					{
+						PreventMoveX(nx, e->obj);
+						vx = -vx;						
+					}
 				}
-				else if (dynamic_cast<CBox*>(e->obj))
-					x += dx;
+				/*if (dynamic_cast<CGoomba*>(e->obj) || dynamic_cast<CMario*>(e->obj))
+				{
+					PreventMoveX(nx, e->obj);
+					vx = -vx;
+				}*/
+				/*else if (dynamic_cast<CBox*>(e->obj))
+					x += dx;*/
 			}
-			else
-				x += dx;
+			/*else
+				x += dx;*/
 		}
 
 		// clean up collision events

@@ -188,13 +188,13 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	case OBJECT_TYPE_KOOPAS:
 	{
 		int type = atoi(tokens[4].c_str());
-		if (type == 2)
+		/*if (type == 2)
 		{
 			float min = atof(tokens[5].c_str());
 			float max = atof(tokens[6].c_str());
 			obj = new CKoopas(type, min, max);
 		}
-		else
+		else*/
 			obj = new CKoopas(type);
 	}
 	break;

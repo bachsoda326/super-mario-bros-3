@@ -132,10 +132,24 @@ void CGameObject::FilterCollision(
 	if (min_iy>=0) coEventsResult.push_back(coEvents[min_iy]);
 }
 
+void CGameObject::PreventMoveX(float nx, LPGAMEOBJECT obj2)
+{
+	if (nx < 0)						//obj1 va chạm phía bên TRÁI obj2, cạnh trái obj2 - cạnh phải obj1 <= 0 
+		x += obj2->left - right;
+	else if (nx > 0)				//obj1 va chạm phía bên PHẢI obj2, cạnh phải obj2 - cạnh trái obj1 >= 0 
+		x += obj2->right - left;
+}
+
+void CGameObject::PreventMoveY(LPGAMEOBJECT obj2)
+{
+	vy = 0;
+	y = obj2->y - (bottom - top);
+}
+
 
 void CGameObject::RenderBoundingBox()
 {
-	D3DXVECTOR3 p(x, y, 0);
+	/*D3DXVECTOR3 p(x, y, 0);
 	RECT rect;
 
 	LPDIRECT3DTEXTURE9 bbox = CTextures::GetInstance()->Get(ID_TEX_BBOX);
@@ -148,7 +162,7 @@ void CGameObject::RenderBoundingBox()
 	rect.right = (int)r - (int)l;
 	rect.bottom = (int)b - (int)t;
 
-	CGame::GetInstance()->Draw(l, t, bbox, rect.left, rect.top, rect.right, rect.bottom, 0, 0, false, 64);
+	CGame::GetInstance()->Draw(l, t, bbox, rect.left, rect.top, rect.right, rect.bottom, 0, 0, false, 64);*/
 }
 
 

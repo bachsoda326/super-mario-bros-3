@@ -6,6 +6,7 @@
 
 #include "Sprites.h"
 #include "Animations.h"
+#include "Utils.h"
 
 
 using namespace std;
@@ -91,6 +92,8 @@ public:
 		float &ny, 
 		float &rdx, 
 		float &rdy);
+	void PreventMoveX(float nx, LPGAMEOBJECT obj2);
+	void PreventMoveY(LPGAMEOBJECT obj2);
 
 	CGameObject();
 
