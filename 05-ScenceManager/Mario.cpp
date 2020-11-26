@@ -173,6 +173,12 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				canJumpHigher = false;
 			}
 		}
+		else if (ny > 0)
+		{
+			vy = 0;
+			canJump = false;
+			canJumpHigher = false;
+		}
 		/*else if (nx == 0 && ny == 0)
 			isOnGround = false;*/
 
@@ -329,11 +335,14 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				//if (level == MARIO_LEVEL_BIG)
 				level = MARIO_LEVEL_RACCOON;
 			}
-			/*else if (dynamic_cast<CQuestionBrick*>(e->obj))
+			else if (dynamic_cast<CQuestionBrick*>(e->obj))
 			{
-				CQuestionBrick* qBrick = dynamic_cast<CQuestionBrick*>(e->obj);
-				qBrick->vy = -0.1f;
-			}*/
+				if (e->ny > 0)
+				{
+					CQuestionBrick* qBrick = dynamic_cast<CQuestionBrick*>(e->obj);
+					qBrick->vy = -0.1f;
+				}
+			}
 			/*else if (!dynamic_cast<CGoomba*>(e->obj) && !dynamic_cast<CKoopas*>(e->obj))
 			{
 				if (e->nx != 0)

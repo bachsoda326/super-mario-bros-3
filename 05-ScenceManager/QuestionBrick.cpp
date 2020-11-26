@@ -1,6 +1,6 @@
 #include "QuestionBrick.h"
 
-CQuestionBrick::CQuestionBrick()
+CQuestionBrick::CQuestionBrick(float x, float y)
 {
 	start_x = x;
 	start_y = y;
@@ -19,8 +19,17 @@ void CQuestionBrick::Render()
 
 void CQuestionBrick::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
-	/*CGameObject::Update(dt);
+	CGameObject::Update(dt, coObjects);
+
+	x += dx;
+	y += dy;
 
 	if (y != start_y)
-		vy += QUESTION_BRICK_GRAVITY * dt;*/
+		vy += QUESTION_BRICK_GRAVITY * dt;
+
+	if (y >= start_y)
+	{
+		y = start_y;
+		vy = 0;
+	}
 }

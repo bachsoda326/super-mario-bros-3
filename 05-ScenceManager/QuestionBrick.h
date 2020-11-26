@@ -10,7 +10,7 @@ public:
 	float start_y;
 
 	bool isColision = false;
-	CQuestionBrick();
+	CQuestionBrick(float x, float y);
 	virtual void Render();
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects = NULL);
 };
