@@ -47,11 +47,14 @@ CTileMap::~CTileMap()
 {
 }
 
-void CTileMap::Render(CMario* player)
+void CTileMap::Render()
 {	
 	CGame* game = CGame::GetInstance();
 	float cx, cy;
-	player->GetPosition(cx, cy);
+	/*player->GetPosition(cx, cy);*/
+	CCamera::GetInstance()->GetPosition();
+	cx = CCamera::GetInstance()->GetPosition().x;
+	cy = CCamera::GetInstance()->GetPosition().y;
 	// tính vị trí topleft và botright của camera
 	int xTopLeftCamera = cx - game->GetScreenWidth() / 2;
 	int yTopLeftCamera = cy - game->GetScreenHeight() / 2;

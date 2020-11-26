@@ -111,7 +111,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	}
 	if (state == MARIO_STATE_FLY && (GetTickCount() - fly_limit_start) > 5000)
 	{
-		SetState(MARIO_STATE_JUMP_HIGH);		
+		SetState(MARIO_STATE_JUMP_HIGH);
 	}
 
 	/*if (GetTickCount() - run_start > MARIO_RUN_TIME)
@@ -126,9 +126,13 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	{
 		x += dx;
 		y += dy;
-		
+
 		if (vy != 0)
+		{
 			isOnGround = false;
+			if (vy > 0)
+				canJump = false;
+		}
 	}
 	else
 	{
@@ -149,11 +153,11 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 		/*if (nx != 0)
 			vx = 0;*/
-		//if (ny != 0)
-		//{
-		//	vy = 0;
-		//	//y += min_ty * dy + ny * 0.4f;
-		//}
+			//if (ny != 0)
+			//{
+			//	vy = 0;
+			//	//y += min_ty * dy + ny * 0.4f;
+			//}
 
 		if (ny < 0 && vy >= 0)
 		{
@@ -172,19 +176,19 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		/*else if (nx == 0 && ny == 0)
 			isOnGround = false;*/
 
-		//
-		// Collision logic with other objects
-		//
+			//
+			// Collision logic with other objects
+			//
 		for (UINT i = 0; i < coEventsResult.size(); i++)
 		{
 			LPCOLLISIONEVENT e = coEventsResult[i];
 
 			if (ny < 0 && e->obj != NULL)
-			{				
+			{
 				vy = 0;
 				if (state == MARIO_STATE_DUCK)
 					y = e->obj->y - (bottom - top + MARIO_BIG_BBOX_HEIGHT_DUCK / 2);
-				else 
+				else
 					y = e->obj->y - (bottom - top);
 			}
 
@@ -196,8 +200,8 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			if (dynamic_cast<CBox*>(e->obj))
 			{
 				if (e->nx != 0)
-					x += dx;				
-			}			
+					x += dx;
+			}
 			else if (dynamic_cast<CGoomba*>(e->obj)) // if e->obj is Goomba 
 			{
 				CGoomba* goomba = dynamic_cast<CGoomba*>(e->obj);
@@ -244,7 +248,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				//}
 				// jump on top >> kill CKoopas, can kick or throw
 				if (e->ny < 0)
-				{					
+				{
 					if (koopas->GetState() == KOOPAS_STATE_HIDE)
 					{
 						koopas->SetState(KOOPAS_STATE_SPIN);
@@ -299,7 +303,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 							SetKoopas(koopas);
 							koopas->SetState(KOOPAS_STATE_HOLD);
 							/*SetState(MARIO_STATE_IDLE_HOLD);*/
-							isHold = true;							
+							isHold = true;
 						}
 						else
 						{
@@ -325,6 +329,11 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				//if (level == MARIO_LEVEL_BIG)
 				level = MARIO_LEVEL_RACCOON;
 			}
+			/*else if (dynamic_cast<CQuestionBrick*>(e->obj))
+			{
+				CQuestionBrick* qBrick = dynamic_cast<CQuestionBrick*>(e->obj);
+				qBrick->vy = -0.1f;
+			}*/
 			/*else if (!dynamic_cast<CGoomba*>(e->obj) && !dynamic_cast<CKoopas*>(e->obj))
 			{
 				if (e->nx != 0)
@@ -388,7 +397,7 @@ void CMario::Render()
 				if (nx > 0) ani = MARIO_ANI_BIG_JUMP_HOLD_RIGHT;
 				else ani = MARIO_ANI_BIG_JUMP_HOLD_LEFT;
 			}
-			else 
+			else
 			{
 				if (nx > 0) ani = MARIO_ANI_BIG_JUMP_RIGHT;
 				else ani = MARIO_ANI_BIG_JUMP_LEFT;
@@ -444,7 +453,7 @@ void CMario::Render()
 		{
 			if (nx > 0) ani = MARIO_ANI_BIG_DUCK_RIGHT;
 			else ani = MARIO_ANI_BIG_DUCK_LEFT;
-		}		
+		}
 	}
 	else if (level == MARIO_LEVEL_RACCOON)
 	{
@@ -763,15 +772,15 @@ void CMario::SetState(int state)
 			vx = -MARIO_WALKING_SPEED;
 			nx = -1;
 			break;*/
-	/*case MARIO_STATE_JUMP_HIGH:
-		if (canJumpHigher)
-			vy -= MARIO_JUMP_HIGH_SPEED_Y;
-		break;*/
+			/*case MARIO_STATE_JUMP_HIGH:
+				if (canJumpHigher)
+					vy -= MARIO_JUMP_HIGH_SPEED_Y;
+				break;*/
 	case MARIO_STATE_JUMP_SHORT:
 		vy = -MARIO_JUMP_SHORT_SPEED_Y;
 		break;
 	case MARIO_STATE_IDLE:
-		vx = 0;		
+		vx = 0;
 		break;
 	case MARIO_STATE_DIE:
 		vy = -MARIO_DIE_DEFLECT_SPEED;

@@ -4,6 +4,7 @@
 #include "MushRoom.h"
 #include "Leaf.h"
 #include "Bullet.h"
+#include "QuestionBrick.h"
 
 
 #define MARIO_WALKING_SPEED		0.1f 

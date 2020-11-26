@@ -200,14 +200,14 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				}
 				if (e->ny < 0 && type == KOOPAS_RED && state == KOOPAS_STATE_WALKING)
 				{
-					if (left <= e->obj->left)
+					if (left <= e->obj->left - KOOPAS_BBOX_WIDTH / 2)
 					{
-						x = e->obj->left;
+						x = e->obj->left - KOOPAS_BBOX_WIDTH / 2;
 						vx = -vx;
 					}
-					if (right >= e->obj->right)
+					if (right >= e->obj->right + KOOPAS_BBOX_WIDTH / 2)
 					{
-						x = e->obj->right - (right - left);
+						x = e->obj->right - KOOPAS_BBOX_WIDTH / 2;
 						vx = -vx;
 					}
 				}

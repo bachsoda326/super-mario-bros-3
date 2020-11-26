@@ -23,6 +23,6 @@ public:
 	CTileMap(int idTex, string txtMapPath);
 	~CTileMap();
 
-	void Render(CMario* player);
+	void Render();
 };
 

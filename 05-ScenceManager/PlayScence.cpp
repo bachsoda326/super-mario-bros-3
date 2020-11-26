@@ -349,7 +349,7 @@ void CPlayScene::Render()
 {
 	if (map != NULL)
 	{
-		map->Render(player);
+		map->Render();
 	}
 
 	for (int i = 0; i < objects.size(); i++)
