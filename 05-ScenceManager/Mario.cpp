@@ -340,7 +340,31 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				if (e->ny > 0)
 				{
 					CQuestionBrick* qBrick = dynamic_cast<CQuestionBrick*>(e->obj);
-					qBrick->vy = -0.1f;
+					if (qBrick->GetState() == QUESTION_BRICK_STATE_NORMAL)
+					{
+						qBrick->vy = -0.1f;
+						switch (qBrick->type)
+						{
+						case QUESTION_BRICK_TYPE_COIN:
+							qBrick->SetState(QUESTION_BRICK_STATE_HIT_COIN);
+							break;
+						case QUESTION_BRICK_TYPE_OBJECT:
+							switch (level)
+							{
+							case MARIO_LEVEL_SMALL:
+								qBrick->SetState(QUESTION_BRICK_STATE_HIT_MUSHROOM);
+								break;
+							case MARIO_LEVEL_BIG: case MARIO_LEVEL_RACCOON: case MARIO_LEVEL_FIRE:
+								qBrick->SetState(QUESTION_BRICK_STATE_HIT_LEAF);
+								break;
+							default:
+								break;
+							}
+							break;
+						default:
+							break;
+						}
+					}
 				}
 			}
 			/*else if (!dynamic_cast<CGoomba*>(e->obj) && !dynamic_cast<CKoopas*>(e->obj))

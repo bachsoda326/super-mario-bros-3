@@ -181,7 +181,12 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		break;
 	case OBJECT_TYPE_GOOMBA: obj = new CGoomba(); break;
 	case OBJECT_TYPE_BRICK: obj = new CBrick(); break;
-	case OBJECT_TYPE_QUESTION_BRICK: obj = new CQuestionBrick(x, y); break;
+	case OBJECT_TYPE_QUESTION_BRICK: 
+	{
+		int type = atoi(tokens[4].c_str());
+		obj = new CQuestionBrick(x, y, type); 
+		break;
+	}
 	case OBJECT_TYPE_BREAKABLE_BRICK: obj = new CBreakableBrick(); break;
 	case OBJECT_TYPE_MUSHROOM: obj = new CMushRoom(); break;
 	case OBJECT_TYPE_LEAF: obj = new CLeaf(); break;
