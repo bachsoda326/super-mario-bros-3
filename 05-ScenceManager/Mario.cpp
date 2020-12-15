@@ -198,7 +198,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					y = e->obj->y - (bottom - top);
 			}
 
-			if (dynamic_cast<CBullet*>(e->obj))
+			if (dynamic_cast<CBullet*>(e->obj) || dynamic_cast<CMushRoom*>(e->obj) || dynamic_cast<CLeaf*>(e->obj))
 			{
 				x += dx;
 				y += dy;
@@ -327,12 +327,20 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			}
 			else if (dynamic_cast<CMushRoom*>(e->obj))
 			{
-				//if (level == MARIO_LEVEL_SMALL)
-				level = MARIO_LEVEL_BIG;
+				if (level == MARIO_LEVEL_SMALL)
+				{
+					DebugOut(L"[NAM]: %f\n", y);
+					CMushRoom* mushRoom = dynamic_cast<CMushRoom*>(e->obj);
+					mushRoom->Delete(coObjects);
+					y -= MARIO_BIG_BBOX_HEIGHT - MARIO_SMALL_BBOX_HEIGHT;					
+					level = MARIO_LEVEL_BIG;
+					DebugOut(L"[NAM1]: %f\n", y);
+				}
 			}
 			else if (dynamic_cast<CLeaf*>(e->obj))
 			{
-				//if (level == MARIO_LEVEL_BIG)
+				if (level == MARIO_LEVEL_SMALL)
+					y -= MARIO_BIG_BBOX_HEIGHT - MARIO_SMALL_BBOX_HEIGHT;
 				level = MARIO_LEVEL_RACCOON;
 			}
 			else if (dynamic_cast<CQuestionBrick*>(e->obj))
@@ -345,14 +353,17 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						qBrick->vy = -0.1f;
 						switch (qBrick->type)
 						{
-						case QUESTION_BRICK_TYPE_COIN:
+						case BRICK_NORMAL:
 							qBrick->SetState(QUESTION_BRICK_STATE_HIT_COIN);
 							break;
-						case QUESTION_BRICK_TYPE_OBJECT:
+						case BRICK_ITEM:
 							switch (level)
 							{
 							case MARIO_LEVEL_SMALL:
-								qBrick->SetState(QUESTION_BRICK_STATE_HIT_MUSHROOM);
+								if (x <= qBrick->x)
+									qBrick->SetState(QUESTION_BRICK_STATE_HIT_MUSHROOM_LEFT);
+								else
+									qBrick->SetState(QUESTION_BRICK_STATE_HIT_MUSHROOM_RIGHT);
 								break;
 							case MARIO_LEVEL_BIG: case MARIO_LEVEL_RACCOON: case MARIO_LEVEL_FIRE:
 								qBrick->SetState(QUESTION_BRICK_STATE_HIT_LEAF);

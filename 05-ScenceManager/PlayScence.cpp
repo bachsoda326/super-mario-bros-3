@@ -187,7 +187,12 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		obj = new CQuestionBrick(x, y, type); 
 		break;
 	}
-	case OBJECT_TYPE_BREAKABLE_BRICK: obj = new CBreakableBrick(); break;
+	case OBJECT_TYPE_BREAKABLE_BRICK: 
+	{
+		int type = atoi(tokens[4].c_str());
+		obj = new CBreakableBrick(type);
+		break; 
+	}
 	case OBJECT_TYPE_MUSHROOM: obj = new CMushRoom(); break;
 	case OBJECT_TYPE_LEAF: obj = new CLeaf(); break;
 	case OBJECT_TYPE_KOOPAS:
@@ -317,10 +322,17 @@ void CPlayScene::Load()
 
 void CPlayScene::Update(DWORD dt)
 {
+	DebugOut(L"[SIZE]: %d\n", otherObjs.size());
 	// We know that Mario is the first object in the list hence we won't add him into the colliable object list
 	// TO-DO: This is a "dirty" way, need a more organized way 
-
+	
+	// add to colliable objs
 	vector<LPGAMEOBJECT> coObjects;
+	for (size_t i = 0; i < otherObjs.size(); i++)
+	{
+		if (!otherObjs[i]->isDie || !otherObjs[i]->isDead)
+			coObjects.push_back(otherObjs[i]);
+	}
 	for (size_t i = 0; i < objects.size(); i++)
 	{
 		if (i == 2) continue;
@@ -328,6 +340,12 @@ void CPlayScene::Update(DWORD dt)
 			coObjects.push_back(objects[i]);
 	}
 
+	// update all objs
+	for (size_t i = 0; i < otherObjs.size(); i++)
+	{
+		if (!otherObjs[i]->isDead)
+			otherObjs[i]->Update(dt, &coObjects);
+	}
 	for (size_t i = 0; i < objects.size(); i++)
 	{
 		if (!objects[i]->isDead)
@@ -357,6 +375,11 @@ void CPlayScene::Render()
 		map->Render();
 	}
 
+	for (int i = 0; i < otherObjs.size(); i++)
+	{
+		if (!otherObjs[i]->isDead)
+			otherObjs[i]->Render();
+	}
 	for (int i = 0; i < objects.size(); i++)
 	{
 		if (!objects[i]->isDead)
@@ -369,6 +392,13 @@ void CPlayScene::Render()
 */
 void CPlayScene::Unload()
 {
+	// other objs
+	for (int i = 0; i < otherObjs.size(); i++)
+		delete otherObjs[i];
+
+	otherObjs.clear();
+
+	// objs
 	for (int i = 0; i < objects.size(); i++)
 		delete objects[i];
 

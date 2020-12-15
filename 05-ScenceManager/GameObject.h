@@ -95,6 +95,8 @@ public:
 	void PreventMoveX(float nx, LPGAMEOBJECT obj2);
 	void PreventMoveY(LPGAMEOBJECT obj2);
 
+	void Delete(vector<LPGAMEOBJECT>* coObjects);
+
 	CGameObject();
 
 	virtual void GetBoundingBox(float& left, float& top, float& right, float& bottom) 

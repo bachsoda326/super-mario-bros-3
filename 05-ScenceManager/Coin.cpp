@@ -1,4 +1,5 @@
 #include "Coin.h"
+#include "Game.h"
 
 CCoin::CCoin()
 {
@@ -30,10 +31,10 @@ void CCoin::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 		vy += COIN_GRAVITY * dt;
 
+		// delete coin
 		if (y >= start_y)
 		{
-			isDead = true;
-			delete this;
+			Delete(coObjects);
 		}
 	}
 }

@@ -146,6 +146,16 @@ void CGameObject::PreventMoveY(LPGAMEOBJECT obj2)
 	y = obj2->y - (bottom - top);
 }
 
+void CGameObject::Delete(vector<LPGAMEOBJECT>* coObjects)
+{
+	isDead = true;
+	vector<LPGAMEOBJECT>* otherObjs;
+	otherObjs = &CGame::GetInstance()->GetCurrentScene()->otherObjs;
+	otherObjs->erase(std::remove(otherObjs->begin(), otherObjs->end(), this), otherObjs->end());
+	coObjects->erase(std::remove(coObjects->begin(), coObjects->end(), this), coObjects->end());
+	delete this;
+}
+
 
 void CGameObject::RenderBoundingBox()
 {
