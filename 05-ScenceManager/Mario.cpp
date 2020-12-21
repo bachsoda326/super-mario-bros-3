@@ -1,14 +1,12 @@
 #include <algorithm>
 #include <assert.h>
-
 #include "Mario.h"
 #include "Utils.h"
-
 #include "Game.h"
-
-
 #include "Portal.h"
 #include "Box.h"
+#include "Coin.h"
+#include "CloudTooth.h"
 
 CMario::CMario(float x, float y) : CGameObject()
 {
@@ -35,12 +33,14 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	// Simple fall down
 	vy += MARIO_GRAVITY * dt;
 
+	// Max jump
 	if (vy <= -0.2f)
 	{
 		vy = -0.2f;
 		canJumpHigher = false;
 	}
 
+	// Edge map
 	if (x <= 5) x = 5;
 
 	if (koopas != NULL && koopas->state == KOOPAS_STATE_DIE)
@@ -163,7 +163,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			//	//y += min_ty * dy + ny * 0.4f;
 			//}
 
-		if (ny < 0 && vy >= 0)
+		/*if (ny < 0 && vy >= 0)
 		{
 			isOnGround = true;
 			if (canRepeatJump)
@@ -182,7 +182,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			vy = 0;
 			canJump = false;
 			canJumpHigher = false;
-		}
+		}*/
 		/*else if (nx == 0 && ny == 0)
 			isOnGround = false;*/
 
@@ -193,25 +193,56 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		{
 			LPCOLLISIONEVENT e = coEventsResult[i];
 
+			// Stand on obj
 			if (ny < 0 && e->obj != NULL)
 			{
-				if (state != MARIO_STATE_DIE)
-					vy = 0;
-				if (state != MARIO_STATE_EAT_ITEM)
+				if (!dynamic_cast<CCoin*>(e->obj) && !dynamic_cast<CLeaf*>(e->obj) && !dynamic_cast<CBullet*>(e->obj) && !dynamic_cast<CMushRoom*>(e->obj))
 				{
-					if (state == MARIO_STATE_DUCK)
-						y = e->obj->y - (bottom - top + MARIO_BIG_BBOX_HEIGHT_DUCK / 2);
-					else
-						y = e->obj->y - (bottom - top);
+					if (state != MARIO_STATE_DIE)
+						vy = 0;
+					if (state != MARIO_STATE_EAT_ITEM)
+					{
+						if (state == MARIO_STATE_DUCK)
+							y = e->obj->y - (bottom - top + MARIO_BIG_BBOX_HEIGHT_DUCK / 2);
+						else
+							y = e->obj->y - (bottom - top);
+					}
 				}
 			}
 
-			if (dynamic_cast<CBullet*>(e->obj) || dynamic_cast<CMushRoom*>(e->obj) || dynamic_cast<CLeaf*>(e->obj))
+			// Logic with jump
+			if (ny < 0 && vy >= 0)
+			{
+				isOnGround = true;
+				if (canRepeatJump)
+				{
+					canJump = true;
+					canJumpHigher = true;
+				}
+				else
+				{
+					canJump = false;
+					canJumpHigher = false;
+				}
+			}
+			else if (ny > 0 && !dynamic_cast<CCoin*>(e->obj) && !dynamic_cast<CLeaf*>(e->obj) && !dynamic_cast<CBullet*>(e->obj) && !dynamic_cast<CMushRoom*>(e->obj) && !dynamic_cast<CCloudTooth*>(e->obj))
+			{
+				vy = 0;
+				canJump = false;
+				canJumpHigher = false;
+			}
+
+			/*if (dynamic_cast<CBullet*>(e->obj) || dynamic_cast<CMushRoom*>(e->obj) || dynamic_cast<CLeaf*>(e->obj))
 			{
 				x += dx;
 				y += dy;
+			}*/
+			if (dynamic_cast<CCloudTooth*>(e->obj))
+			{
+				if (e->ny > 0)
+					y += dy;
 			}
-			if (dynamic_cast<CBox*>(e->obj))
+			else if (dynamic_cast<CBox*>(e->obj))
 			{
 				if (e->nx != 0)
 					x += dx;
@@ -335,6 +366,9 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			}
 			else if (dynamic_cast<CMushRoom*>(e->obj))
 			{
+				x += dx;
+				y += dy;
+
 				if (level == MARIO_LEVEL_SMALL)
 				{
 					eat_item_start = GetTickCount();
@@ -349,6 +383,9 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			}
 			else if (dynamic_cast<CLeaf*>(e->obj))
 			{
+				x += dx;
+				y += dy;
+
 				eat_item_start = GetTickCount();
 				SetState(MARIO_STATE_EAT_ITEM);
 				CLeaf* leaf = dynamic_cast<CLeaf*>(e->obj);
@@ -391,6 +428,14 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					}
 				}
 			}
+			else if (dynamic_cast<CCoin*>(e->obj))
+			{
+				x += dx;
+				y += dy;
+				CCoin* coin = dynamic_cast<CCoin*>(e->obj);
+				coin->DeleteObjs(coObjects);
+			}
+
 			/*else if (!dynamic_cast<CGoomba*>(e->obj) && !dynamic_cast<CKoopas*>(e->obj))
 			{
 				if (e->nx != 0)

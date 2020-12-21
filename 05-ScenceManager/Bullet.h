@@ -24,6 +24,7 @@ class CBullet : public CGameObject
 	virtual void Render();
 
 public:
+	bool isEnemy = false;
 	DWORD explode_start;
 
 	CBullet();

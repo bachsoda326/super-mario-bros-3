@@ -41,6 +41,8 @@ CPlayScene::CPlayScene(int id, LPCWSTR filePath) :
 #define OBJECT_TYPE_BREAKABLE_BRICK	9
 #define OBJECT_TYPE_MUSHROOM	10
 #define OBJECT_TYPE_LEAF	11
+#define OBJECT_TYPE_COIN	12
+#define OBJECT_TYPE_CLOUD_TOOTH	13
 
 #define OBJECT_TYPE_PORTAL	50
 
@@ -154,7 +156,9 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	int ani_set_id = atoi(tokens[3].c_str());
 
 	CAnimationSets* animation_sets = CAnimationSets::GetInstance();
-	LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
+	LPANIMATION_SET ani_set = LPANIMATION_SET();
+	if (ani_set_id != -1)
+		ani_set = animation_sets->Get(ani_set_id);
 
 	CGameObject* obj = NULL;
 
@@ -219,7 +223,10 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	{
 		float r = atof(tokens[4].c_str());
 		float b = atof(tokens[5].c_str());
-		obj = new CWarpPipe(r, b);
+		int type = -1;		
+		if (tokens.size() > 6)
+			type = atoi(tokens[6].c_str());
+		obj = new CWarpPipe(x, y, r, b, type);
 	}
 	break;
 	case OBJECT_TYPE_GROUND:
@@ -237,6 +244,8 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		obj = new CPortal(x, y, r, b, scene_id);
 	}
 	break;
+	case OBJECT_TYPE_COIN:	obj = new CCoin(); break;
+	case OBJECT_TYPE_CLOUD_TOOTH:	obj = new CCloudTooth(); break;
 	default:
 		DebugOut(L"[ERR] Invalid object type: %d\n", object_type);
 		return;
@@ -247,7 +256,9 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 
 	/*LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);*/
 
-	obj->SetAnimationSet(ani_set);
+	if (ani_set_id != -1)
+		obj->SetAnimationSet(ani_set);
+
 	objects.push_back(obj);
 }
 
@@ -458,6 +469,12 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 	CMario* mario = ((CPlayScene*)scence)->GetPlayer();
 	switch (KeyCode)
 	{
+	case DIK_H:
+		mario->SetPosition(250, 350);
+		break;
+	case DIK_J:
+		mario->SetPosition(1750, 350);
+		break;
 	case DIK_S:
 		if (mario->canJump)
 			mario->vy = -0.15f;

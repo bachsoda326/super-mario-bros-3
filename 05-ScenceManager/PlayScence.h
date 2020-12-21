@@ -14,6 +14,8 @@
 #include "MushRoom.h"
 #include "Leaf.h"
 #include "TileMap.h"
+#include "Coin.h"
+#include "CloudTooth.h"
 
 
 class CPlayScene: public CScene
