@@ -113,6 +113,10 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	{
 		SetState(MARIO_STATE_JUMP_HIGH);
 	}
+	if ((GetTickCount() - eat_item_start) < 1)
+	{
+		SetState(MARIO_STATE_EAT_ITEM);
+	}
 
 	/*if (GetTickCount() - run_start > MARIO_RUN_TIME)
 	{
@@ -191,11 +195,15 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 			if (ny < 0 && e->obj != NULL)
 			{
-				vy = 0;
-				if (state == MARIO_STATE_DUCK)
-					y = e->obj->y - (bottom - top + MARIO_BIG_BBOX_HEIGHT_DUCK / 2);
-				else
-					y = e->obj->y - (bottom - top);
+				if (state != MARIO_STATE_DIE)
+					vy = 0;
+				if (state != MARIO_STATE_EAT_ITEM)
+				{
+					if (state == MARIO_STATE_DUCK)
+						y = e->obj->y - (bottom - top + MARIO_BIG_BBOX_HEIGHT_DUCK / 2);
+					else
+						y = e->obj->y - (bottom - top);
+				}
 			}
 
 			if (dynamic_cast<CBullet*>(e->obj) || dynamic_cast<CMushRoom*>(e->obj) || dynamic_cast<CLeaf*>(e->obj))
@@ -329,18 +337,23 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			{
 				if (level == MARIO_LEVEL_SMALL)
 				{
-					DebugOut(L"[NAM]: %f\n", y);
+					eat_item_start = GetTickCount();
+					SetState(MARIO_STATE_EAT_ITEM);
+					//DebugOut(L"[NAM]: %f\n", y);
 					CMushRoom* mushRoom = dynamic_cast<CMushRoom*>(e->obj);
-					mushRoom->Delete(coObjects);
-					y -= MARIO_BIG_BBOX_HEIGHT - MARIO_SMALL_BBOX_HEIGHT;					
+					mushRoom->DeleteOtherObjs(coObjects);
+					//y -= MARIO_BIG_BBOX_HEIGHT - MARIO_SMALL_BBOX_HEIGHT;
 					level = MARIO_LEVEL_BIG;
-					DebugOut(L"[NAM1]: %f\n", y);
+					//DebugOut(L"[NAM1]: %f\n", y);
 				}
 			}
 			else if (dynamic_cast<CLeaf*>(e->obj))
 			{
-				if (level == MARIO_LEVEL_SMALL)
-					y -= MARIO_BIG_BBOX_HEIGHT - MARIO_SMALL_BBOX_HEIGHT;
+				eat_item_start = GetTickCount();
+				SetState(MARIO_STATE_EAT_ITEM);
+				CLeaf* leaf = dynamic_cast<CLeaf*>(e->obj);
+				leaf->DeleteObjs(coObjects);
+				//y -= MARIO_BIG_BBOX_HEIGHT - MARIO_SMALL_BBOX_HEIGHT;
 				level = MARIO_LEVEL_RACCOON;
 			}
 			else if (dynamic_cast<CQuestionBrick*>(e->obj))
@@ -408,7 +421,7 @@ void CMario::Render()
 		ani = MARIO_ANI_SMALL_DIE;
 	else if (level == MARIO_LEVEL_BIG)
 	{
-		if (state == MARIO_STATE_IDLE)
+		if (state == MARIO_STATE_IDLE || state == MARIO_STATE_EAT_ITEM)
 		{
 			if (isHold)
 			{
@@ -501,7 +514,7 @@ void CMario::Render()
 	}
 	else if (level == MARIO_LEVEL_RACCOON)
 	{
-		if (state == MARIO_STATE_IDLE)
+		if (state == MARIO_STATE_IDLE || state == MARIO_STATE_EAT_ITEM)
 		{
 			if (isHold)
 			{
@@ -609,7 +622,7 @@ void CMario::Render()
 	}
 	else if (level == MARIO_LEVEL_FIRE)
 	{
-		if (state == MARIO_STATE_IDLE)
+		if (state == MARIO_STATE_IDLE || state == MARIO_STATE_EAT_ITEM)
 		{
 			if (isHold)
 			{
@@ -707,7 +720,7 @@ void CMario::Render()
 	}
 	else if (level == MARIO_LEVEL_SMALL)
 	{
-		if (state == MARIO_STATE_IDLE)
+		if (state == MARIO_STATE_IDLE || state == MARIO_STATE_EAT_ITEM)
 		{
 			if (isHold)
 			{
@@ -797,7 +810,7 @@ void CMario::Render()
 	int alpha = 255;
 	if (untouchable) alpha = 128;
 
-	animation_set->at(ani)->Render(x, y, false, alpha);
+	animation_set->at(ani)->Render(x, y, xReverse, yReverse, alpha);
 
 	RenderBoundingBox();
 }

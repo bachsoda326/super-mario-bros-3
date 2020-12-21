@@ -9,14 +9,14 @@ CMushRoom::CMushRoom()
 }
 
 CMushRoom::CMushRoom(float x, float y, int nx)
-{
-	SetPosition(x, y);
-	this->nx = nx;
-	this->start_bottom = y;
-
+{	
 	CAnimationSets* animation_sets = CAnimationSets::GetInstance();
 	LPANIMATION_SET ani_set = animation_sets->Get(MUSHROOM_ANI_SET);
 	SetAnimationSet(ani_set);
+
+	this->nx = nx;
+	this->start_bottom = y;
+	SetPosition(x, y);	
 
 	vy = -0.02f;
 }

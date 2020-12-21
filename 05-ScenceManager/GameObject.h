@@ -62,6 +62,7 @@ public:
 	int state;
 	bool isDie = false;
 	bool isDead = false;
+	bool xReverse = false;
 	bool yReverse = false;
 
 	DWORD dt; 
@@ -95,7 +96,8 @@ public:
 	void PreventMoveX(float nx, LPGAMEOBJECT obj2);
 	void PreventMoveY(LPGAMEOBJECT obj2);
 
-	void Delete(vector<LPGAMEOBJECT>* coObjects);
+	void DeleteObjs(vector<LPGAMEOBJECT>* coObjects);
+	void DeleteOtherObjs(vector<LPGAMEOBJECT>* coObjects);
 
 	CGameObject();
 

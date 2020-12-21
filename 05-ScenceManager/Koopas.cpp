@@ -1,4 +1,7 @@
 #include "Koopas.h"
+#include "QuestionBrick.h"
+#include "Game.h"
+#include "PlayScence.h"
 
 CKoopas::CKoopas(int type)
 {
@@ -194,6 +197,46 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				{
 					if (!dynamic_cast<CBox*>(e->obj))
 					{
+						if (state == KOOPAS_STATE_SPIN)
+						{
+							if (dynamic_cast<CQuestionBrick*>(e->obj))
+							{
+								if (e->nx != 0)
+								{
+									CQuestionBrick* qBrick = dynamic_cast<CQuestionBrick*>(e->obj);
+									if (qBrick->GetState() == QUESTION_BRICK_STATE_NORMAL)
+									{
+										CScene* scence = CGame::GetInstance()->GetCurrentScene();
+										CMario* mario = ((CPlayScene*)scence)->GetPlayer();
+										switch (qBrick->type)
+										{
+										case BRICK_NORMAL:
+											qBrick->SetState(QUESTION_BRICK_STATE_HIT_COIN);
+											break;
+										case BRICK_ITEM:
+											switch (mario->GetLevel())
+											{
+											case MARIO_LEVEL_SMALL:
+												if (x <= qBrick->x)
+													qBrick->SetState(QUESTION_BRICK_STATE_HIT_MUSHROOM_LEFT);
+												else
+													qBrick->SetState(QUESTION_BRICK_STATE_HIT_MUSHROOM_RIGHT);
+												break;
+											case MARIO_LEVEL_BIG: case MARIO_LEVEL_RACCOON: case MARIO_LEVEL_FIRE:
+												qBrick->SetState(QUESTION_BRICK_STATE_HIT_LEAF);
+												break;
+											default:
+												break;
+											}
+											break;
+										default:
+											break;
+										}
+									}
+								}
+							}
+						}
+
 						PreventMoveX(nx, e->obj);
 						vx = -vx;
 					}
@@ -248,7 +291,7 @@ void CKoopas::Render()
 	else if (vx > 0) ani = KOOPAS_ANI_WALKING_RIGHT;
 	else if (vx <= 0) ani = KOOPAS_ANI_WALKING_LEFT;
 
-	animation_set->at(ani)->Render(x, y, yReverse);
+	animation_set->at(ani)->Render(x, y, xReverse, yReverse);
 
 	RenderBoundingBox();
 }

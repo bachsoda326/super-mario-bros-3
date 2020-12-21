@@ -63,7 +63,7 @@ void CGame::Init(HWND hWnd)
 /*
 	Utility function to wrap LPD3DXSPRITE::Draw 
 */
-void CGame::Draw(float x, float y, LPDIRECT3DTEXTURE9 texture, int left, int top, int right, int bottom, int xD, int yD, bool yReverse, int alpha)
+void CGame::Draw(float x, float y, LPDIRECT3DTEXTURE9 texture, int left, int top, int right, int bottom, int xD, int yD, bool xReverse, bool yReverse, int alpha)
 {
 	//D3DXVECTOR3 p(floor(x - cam_x), floor(y - cam_y), 0);
 	float xNew = floor(x - xD - CCamera::GetInstance()->GetPosition().x + GetScreenWidth() / 2);
@@ -76,9 +76,13 @@ void CGame::Draw(float x, float y, LPDIRECT3DTEXTURE9 texture, int left, int top
 	r.right = right;
 	r.bottom = bottom;
 		
-	if (yReverse)
+	if (xReverse || yReverse)
 	{
-		D3DXVECTOR2 scale(1, -1);
+		D3DXVECTOR2 scale;
+		if (xReverse)
+			scale = D3DXVECTOR2(-1, 1);
+		else if (yReverse)
+			scale = D3DXVECTOR2(1, -1);
 		D3DXVECTOR2 center = D3DXVECTOR2(xNew + (right - left) / 2, yNew + (bottom - top) / 2);
 		D3DXMATRIX oldMatrix, newMatrix;
 

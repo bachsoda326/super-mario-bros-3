@@ -33,7 +33,8 @@
 #define MARIO_STATE_TAIL				112
 #define MARIO_STATE_SHOT				113
 #define MARIO_STATE_JUMP_SHOT			114
-#define MARIO_STATE_RUNJUMP_SHOT		114
+#define MARIO_STATE_RUNJUMP_SHOT		115
+#define MARIO_STATE_EAT_ITEM			116
 #define MARIO_STATE_DIE					999
 
 //#define MARIO_ANI_BIG_IDLE_RIGHT		0
@@ -258,7 +259,9 @@ public:
 	DWORD wag_start;
 	DWORD fly_start;
 	DWORD fly_limit_start;
+	DWORD eat_item_start;
 
+	/*bool isPreventMoveX = false;*/
 	bool isOnGround = false;
 	bool canJump = true;
 	bool canRepeatJump = true;

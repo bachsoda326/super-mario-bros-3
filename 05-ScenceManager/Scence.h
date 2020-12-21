@@ -7,14 +7,17 @@
 class CScene
 {
 protected:
+	vector<LPGAMEOBJECT> objects;
+	vector<LPGAMEOBJECT> otherObjs;
 	CKeyEventHandler * key_handler;
 	int id;
 	LPCWSTR sceneFilePath;
 
-public: 
-	vector<LPGAMEOBJECT> otherObjs;
+public:
 	CScene(int id, LPCWSTR filePath);
 
+	vector<LPGAMEOBJECT>* GetObjs() { return &objects; }
+	vector<LPGAMEOBJECT>* GetOtherObjs() { return &otherObjs; }
 	CKeyEventHandler * GetKeyEventHandler() { return key_handler; }
 	virtual void Load() = 0;
 	virtual void Unload() = 0;

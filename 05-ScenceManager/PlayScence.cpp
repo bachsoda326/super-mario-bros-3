@@ -322,7 +322,6 @@ void CPlayScene::Load()
 
 void CPlayScene::Update(DWORD dt)
 {
-	DebugOut(L"[SIZE]: %d\n", otherObjs.size());
 	// We know that Mario is the first object in the list hence we won't add him into the colliable object list
 	// TO-DO: This is a "dirty" way, need a more organized way 
 	
@@ -610,7 +609,7 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 	if (game->IsKeyDown(DIK_RIGHT))
 	{
 		mario->nx = 1;
-		if (state != MARIO_STATE_DUCK)
+		if (state != MARIO_STATE_DUCK /*&& !mario->isPreventMoveX*/)
 			if (mario->vx < MARIO_WALKING_SPEED)
 				mario->vx += 0.005f;
 
@@ -649,7 +648,7 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 	else if (game->IsKeyDown(DIK_LEFT))
 	{
 		mario->nx = -1;
-		if (state != MARIO_STATE_DUCK)
+		if (state != MARIO_STATE_DUCK /*&& !mario->isPreventMoveX*/)
 			if (mario->vx > -MARIO_WALKING_SPEED)
 				mario->vx -= 0.005f;
 			

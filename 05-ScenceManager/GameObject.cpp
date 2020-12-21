@@ -146,11 +146,21 @@ void CGameObject::PreventMoveY(LPGAMEOBJECT obj2)
 	y = obj2->y - (bottom - top);
 }
 
-void CGameObject::Delete(vector<LPGAMEOBJECT>* coObjects)
+void CGameObject::DeleteObjs(vector<LPGAMEOBJECT>* coObjects)
+{
+	isDead = true;
+	vector<LPGAMEOBJECT>* objs;
+	objs = CGame::GetInstance()->GetCurrentScene()->GetObjs();
+	objs->erase(std::remove(objs->begin(), objs->end(), this), objs->end());
+	coObjects->erase(std::remove(coObjects->begin(), coObjects->end(), this), coObjects->end());
+	delete this;
+}
+
+void CGameObject::DeleteOtherObjs(vector<LPGAMEOBJECT>* coObjects)
 {
 	isDead = true;
 	vector<LPGAMEOBJECT>* otherObjs;
-	otherObjs = &CGame::GetInstance()->GetCurrentScene()->otherObjs;
+	otherObjs = CGame::GetInstance()->GetCurrentScene()->GetOtherObjs();
 	otherObjs->erase(std::remove(otherObjs->begin(), otherObjs->end(), this), otherObjs->end());
 	coObjects->erase(std::remove(coObjects->begin(), coObjects->end(), this), coObjects->end());
 	delete this;
@@ -172,7 +182,7 @@ void CGameObject::RenderBoundingBox()
 	rect.right = (int)r - (int)l;
 	rect.bottom = (int)b - (int)t;
 
-	CGame::GetInstance()->Draw(l, t, bbox, rect.left, rect.top, rect.right, rect.bottom, 0, 0, false, 64);
+	CGame::GetInstance()->Draw(l, t, bbox, rect.left, rect.top, rect.right, rect.bottom, 0, 0, xReverse, yReverse, 64);
 }
 
 

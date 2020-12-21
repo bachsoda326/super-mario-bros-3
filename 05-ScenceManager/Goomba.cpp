@@ -142,7 +142,7 @@ void CGoomba::Render()
 		ani = GOOMBA_ANI_WALKING;
 	}
 
-	animation_set->at(ani)->Render(x, y, yReverse);
+	animation_set->at(ani)->Render(x, y, xReverse, yReverse);
 
 	RenderBoundingBox();
 }

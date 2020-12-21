@@ -145,7 +145,7 @@ void CBullet::Render()
 		ani = BULLET_ANI_EXPLODE;
 	}
 
-	animation_set->at(ani)->Render(x, y, yReverse);
+	animation_set->at(ani)->Render(x, y, xReverse, yReverse);
 
 	RenderBoundingBox();
 }
