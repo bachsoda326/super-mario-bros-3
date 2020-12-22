@@ -5,17 +5,7 @@
 
 CKoopas::CKoopas(int type)
 {
-	switch (type)
-	{
-	case 1:
-		this->type = KOOPAS_GREEN;
-		break;
-	case 2:
-		this->type = KOOPAS_RED;
-		break;
-	default:
-		break;
-	}
+	this->type = type;
 
 	/*if (min != -1 && max != -1)
 	{
@@ -41,13 +31,16 @@ void CKoopas::GetBoundingBox(float& left, float& top, float& right, float& botto
 }
 
 void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
-{	
+{
 	CGameObject::Update(dt, coObjects);
 
 	x += dx;
 	y += dy;
 	// Simple fall down
-	vy += KOOPAS_GRAVITY * dt;
+	if (type == KOOPAS_GREEN_WING)
+		vy += KOOPAS_WING_GRAVITY * dt;
+	else
+		vy += KOOPAS_GRAVITY * dt;
 
 	if (y + KOOPAS_BBOX_HEIGHT_HIDE > 432)
 	{
@@ -115,11 +108,19 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 			if (ny < 0 && e->obj != NULL)
 			{
-				PreventMoveY(e->obj);
-
-				if (state == KOOPAS_STATE_HIDE && yReverse == true)
+				if (type == KOOPAS_GREEN_WING)
 				{
-					vx = 0;
+					y = e->obj->y - (bottom - top);
+					vy = -KOOPAS_WING_JUMP;
+				}
+				else
+				{
+					PreventMoveY(e->obj);
+
+					if (state == KOOPAS_STATE_HIDE && yReverse == true)
+					{
+						vx = 0;
+					}
 				}
 			}
 
@@ -145,7 +146,7 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			{
 				CGoomba* goomba = dynamic_cast<CGoomba*>(e->obj);
 				if (state == KOOPAS_STATE_SPIN || state == KOOPAS_STATE_HOLD)
-				{					
+				{
 					if (goomba->state != GOOMBA_STATE_DIE_REVERSE)
 					{
 						goomba->vx = -nx * 0.1f;
@@ -170,7 +171,7 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			{
 				CKoopas* koopas = dynamic_cast<CKoopas*>(e->obj);
 				if (state == KOOPAS_STATE_SPIN)
-				{					
+				{
 					if (!koopas->isDie)
 					{
 						koopas->vx = -nx * 0.07f;
@@ -206,8 +207,7 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 									CQuestionBrick* qBrick = dynamic_cast<CQuestionBrick*>(e->obj);
 									if (qBrick->GetState() == QUESTION_BRICK_STATE_NORMAL)
 									{
-										CScene* scence = CGame::GetInstance()->GetCurrentScene();
-										CMario* mario = ((CPlayScene*)scence)->GetPlayer();
+										CMario* mario = ((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetPlayer();
 										switch (qBrick->type)
 										{
 										case BRICK_NORMAL:
@@ -281,7 +281,15 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 void CKoopas::Render()
 {
 	int ani = KOOPAS_ANI_WALKING_LEFT;
-	if (state == KOOPAS_STATE_HIDE || state == KOOPAS_STATE_HOLD || state == KOOPAS_STATE_DIE) {
+	if (type == KOOPAS_GREEN_WING)
+	{
+		if (vx > 0)
+			xReverse = true;
+		else
+			xReverse = false;
+		ani = KOOPAS_ANI_WING;
+	}
+	else if (state == KOOPAS_STATE_HIDE || state == KOOPAS_STATE_HOLD || state == KOOPAS_STATE_DIE) {
 		ani = KOOPAS_ANI_HIDE;
 	}
 	else if (state == KOOPAS_STATE_SPIN) {
@@ -302,6 +310,8 @@ void CKoopas::SetState(int state)
 	switch (state)
 	{
 	case KOOPAS_STATE_DIE:
+		if (type == KOOPAS_GREEN_WING)
+			type = KOOPAS_GREEN;
 		yReverse = true;
 		isDie = true;
 		//die_start = GetTickCount();
@@ -315,7 +325,10 @@ void CKoopas::SetState(int state)
 		//		vx = -KOOPAS_SPIN_SPEED;
 		//		break;*/
 	case KOOPAS_STATE_WALKING:
-		vx = -KOOPAS_WALKING_SPEED;
+		if (type == KOOPAS_GREEN_WING)
+			vx = -KOOPAS_WALKING_WING_SPEED;
+		else
+			vx = -KOOPAS_WALKING_SPEED;
 		break;
 		/*case KOOPAS_STATE_HOLD:
 			vx = -KOOPAS_WALKING_SPEED;

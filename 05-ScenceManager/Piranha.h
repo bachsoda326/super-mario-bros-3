@@ -7,15 +7,30 @@
 #define PIRANHA_FIRE_RED	2
 #define PIRANHA_ANI_SET		27
 
+#define PIRANHA_STATE_NORMAL	100
+#define PIRANHA_STATE_HIDE		200
+#define PIRANHA_STATE_DIE		300
+
+#define PIRANHA_ANI_FIRE_RED_DOWN	0
+#define PIRANHA_ANI_FIRE_RED_UP		1
+#define PIRANHA_ANI_NOR				2
+#define PIRANHA_ANI_FIRE_DOWN		3
+#define PIRANHA_ANI_FIRE_UP			4
+#define PIRANHA_ANI_DIE				5
+
 #define PIRANHA_BBOX_WIDTH				17
 #define PIRANHA_FIRE_RED_BBOX_HEIGHT	32
 #define PIRANHA_NOR_BBOX_HEIGHT			24
 #define PIRANHA_FIRE_BBOX_HEIGHT		25
+#define PIRANHA_BBOX_HEAD_HEIGHT		5
 
 class CPiranha : public CGameObject
 {
 	DWORD wait_up_start;
 	DWORD wait_down_start;
+	DWORD wait_fire_start;
+	DWORD explode_start;
+	bool isUp = false;
 
 	CBullet* bullet = NULL;
 
@@ -27,7 +42,10 @@ public:
 	int type;
 	float start_top;
 	float start_bottom;
+	float height;
 
 	CPiranha(int type, float x, float y);
+
+	void SetState(int state);
 };
 

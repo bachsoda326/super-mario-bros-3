@@ -1,9 +1,13 @@
 #pragma once
 #include "GameObject.h"
 
+#define BULLET_ANI_SET	2
 #define BULLET_GRAVITY	0.001f
 #define BULLET_VX_SPEED 0.2f
 #define BULLET_VY_SPEED 0.02f
+#define BULLET_ENEMY_VX_SPEED 0.045f
+#define BULLET_ENEMY_NEAR_VY_SPEED 0.045f
+#define BULLET_ENEMY_FAR_VY_SPEED 0.0175f
 
 #define BULLET_BBOX_WIDTH 8
 #define BULLET_BBOX_HEIGHT 8

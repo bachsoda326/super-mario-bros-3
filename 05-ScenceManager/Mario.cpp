@@ -242,6 +242,34 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				if (e->ny > 0)
 					y += dy;
 			}
+			else if (dynamic_cast<CBullet*>(e->obj))
+			{
+				x += dx;
+				y += dy;
+
+				CBullet* bullet = dynamic_cast<CBullet*>(e->obj);
+
+				if (bullet->isEnemy)
+				{
+					Hurt();
+				}
+			}
+			else if (dynamic_cast<CPiranha*>(e->obj))
+			{
+				x += dx;
+				y += dy;
+
+				CPiranha* piranha = dynamic_cast<CPiranha*>(e->obj);
+
+				if (piranha->GetState() == PIRANHA_STATE_NORMAL)
+				{
+					if (state == MARIO_STATE_TAIL)
+						piranha->SetState(PIRANHA_STATE_DIE);
+					else
+						Hurt();
+					
+				}
+			}
 			else if (dynamic_cast<CBox*>(e->obj))
 			{
 				if (e->nx != 0)
@@ -268,18 +296,9 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						goomba->vy = -0.2f;
 						goomba->SetState(GOOMBA_STATE_DIE_REVERSE);
 					}
-					else if (untouchable == 0)
+					else if (goomba->GetState() != GOOMBA_STATE_DIE)
 					{
-						if (goomba->GetState() != GOOMBA_STATE_DIE)
-						{
-							if (level > MARIO_LEVEL_SMALL)
-							{
-								level = MARIO_LEVEL_SMALL;
-								StartUntouchable();
-							}
-							else
-								SetState(MARIO_STATE_DIE);
-						}
+						Hurt();
 					}
 				}
 			} // if Koopas
@@ -294,7 +313,12 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				// jump on top >> kill CKoopas, can kick or throw
 				if (e->ny < 0)
 				{
-					if (koopas->GetState() == KOOPAS_STATE_HIDE)
+					if (koopas->type == KOOPAS_GREEN_WING)
+					{
+						koopas->type = KOOPAS_GREEN;
+						vy = -MARIO_JUMP_DEFLECT_SPEED;
+					}
+					else if (koopas->GetState() == KOOPAS_STATE_HIDE)
 					{
 						koopas->SetState(KOOPAS_STATE_SPIN);
 						koopas->vx = this->nx * KOOPAS_SPIN_SPEED;
@@ -319,27 +343,9 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					}
 					else if (koopas->GetState() == KOOPAS_STATE_WALKING || koopas->GetState() == KOOPAS_STATE_SPIN)
 					{
+						Hurt();
 						if (untouchable == 0)
-						{
-							//if (koopas->GetState() == KOOPAS_STATE_WALKING)
-							//{
-							//	//koopas->vx = nx * vx;
-							//	if (level > MARIO_LEVEL_SMALL)
-							//	{
-							//		level = MARIO_LEVEL_SMALL;
-							//		StartUntouchable();
-							//	}
-							//	else
-							//		SetState(MARIO_STATE_DIE);
-							//}
-							if (level > MARIO_LEVEL_SMALL)
-							{
-								level = MARIO_LEVEL_SMALL;
-								StartUntouchable();
-							}
-							else
-								SetState(MARIO_STATE_DIE);
-						}
+							koopas->vx = -koopas->vx;
 					}
 					else if (koopas->GetState() == KOOPAS_STATE_HIDE)
 					{
@@ -466,7 +472,7 @@ void CMario::Render()
 		ani = MARIO_ANI_SMALL_DIE;
 	else if (level == MARIO_LEVEL_BIG)
 	{
-		if (state == MARIO_STATE_IDLE || state == MARIO_STATE_EAT_ITEM)
+		if (state == MARIO_STATE_IDLE || state == MARIO_STATE_EAT_ITEM || state == MARIO_STATE_TAIL || state == MARIO_STATE_SHOT || state == MARIO_STATE_JUMP_SHOT || state == MARIO_STATE_RUNJUMP_SHOT || state == MARIO_STATE_FLY)
 		{
 			if (isHold)
 			{
@@ -765,7 +771,7 @@ void CMario::Render()
 	}
 	else if (level == MARIO_LEVEL_SMALL)
 	{
-		if (state == MARIO_STATE_IDLE || state == MARIO_STATE_EAT_ITEM)
+		if (state == MARIO_STATE_IDLE || state == MARIO_STATE_EAT_ITEM || state == MARIO_STATE_TAIL || state == MARIO_STATE_SHOT || state == MARIO_STATE_JUMP_SHOT || state == MARIO_STATE_RUNJUMP_SHOT || state == MARIO_STATE_FLY)
 		{
 			if (isHold)
 			{
@@ -951,5 +957,24 @@ void CMario::Reset()
 	SetSpeed(0, 0);
 	canJump = true;
 	canJumpHigher = true;
+}
+
+void CMario::Hurt()
+{
+	if (untouchable == 0)
+	{
+		if (level > MARIO_LEVEL_BIG)
+		{
+			level = MARIO_LEVEL_BIG;
+			StartUntouchable();
+		}
+		else if (level > MARIO_LEVEL_SMALL)
+		{
+			level = MARIO_LEVEL_SMALL;
+			StartUntouchable();
+		}
+		else
+			SetState(MARIO_STATE_DIE);
+	}
 }
 

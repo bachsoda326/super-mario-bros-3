@@ -176,7 +176,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		for (int i = 0; i < 2; i++)
 		{
 			CBullet* bullet = new CBullet();
-			bullet->SetAnimationSet(ani_set);
+			//bullet->SetAnimationSet(ani_set);
 			player->bullets->push_back(bullet);
 			objects.push_back(player->bullets->at(i));
 		}
@@ -473,6 +473,9 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 		mario->SetPosition(250, 350);
 		break;
 	case DIK_J:
+		mario->SetPosition(1300, 350);
+		break;
+	case DIK_K:
 		mario->SetPosition(1750, 350);
 		break;
 	case DIK_S:

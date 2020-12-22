@@ -286,5 +286,7 @@ public:
 	void SetKoopas(CKoopas* koopas) { this->koopas = koopas; };
 	void Reset();
 
+	void Hurt();
+
 	virtual void GetBoundingBox(float &left, float &top, float &right, float &bottom);
 };
