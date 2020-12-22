@@ -127,6 +127,20 @@ void CBullet::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						goomba->SetState(GOOMBA_STATE_DIE_REVERSE);
 					}
 				}
+				if (dynamic_cast<CParaGoomba*>(e->obj))
+				{
+					vx = 0;
+					vy = 0;
+					SetState(BULLET_STATE_EXPLODE);
+
+					CParaGoomba* para = dynamic_cast<CParaGoomba*>(e->obj);
+					if (!para->isDie)
+					{
+						para->vx = -nx * 0.05f;
+						para->vy = -0.1f;
+						para->SetState(PARA_GOOMBA_STATE_DIE_REVERSE);
+					}
+				}
 				else if (dynamic_cast<CKoopas*>(e->obj))
 				{
 					vx = 0;

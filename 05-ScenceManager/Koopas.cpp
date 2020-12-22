@@ -147,7 +147,7 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				CGoomba* goomba = dynamic_cast<CGoomba*>(e->obj);
 				if (state == KOOPAS_STATE_SPIN || state == KOOPAS_STATE_HOLD)
 				{
-					if (goomba->state != GOOMBA_STATE_DIE_REVERSE)
+					if (!goomba->isDie)
 					{
 						goomba->vx = -nx * 0.1f;
 						goomba->vy = -0.2f;
@@ -165,6 +165,26 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				{
 					PreventMoveX(nx, goomba);
 					vx = -vx;
+				}
+			}
+			else if (dynamic_cast<CParaGoomba*>(e->obj))
+			{
+				if (state == KOOPAS_STATE_SPIN || state == KOOPAS_STATE_HOLD)
+				{
+					CParaGoomba* para = dynamic_cast<CParaGoomba*>(e->obj);
+					if (!para->isDie)
+					{
+						para->vx = -nx * 0.05f;
+						para->vy = -0.1f;
+						para->SetState(PARA_GOOMBA_STATE_DIE_REVERSE);
+					}
+
+					if (state == KOOPAS_STATE_HOLD)
+					{
+						vx = -nx * 0.07f;
+						vy = -0.2f;
+						SetState(KOOPAS_STATE_DIE);
+					}
 				}
 			}
 			else if (dynamic_cast<CKoopas*>(e->obj))

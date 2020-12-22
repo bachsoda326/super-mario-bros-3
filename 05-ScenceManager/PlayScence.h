@@ -16,6 +16,7 @@
 #include "TileMap.h"
 #include "Coin.h"
 #include "CloudTooth.h"
+#include "ParaGoomba.h"
 
 
 class CPlayScene: public CScene

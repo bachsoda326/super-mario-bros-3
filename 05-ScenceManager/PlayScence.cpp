@@ -30,19 +30,20 @@ CPlayScene::CPlayScene(int id, LPCWSTR filePath) :
 #define SCENE_SECTION_OBJECTS	6
 #define SCENE_SECTION_MAP 7
 
-#define OBJECT_TYPE_MARIO	0
-#define OBJECT_TYPE_BRICK	1
-#define OBJECT_TYPE_GOOMBA	2
-#define OBJECT_TYPE_KOOPAS	3
-#define OBJECT_TYPE_BOX	4
-#define OBJECT_TYPE_GROUND	5
+#define OBJECT_TYPE_MARIO			0
+#define OBJECT_TYPE_BRICK			1
+#define OBJECT_TYPE_GOOMBA			2
+#define OBJECT_TYPE_KOOPAS			3
+#define OBJECT_TYPE_BOX				4
+#define OBJECT_TYPE_GROUND			5
 #define OBJECT_TYPE_QUESTION_BRICK	6
-#define OBJECT_TYPE_WARPPIPE	7
+#define OBJECT_TYPE_WARPPIPE		7
 #define OBJECT_TYPE_BREAKABLE_BRICK	9
-#define OBJECT_TYPE_MUSHROOM	10
-#define OBJECT_TYPE_LEAF	11
-#define OBJECT_TYPE_COIN	12
-#define OBJECT_TYPE_CLOUD_TOOTH	13
+#define OBJECT_TYPE_MUSHROOM		10
+#define OBJECT_TYPE_LEAF			11
+#define OBJECT_TYPE_COIN			12
+#define OBJECT_TYPE_CLOUD_TOOTH		13
+#define OBJECT_TYPE_PARA_GOOMBA		14
 
 #define OBJECT_TYPE_PORTAL	50
 
@@ -246,6 +247,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	break;
 	case OBJECT_TYPE_COIN:	obj = new CCoin(); break;
 	case OBJECT_TYPE_CLOUD_TOOTH:	obj = new CCloudTooth(); break;
+	case OBJECT_TYPE_PARA_GOOMBA:	obj = new CParaGoomba(); break;
 	default:
 		DebugOut(L"[ERR] Invalid object type: %d\n", object_type);
 		return;
@@ -469,13 +471,19 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 	CMario* mario = ((CPlayScene*)scence)->GetPlayer();
 	switch (KeyCode)
 	{
-	case DIK_H:
+	case DIK_NUMPAD1:
 		mario->SetPosition(250, 350);
 		break;
-	case DIK_J:
+	case DIK_NUMPAD2:
+		mario->SetPosition(500, 350);
+		break;
+	case DIK_NUMPAD3:
+		mario->SetPosition(960, 350);
+		break;
+	case DIK_NUMPAD4:
 		mario->SetPosition(1300, 350);
 		break;
-	case DIK_K:
+	case DIK_NUMPAD5:
 		mario->SetPosition(1750, 350);
 		break;
 	case DIK_S:

@@ -7,6 +7,7 @@
 #include "Box.h"
 #include "Coin.h"
 #include "CloudTooth.h"
+#include "ParaGoomba.h"
 
 CMario::CMario(float x, float y) : CGameObject()
 {
@@ -280,28 +281,63 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				CGoomba* goomba = dynamic_cast<CGoomba*>(e->obj);
 
 				// jump on top >> kill Goomba and deflect a bit 
-				if (e->ny < 0)
+				if (!goomba->isDie)
 				{
-					if (goomba->GetState() != GOOMBA_STATE_DIE)
+					if (e->ny < 0)
 					{
 						goomba->SetState(GOOMBA_STATE_DIE);
 						vy = -MARIO_JUMP_DEFLECT_SPEED;
 					}
-				}
-				else if (e->nx != 0)
+					else if (e->nx != 0)
+					{
+						if (state == MARIO_STATE_TAIL)
+						{
+							goomba->vx = -nx * 0.1f;
+							goomba->vy = -0.2f;
+							goomba->SetState(GOOMBA_STATE_DIE_REVERSE);
+						}
+						else
+						{
+							Hurt();
+						}
+					}
+				}				
+			}
+			else if (dynamic_cast<CParaGoomba*>(e->obj)) // if e->obj is ParaGoomba 
+			{
+				CParaGoomba* para = dynamic_cast<CParaGoomba*>(e->obj);
+
+				// jump on top >> kill Para Goomba and deflect a bit 
+				if (!para->isDie)
 				{
-					if (state == MARIO_STATE_TAIL && !goomba->isDie)
+					if (e->ny < 0)
 					{
-						goomba->vx = -nx * 0.1f;
-						goomba->vy = -0.2f;
-						goomba->SetState(GOOMBA_STATE_DIE_REVERSE);
+						if (para->GetLevel() == PARA_GOOMBA_LEVEL_WING)
+							para->SetState(PARA_GOOMBA_STATE_LOOSE_WING);
+						else
+							para->SetState(PARA_GOOMBA_STATE_DIE);
+						vy = -MARIO_JUMP_DEFLECT_SPEED;
 					}
-					else if (goomba->GetState() != GOOMBA_STATE_DIE)
+					else if (e->nx != 0)
 					{
-						Hurt();
+						if (state == MARIO_STATE_TAIL)
+						{
+							if (para->GetLevel() == PARA_GOOMBA_LEVEL_WING)
+								para->SetState(PARA_GOOMBA_STATE_LOOSE_WING);
+							else
+							{
+								para->vx = -nx * 0.1f;
+								para->vy = -0.1f;
+								para->SetState(PARA_GOOMBA_STATE_LOOSE_WING);
+							}
+						}
+						else
+						{
+							Hurt();
+						}
 					}
-				}
-			} // if Koopas
+				}				
+			}// if Koopas
 			else if (dynamic_cast<CKoopas*>(e->obj)) // if e->obj is CKoopas 
 			{
 				CKoopas* koopas = dynamic_cast<CKoopas*>(e->obj);

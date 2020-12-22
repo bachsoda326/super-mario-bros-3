@@ -38,14 +38,14 @@
 
 class CKoopas : public CGameObject
 {
-	virtual void GetBoundingBox(float &left, float &top, float &right, float &bottom);
-	virtual void Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects);
-	virtual void Render();
+	void GetBoundingBox(float &left, float &top, float &right, float &bottom);
+	void Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects);
+	void Render();
 
 public:
 	int type;
 	/*float xMin, xMax;*/
 
 	CKoopas(int type);
-	virtual void SetState(int state);
+	void SetState(int state);
 };
