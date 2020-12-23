@@ -1,6 +1,7 @@
 #include "BreakableBrick.h"
 #include "PlayScence.h"
 #include "PSwitch.h"
+#include "BrickPiece.h"
 
 CBreakableBrick::CBreakableBrick(int type)
 {
@@ -20,6 +21,11 @@ void CBreakableBrick::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	{
 		SetState(BREAKABLE_BRICK_STATE_NORMAL);
 	}
+
+	if (break_start != 0 && (GetTickCount() - break_start) > 3000)
+	{
+		DeleteObjs(coObjects);
+	}
 }
 
 void CBreakableBrick::Render()
@@ -27,7 +33,7 @@ void CBreakableBrick::Render()
 	int ani = -1;
 	switch (state)
 	{
-	case BREAKABLE_BRICK_STATE_NORMAL:
+	case BREAKABLE_BRICK_STATE_NORMAL: case BREAKABLE_BRICK_STATE_BREAK:
 		ani = BREAKABLE_BRICK_ANI_NORMAL;
 		break;
 	case BREAKABLE_BRICK_STATE_COIN:
@@ -50,6 +56,39 @@ void CBreakableBrick::SetState(int state)
 
 	switch (state)
 	{		
+	case BREAKABLE_BRICK_STATE_BREAK:
+		isDie = true;
+		isDead = true;
+		break_start = GetTickCount();
+
+		for (int i = 0; i < 4; i++)
+		{
+			CBrickPiece* piece = new CBrickPiece();
+			piece->SetPosition(x, y);			
+			switch (i)
+			{
+			case 0:
+				piece->vx = -BRICK_PIECE_HIGH_SPEED_X;				
+				piece->vy = -BRICK_PIECE_HIGH_SPEED_Y;
+				break;
+			case 1:
+				piece->vx = BRICK_PIECE_HIGH_SPEED_X;
+				piece->vy = -BRICK_PIECE_HIGH_SPEED_Y;
+				break;
+			case 2:
+				piece->vx = -BRICK_PIECE_LOW_SPEED_X;
+				piece->vy = -BRICK_PIECE_LOW_SPEED_Y;
+				break;
+			case 3:
+				piece->vx = BRICK_PIECE_LOW_SPEED_X;
+				piece->vy = -BRICK_PIECE_LOW_SPEED_Y;
+				break;
+			default:
+				break;
+			}
+			CGame::GetInstance()->GetCurrentScene()->GetObjs()->push_back(piece);
+		}
+		break;
 	case BREAKABLE_BRICK_STATE_1UP_MUSHROOM_LEFT:
 		obj = new CMushRoom(x, y, -1, MUSHROOM_TYPE_RED);
 		CGame::GetInstance()->GetCurrentScene()->GetOtherObjs()->push_back(obj);

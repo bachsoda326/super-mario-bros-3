@@ -223,7 +223,7 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			{
 				if (e->nx != 0)
 				{
-					if (!dynamic_cast<CBox*>(e->obj))
+					if (!dynamic_cast<CBox*>(e->obj) && !dynamic_cast<CLeaf*>(e->obj) && !dynamic_cast<CMushRoom*>(e->obj))
 					{
 						if (state == KOOPAS_STATE_SPIN)
 						{
@@ -262,20 +262,47 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 									}
 								}
 							}
+							else if (dynamic_cast<CBreakableBrick*>(e->obj))
+							{
+								CBreakableBrick* bBrick = dynamic_cast<CBreakableBrick*>(e->obj);
+								if (bBrick->GetState() == QUESTION_BRICK_STATE_NORMAL)
+								{
+									switch (bBrick->type)
+									{
+									case BREAKABLE_BRICK_TYPE_COIN:
+										bBrick->SetState(BREAKABLE_BRICK_STATE_BREAK);
+										break;
+									case BREAKABLE_BRICK_TYPE_1UP_MUSHROOM:
+										if (x <= bBrick->x)
+											bBrick->SetState(BREAKABLE_BRICK_STATE_1UP_MUSHROOM_LEFT);
+										else
+											bBrick->SetState(BREAKABLE_BRICK_STATE_1UP_MUSHROOM_RIGHT);
+										break;
+									/*case BREAKABLE_BRICK_TYPE_P_SWITCH:
+										bBrick->SetState(BREAKABLE_BRICK_STATE_P_SWITCH);
+										break;*/
+									default:
+										break;
+									}
+								}
+							}
 						}
 
-						PreventMoveX(nx, e->obj);
-						vx = -vx;
+						if (!(dynamic_cast<CBreakableBrick*>(e->obj) && e->obj->GetState() == BREAKABLE_BRICK_STATE_COIN))
+						{
+							PreventMoveX(nx, e->obj);
+							vx = -vx;
+						}
 					}
 				}
 				if (e->ny < 0 && type == KOOPAS_RED && state == KOOPAS_STATE_WALKING)
 				{
-					if (left <= e->obj->left - KOOPAS_BBOX_WIDTH / 2)
+					if (left < e->obj->left - KOOPAS_BBOX_WIDTH / 2)
 					{
 						x = e->obj->left - KOOPAS_BBOX_WIDTH / 2;
 						vx = -vx;
 					}
-					if (right >= e->obj->right + KOOPAS_BBOX_WIDTH / 2)
+					if (right > e->obj->right + KOOPAS_BBOX_WIDTH / 2)
 					{
 						x = e->obj->right - KOOPAS_BBOX_WIDTH / 2;
 						vx = -vx;

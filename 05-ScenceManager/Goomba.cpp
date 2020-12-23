@@ -31,7 +31,7 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	{
 		isDie = true;
 		isDead = true;
-	}	
+	}
 
 	if (state == GOOMBA_STATE_DIE && GetTickCount() - die_start > 300)
 		isDead = true;

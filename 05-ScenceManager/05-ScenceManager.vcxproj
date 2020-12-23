@@ -128,6 +128,7 @@
     <ClCompile Include="Box.cpp" />
     <ClCompile Include="BreakableBrick.cpp" />
     <ClCompile Include="Brick.cpp" />
+    <ClCompile Include="BrickPiece.cpp" />
     <ClCompile Include="Bullet.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CloudTooth.cpp" />
@@ -160,6 +161,7 @@
     <ClInclude Include="Box.h" />
     <ClInclude Include="BreakableBrick.h" />
     <ClInclude Include="Brick.h" />
+    <ClInclude Include="BrickPiece.h" />
     <ClInclude Include="Bullet.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CloudTooth.h" />
@@ -175,6 +177,7 @@
     <ClInclude Include="Portal.h" />
     <ClInclude Include="PSwitch.h" />
     <ClInclude Include="QuestionBrick.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="TileMap.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="Game.h" />
@@ -187,6 +190,9 @@
     <ClInclude Include="Sprites.h" />
     <ClInclude Include="Textures.h" />
     <ClInclude Include="WarpPipe.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="05-ScenceManager.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

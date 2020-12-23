@@ -199,7 +199,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			// Stand on obj
 			if (ny < 0 && e->obj != NULL)
 			{
-				if (!dynamic_cast<CCoin*>(e->obj) && !dynamic_cast<CLeaf*>(e->obj) && !dynamic_cast<CBullet*>(e->obj) && !dynamic_cast<CMushRoom*>(e->obj))
+				if (!dynamic_cast<CCoin*>(e->obj) && !dynamic_cast<CBullet*>(e->obj) && !dynamic_cast<CLeaf*>(e->obj) && !dynamic_cast<CMushRoom*>(e->obj))
 				{
 					if (!(dynamic_cast<CBreakableBrick*>(e->obj) && e->obj->GetState() == BREAKABLE_BRICK_STATE_COIN || dynamic_cast<CPSwitch*>(e->obj) && e->obj->GetState() == PSWITCH_STATE_HIT))
 					{
@@ -497,17 +497,14 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					x += dx;
 					y += dy;
 
-					bBrick->DeleteOtherObjs(coObjects);
+					bBrick->DeleteObjs(coObjects);
 				}
-				else if (e->ny > 0 || (e->nx != 0 && state == MARIO_STATE_TAIL))
+				else if (bBrick->GetState() == QUESTION_BRICK_STATE_NORMAL)
 				{
-					if (bBrick->GetState() == QUESTION_BRICK_STATE_NORMAL)
+					if (e->ny > 0 || (e->nx != 0 && state == MARIO_STATE_TAIL))
 					{
 						switch (bBrick->type)
-						{
-						case BREAKABLE_BRICK_TYPE_COIN:
-							bBrick->SetState(BREAKABLE_BRICK_STATE_BREAK);
-							break;
+						{						
 						case BREAKABLE_BRICK_TYPE_1UP_MUSHROOM:
 							if (x <= bBrick->x)
 								bBrick->SetState(BREAKABLE_BRICK_STATE_1UP_MUSHROOM_LEFT);
@@ -520,8 +517,13 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						default:
 							break;
 						}
+
+						if (!(e->ny > 0) && bBrick->type == BREAKABLE_BRICK_TYPE_COIN)
+						{
+							bBrick->SetState(BREAKABLE_BRICK_STATE_BREAK);
+						}
 					}
-				}
+				}				
 			}
 			else if (dynamic_cast<CCoin*>(e->obj))
 			{

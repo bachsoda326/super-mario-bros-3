@@ -19,6 +19,7 @@
 class CBreakableBrick : public CBrick
 {
 	DWORD coin_start;
+	DWORD break_start;
 
 	void Render();
 	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects = NULL);
