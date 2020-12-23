@@ -1,16 +1,68 @@
 #include "BreakableBrick.h"
+#include "PlayScence.h"
+#include "PSwitch.h"
 
 CBreakableBrick::CBreakableBrick(int type)
 {
 	this->type = type;
-}
-
-void CBreakableBrick::Render()
-{	
-	animation_set->at(0)->Render(x, y);
-	//RenderBoundingBox();
+	SetState(BREAKABLE_BRICK_STATE_NORMAL);
 }
 
 void CBreakableBrick::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
+	if (type == BREAKABLE_BRICK_TYPE_COIN && ((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->isBrickToCoin)
+	{
+		SetState(BREAKABLE_BRICK_STATE_COIN);
+		coin_start = GetTickCount();
+	}
+
+	if (coin_start != 0 && (GetTickCount() - coin_start) > 3000)
+	{
+		SetState(BREAKABLE_BRICK_STATE_NORMAL);
+	}
+}
+
+void CBreakableBrick::Render()
+{	
+	int ani = -1;
+	switch (state)
+	{
+	case BREAKABLE_BRICK_STATE_NORMAL:
+		ani = BREAKABLE_BRICK_ANI_NORMAL;
+		break;
+	case BREAKABLE_BRICK_STATE_COIN:
+		ani = BREAKABLE_BRICK_ANI_COIN;
+		break;
+	case BREAKABLE_BRICK_STATE_1UP_MUSHROOM_LEFT: case BREAKABLE_BRICK_STATE_1UP_MUSHROOM_RIGHT: case BREAKABLE_BRICK_STATE_P_SWITCH:
+		ani = BREAKABLE_BRICK_ANI_HIT;
+		break;	
+	default:
+		break;
+	}
+	animation_set->at(ani)->Render(x, y);
+
+	RenderBoundingBox();
+}
+
+void CBreakableBrick::SetState(int state)
+{
+	CGameObject::SetState(state);
+
+	switch (state)
+	{		
+	case BREAKABLE_BRICK_STATE_1UP_MUSHROOM_LEFT:
+		obj = new CMushRoom(x, y, -1, MUSHROOM_TYPE_RED);
+		CGame::GetInstance()->GetCurrentScene()->GetOtherObjs()->push_back(obj);
+		break;
+	case BREAKABLE_BRICK_STATE_1UP_MUSHROOM_RIGHT:
+		obj = new CMushRoom(x, y, 1, MUSHROOM_TYPE_RED);
+		CGame::GetInstance()->GetCurrentScene()->GetOtherObjs()->push_back(obj);
+		break;
+	case BREAKABLE_BRICK_STATE_P_SWITCH:
+		obj = new CPSwitch(x, y);
+		CGame::GetInstance()->GetCurrentScene()->GetOtherObjs()->push_back(obj);
+		break;
+	default:
+		break;
+	}
 }

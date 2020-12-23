@@ -8,12 +8,13 @@ CMushRoom::CMushRoom()
 {
 }
 
-CMushRoom::CMushRoom(float x, float y, int nx)
+CMushRoom::CMushRoom(float x, float y, int nx, int type)
 {	
 	CAnimationSets* animation_sets = CAnimationSets::GetInstance();
 	LPANIMATION_SET ani_set = animation_sets->Get(MUSHROOM_ANI_SET);
 	SetAnimationSet(ani_set);
 
+	this->type = type;
 	this->nx = nx;
 	this->start_bottom = y;
 	SetPosition(x, y);	
@@ -93,7 +94,19 @@ void CMushRoom::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 void CMushRoom::Render()
 {
-	animation_set->at(1)->Render(x, y);
+	int ani = -1;
+	switch (type)
+	{
+	case MUSHROOM_TYPE_RED:
+		ani = MUSHROOM_ANI_RED;
+		break;
+	case MUSHROOM_TYPE_1_UP:
+		ani = MUSHROOM_ANI_1_UP;
+		break;
+	default:
+		break;
+	}
+	animation_set->at(MUSHROOM_ANI_1_UP)->Render(x, y);
 
 	RenderBoundingBox();
 }

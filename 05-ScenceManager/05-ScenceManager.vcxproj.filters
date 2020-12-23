@@ -102,6 +102,9 @@
     <ClCompile Include="ParaGoomba.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="PSwitch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Brick.h">
@@ -192,6 +195,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ParaGoomba.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PSwitch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

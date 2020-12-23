@@ -37,6 +37,8 @@ protected:
 
 	
 public: 
+	bool isBrickToCoin = false;
+
 	CPlayScene(int id, LPCWSTR filePath);
 
 	virtual void Load();

@@ -6,7 +6,7 @@
 #include "Koopas.h"
 #include "Brick.h"
 
-#define GOOMBA_WALKING_SPEED 0.05f;
+#define GOOMBA_WALKING_SPEED 0.035f
 
 #define GOOMBA_BBOX_WIDTH 17
 #define GOOMBA_BBOX_HEIGHT 16

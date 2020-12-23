@@ -1,7 +1,7 @@
 #pragma once
 #include "GameObject.h"
 
-#define PARA_GOOMBA_WALKING_SPEED 0.05f
+#define PARA_GOOMBA_WALKING_SPEED 0.035f
 		
 #define PARA_GOOMBA_WING_BBOX_WIDTH 20
 #define PARA_GOOMBA_WING_BBOX_HEIGHT 23

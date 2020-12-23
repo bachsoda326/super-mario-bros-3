@@ -5,6 +5,12 @@
 #define MUSHROOM_BBOX_HEIGHT 16
 #define MUSHROOM_ANI_SET 25
 
+#define MUSHROOM_TYPE_RED	1
+#define MUSHROOM_TYPE_1_UP	2
+
+#define MUSHROOM_ANI_RED	1
+#define MUSHROOM_ANI_1_UP	3
+
 #define MUSHROOM_GRAVITY			0.001f
 
 class CMushRoom : public CGameObject
@@ -14,10 +20,11 @@ class CMushRoom : public CGameObject
 	void GetBoundingBox(float& l, float& t, float& r, float& b);
 
 public:
+	int type;
 	bool isInitialized = false;
 	int nx;
 	float start_bottom;
 	CMushRoom();
-	CMushRoom(float x, float y, int nx);
+	CMushRoom(float x, float y, int nx, int type);
 };
 

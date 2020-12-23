@@ -8,6 +8,8 @@
 #include "Coin.h"
 #include "CloudTooth.h"
 #include "ParaGoomba.h"
+#include "BreakableBrick.h"
+#include "PSwitch.h"
 
 CMario::CMario(float x, float y) : CGameObject()
 {
@@ -199,14 +201,17 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			{
 				if (!dynamic_cast<CCoin*>(e->obj) && !dynamic_cast<CLeaf*>(e->obj) && !dynamic_cast<CBullet*>(e->obj) && !dynamic_cast<CMushRoom*>(e->obj))
 				{
-					if (state != MARIO_STATE_DIE)
-						vy = 0;
-					if (state != MARIO_STATE_EAT_ITEM)
+					if (!(dynamic_cast<CBreakableBrick*>(e->obj) && e->obj->GetState() == BREAKABLE_BRICK_STATE_COIN || dynamic_cast<CPSwitch*>(e->obj) && e->obj->GetState() == PSWITCH_STATE_HIT))
 					{
-						if (state == MARIO_STATE_DUCK)
-							y = e->obj->y - (bottom - top + MARIO_BIG_BBOX_HEIGHT_DUCK / 2);
-						else
-							y = e->obj->y - (bottom - top);
+						if (state != MARIO_STATE_DIE)
+							vy = 0;
+						if (state != MARIO_STATE_EAT_ITEM)
+						{
+							if (state == MARIO_STATE_DUCK)
+								y = e->obj->y - (bottom - top + MARIO_BIG_BBOX_HEIGHT_DUCK / 2);
+							else
+								y = e->obj->y - (bottom - top);
+						}
 					}
 				}
 			}
@@ -228,9 +233,12 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			}
 			else if (ny > 0 && !dynamic_cast<CCoin*>(e->obj) && !dynamic_cast<CLeaf*>(e->obj) && !dynamic_cast<CBullet*>(e->obj) && !dynamic_cast<CMushRoom*>(e->obj) && !dynamic_cast<CCloudTooth*>(e->obj))
 			{
-				vy = 0;
-				canJump = false;
-				canJumpHigher = false;
+				if (!(dynamic_cast<CBreakableBrick*>(e->obj) && e->obj->GetState() == BREAKABLE_BRICK_STATE_COIN))
+				{
+					vy = 0;
+					canJump = false;
+					canJumpHigher = false;
+				}
 			}
 
 			/*if (dynamic_cast<CBullet*>(e->obj) || dynamic_cast<CMushRoom*>(e->obj) || dynamic_cast<CLeaf*>(e->obj))
@@ -268,7 +276,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						piranha->SetState(PIRANHA_STATE_DIE);
 					else
 						Hurt();
-					
+
 				}
 			}
 			else if (dynamic_cast<CBox*>(e->obj))
@@ -301,7 +309,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 							Hurt();
 						}
 					}
-				}				
+				}
 			}
 			else if (dynamic_cast<CParaGoomba*>(e->obj)) // if e->obj is ParaGoomba 
 			{
@@ -336,7 +344,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 							Hurt();
 						}
 					}
-				}				
+				}
 			}// if Koopas
 			else if (dynamic_cast<CKoopas*>(e->obj)) // if e->obj is CKoopas 
 			{
@@ -411,16 +419,26 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				x += dx;
 				y += dy;
 
-				if (level == MARIO_LEVEL_SMALL)
+				CMushRoom* mushRoom = dynamic_cast<CMushRoom*>(e->obj);
+				switch (mushRoom->type)
 				{
-					eat_item_start = GetTickCount();
-					SetState(MARIO_STATE_EAT_ITEM);
-					//DebugOut(L"[NAM]: %f\n", y);
-					CMushRoom* mushRoom = dynamic_cast<CMushRoom*>(e->obj);
+				case MUSHROOM_TYPE_RED:
+					if (level == MARIO_LEVEL_SMALL)
+					{
+						eat_item_start = GetTickCount();
+						SetState(MARIO_STATE_EAT_ITEM);
+						//DebugOut(L"[NAM]: %f\n", y);					
+						mushRoom->DeleteOtherObjs(coObjects);
+						//y -= MARIO_BIG_BBOX_HEIGHT - MARIO_SMALL_BBOX_HEIGHT;
+						level = MARIO_LEVEL_BIG;
+						//DebugOut(L"[NAM1]: %f\n", y);
+					}
+					break;
+				case MUSHROOM_TYPE_1_UP:
 					mushRoom->DeleteOtherObjs(coObjects);
-					//y -= MARIO_BIG_BBOX_HEIGHT - MARIO_SMALL_BBOX_HEIGHT;
-					level = MARIO_LEVEL_BIG;
-					//DebugOut(L"[NAM1]: %f\n", y);
+					break;
+				default:
+					break;
 				}
 			}
 			else if (dynamic_cast<CLeaf*>(e->obj))
@@ -437,7 +455,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			}
 			else if (dynamic_cast<CQuestionBrick*>(e->obj))
 			{
-				if (e->ny > 0)
+				if (e->ny > 0 || (e->nx != 0 && state == MARIO_STATE_TAIL))
 				{
 					CQuestionBrick* qBrick = dynamic_cast<CQuestionBrick*>(e->obj);
 					if (qBrick->GetState() == QUESTION_BRICK_STATE_NORMAL)
@@ -470,12 +488,67 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					}
 				}
 			}
+			else if (dynamic_cast<CBreakableBrick*>(e->obj))
+			{
+				CBreakableBrick* bBrick = dynamic_cast<CBreakableBrick*>(e->obj);
+
+				if (bBrick->GetState() == BREAKABLE_BRICK_STATE_COIN)
+				{
+					x += dx;
+					y += dy;
+
+					bBrick->DeleteOtherObjs(coObjects);
+				}
+				else if (e->ny > 0 || (e->nx != 0 && state == MARIO_STATE_TAIL))
+				{
+					if (bBrick->GetState() == QUESTION_BRICK_STATE_NORMAL)
+					{
+						switch (bBrick->type)
+						{
+						case BREAKABLE_BRICK_TYPE_COIN:
+							bBrick->SetState(BREAKABLE_BRICK_STATE_BREAK);
+							break;
+						case BREAKABLE_BRICK_TYPE_1UP_MUSHROOM:
+							if (x <= bBrick->x)
+								bBrick->SetState(BREAKABLE_BRICK_STATE_1UP_MUSHROOM_LEFT);
+							else
+								bBrick->SetState(BREAKABLE_BRICK_STATE_1UP_MUSHROOM_RIGHT);
+							break;
+						case BREAKABLE_BRICK_TYPE_P_SWITCH:
+							bBrick->SetState(BREAKABLE_BRICK_STATE_P_SWITCH);
+							break;
+						default:
+							break;
+						}
+					}
+				}
+			}
 			else if (dynamic_cast<CCoin*>(e->obj))
 			{
 				x += dx;
 				y += dy;
+
 				CCoin* coin = dynamic_cast<CCoin*>(e->obj);
 				coin->DeleteObjs(coObjects);
+			}
+			else if (dynamic_cast<CPSwitch*>(e->obj))
+			{
+				if (e->ny < 0)
+				{
+					CPSwitch* pSwitch = dynamic_cast<CPSwitch*>(e->obj);
+					switch (pSwitch->GetState())
+					{
+					case PSWITCH_STATE_NORMAL:
+						pSwitch->SetState(PSWITCH_STATE_HIT);
+						break;
+					case PSWITCH_STATE_HIT:
+						x += dx;
+						y += dy;
+						break;
+					default:
+						break;
+					}
+				}
 			}
 
 			/*else if (!dynamic_cast<CGoomba*>(e->obj) && !dynamic_cast<CKoopas*>(e->obj))

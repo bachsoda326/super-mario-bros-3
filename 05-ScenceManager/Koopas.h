@@ -7,7 +7,7 @@
 #include "Brick.h"
 #include "Goomba.h"
 
-#define KOOPAS_WALKING_SPEED 0.05f
+#define KOOPAS_WALKING_SPEED 0.035f
 #define KOOPAS_WALKING_WING_SPEED 0.02f
 #define KOOPAS_SPIN_SPEED 0.25f
 

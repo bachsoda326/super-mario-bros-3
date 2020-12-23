@@ -471,6 +471,9 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 	CMario* mario = ((CPlayScene*)scence)->GetPlayer();
 	switch (KeyCode)
 	{
+	case DIK_NUMPAD0:
+		mario->SetPosition(1400, 130);
+		break;
 	case DIK_NUMPAD1:
 		mario->SetPosition(250, 350);
 		break;
@@ -484,7 +487,7 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 		mario->SetPosition(1300, 350);
 		break;
 	case DIK_NUMPAD5:
-		mario->SetPosition(1750, 350);
+		mario->SetPosition(1950, 350);
 		break;
 	case DIK_S:
 		if (mario->canJump)

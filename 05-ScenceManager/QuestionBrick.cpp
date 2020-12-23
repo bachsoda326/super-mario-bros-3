@@ -22,9 +22,9 @@ void CQuestionBrick::Render()
 
 	int ani = -1;
 	if (state == QUESTION_BRICK_STATE_NORMAL)
-		ani = 1;
+		ani = QUESTION_BRICK_ANI_NORMAL;
 	else
-		ani = 0;
+		ani = QUESTION_BRICK_ANI_HIT;
 	animation_set->at(ani)->Render(x, y);
 	//RenderBoundingBox();	
 }
@@ -59,11 +59,11 @@ void CQuestionBrick::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				switch (state)
 				{
 				case QUESTION_BRICK_STATE_HIT_MUSHROOM_LEFT:
-					obj = new CMushRoom(start_x, start_y, -1);
+					obj = new CMushRoom(start_x, start_y, -1, MUSHROOM_TYPE_1_UP);
 					CGame::GetInstance()->GetCurrentScene()->GetOtherObjs()->push_back(obj);
 					break;
 				case QUESTION_BRICK_STATE_HIT_MUSHROOM_RIGHT:
-					obj = new CMushRoom(start_x, start_y, 1);
+					obj = new CMushRoom(start_x, start_y, 1, MUSHROOM_TYPE_1_UP);
 					CGame::GetInstance()->GetCurrentScene()->GetOtherObjs()->push_back(obj);
 					break;
 				default:

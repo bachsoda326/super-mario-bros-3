@@ -2,6 +2,7 @@
 #include "QuestionBrick.h"
 #include "Game.h"
 #include "PlayScence.h"
+#include "PSwitch.h"
 
 CKoopas::CKoopas(int type)
 {
@@ -108,20 +109,26 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 			if (ny < 0 && e->obj != NULL)
 			{
-				if (type == KOOPAS_GREEN_WING)
+				if (!dynamic_cast<CCoin*>(e->obj) && !dynamic_cast<CLeaf*>(e->obj) && !dynamic_cast<CMushRoom*>(e->obj))
 				{
-					y = e->obj->y - (bottom - top);
-					vy = -KOOPAS_WING_JUMP;
-				}
-				else
-				{
-					PreventMoveY(e->obj);
-
-					if (state == KOOPAS_STATE_HIDE && yReverse == true)
+					if (!(dynamic_cast<CBreakableBrick*>(e->obj) && e->obj->GetState() == BREAKABLE_BRICK_STATE_COIN || dynamic_cast<CPSwitch*>(e->obj) && e->obj->GetState() == PSWITCH_STATE_HIT))
 					{
-						vx = 0;
+						if (type == KOOPAS_GREEN_WING)
+						{
+							y = e->obj->y - (bottom - top);
+							vy = -KOOPAS_WING_JUMP;
+						}
+						else
+						{
+							PreventMoveY(e->obj);
+
+							if (state == KOOPAS_STATE_HIDE && yReverse == true)
+							{
+								vx = 0;
+							}
+						}
 					}
-				}
+				}				
 			}
 
 			//if (dynamic_cast<CBox*>(e->obj) && type == KOOPAS_RED && state == KOOPAS_STATE_WALKING)
@@ -212,7 +219,7 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					vx = -vx;
 				}
 			}
-			else if (dynamic_cast<CBox*>(e->obj) || dynamic_cast<CGround*>(e->obj) || dynamic_cast<CWarpPipe*>(e->obj) || dynamic_cast<CBrick*>(e->obj))
+			else if ((dynamic_cast<CBox*>(e->obj) || dynamic_cast<CGround*>(e->obj) || dynamic_cast<CWarpPipe*>(e->obj) || dynamic_cast<CBrick*>(e->obj)) && !(dynamic_cast<CBreakableBrick*>(e->obj) && e->obj->GetState() == BREAKABLE_BRICK_STATE_COIN))
 			{
 				if (e->nx != 0)
 				{

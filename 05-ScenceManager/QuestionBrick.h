@@ -16,10 +16,13 @@
 #define QUESTION_BRICK_TYPE_COIN	1
 #define QUESTION_BRICK_TYPE_OBJECT	2
 
+#define QUESTION_BRICK_ANI_NORMAL	0
+#define QUESTION_BRICK_ANI_HIT		1
+
 class CQuestionBrick : public CBrick
 {
-	virtual void Render();
-	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects = NULL);
+	void Render();
+	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects = NULL);
 
 public:
 	float start_x;			// initial position of question brick
