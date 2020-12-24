@@ -489,6 +489,9 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 	case DIK_NUMPAD5:
 		mario->SetPosition(1950, 350);
 		break;
+	case DIK_NUMPAD9:
+		mario->SetPosition(2120, 500);
+		break;
 	case DIK_S:
 		if (mario->canJump)
 			mario->vy = -0.15f;
