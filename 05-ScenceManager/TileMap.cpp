@@ -5,6 +5,8 @@
 
 CTileMap::CTileMap(int idTex, string txtMapPath)
 {
+	id = idTex;
+
 	fstream fs;
 	fs.open(txtMapPath);
 
@@ -74,6 +76,11 @@ void CTileMap::Render()
 		xBotRight = numXTiles - 1;
 	if (yBotRight >= numYTiles - 1)
 		yBotRight = numYTiles - 1;
+
+	if (xTopLeft < 0)
+		xTopLeft = 0;
+	if (yTopLeft < 0)
+		yTopLeft = 0;
 
 	for (int x = xTopLeft; x <= xBotRight; x++)
 	{

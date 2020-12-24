@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "Game.h"
 #include "Textures.h"
 #include "Scence.h"
@@ -17,12 +17,14 @@
 #include "Coin.h"
 #include "CloudTooth.h"
 #include "ParaGoomba.h"
+#include "WorldBush.h"
+#include "CastleHelp.h"
+#include "WorldHammer.h"
 
-
-class CPlayScene: public CScene
+class CWorldMapScene : public CScene
 {
-protected: 
-	CMario *player;					// A play scene has to have player, right? 
+protected:
+	CMario* player;					// A play scene has to have player, right? 
 
 	//vector<LPGAMEOBJECT> objects;
 
@@ -34,32 +36,28 @@ protected:
 	void _ParseSection_ANIMATION_SETS(string line);
 	void _ParseSection_OBJECTS(string line);
 	void _ParseSection_MAP(string line);
-	
-public: 
+
+public:
 	bool isBrickToCoin = false;
 
-	CPlayScene(int id, LPCWSTR filePath);
+	CWorldMapScene(int id, LPCWSTR filePath);
 
 	virtual void Load();
 	virtual void Update(DWORD dt);
 	virtual void Render();
-	virtual void Unload();
+	virtual void Unload();	
 
-	// Cập nhật vị trí camera khi đụng biên map và khi Mario di chuyển // Chưa dùng đến
-	void UpdateCamera(int mapWidth, int mapHeight);
-
-	CMario * GetPlayer() { return player; }
+	CMario* GetPlayer() { return player; }
 	CTileMap* GetMap() { return map; }
 
 	//friend class CPlayScenceKeyHandler;
 };
 
-class CPlayScenceKeyHandler : public CScenceKeyHandler
+class CWorldMapSceneKeyHandler : public CScenceKeyHandler
 {
-public: 
-	virtual void KeyState(BYTE *states);
+public:
+	virtual void KeyState(BYTE* states);
 	virtual void OnKeyDown(int KeyCode);
 	virtual void OnKeyUp(int KeyCode);
-	CPlayScenceKeyHandler(CScene *s) :CScenceKeyHandler(s) {};
+	CWorldMapSceneKeyHandler(CScene* s) :CScenceKeyHandler(s) {};
 };
-

@@ -12,7 +12,7 @@ public:
 
 	void SetPosition(D3DXVECTOR3 pos);
 	void SetPosition(float x, float y);
-	void SetMapSize(int width, int height);
+	void SetMapSize(int left, int top, int right, int bottom, int width, int height);
 
 	void Update(CMario *player);
 
@@ -28,7 +28,8 @@ private:
 	static CCamera* __instance;
 
 	int width, height;
-	int mapWidth, mapHeight;
+	int widthMap, heightMap;
+	int leftMap, topMap, rightMap, bottomMap;
 
 	D3DXVECTOR3 position;
 };

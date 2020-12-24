@@ -10,6 +10,7 @@
 #include "ParaGoomba.h"
 #include "BreakableBrick.h"
 #include "PSwitch.h"
+#include "PlayScence.h"
 
 CMario::CMario(float x, float y) : CGameObject()
 {
@@ -126,6 +127,14 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		pipe_down_start = 0;
 		SetState(MARIO_STATE_JUMP_HIGH);
 		SetPosition(pipe_tele_x, pipe_tele_y);
+
+		switch (((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetMap()->GetId())
+		{
+		case MAP_1_1:
+			CCamera::GetInstance()->SetMapSize(LEFT_UNDER_MAP_1_1, TOP_UNDER_MAP_1_1, RIGHT_UNDER_MAP_1_1, BOTTOM_UNDER_MAP_1_1, WIDTH_UNDER_MAP_1_1, HEIGHT_UNDER_MAP_1_1);
+		default:
+			break;
+		}
 	}
 	if ((GetTickCount() - pipe_up_start) < 1500)
 	{
@@ -137,6 +146,14 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		{			
 			//SetState(MARIO_STATE_IDLE);
 			SetPosition(pipe_tele_x, pipe_tele_y);
+
+			switch (((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetMap()->GetId())
+			{
+			case MAP_1_1:
+				CCamera::GetInstance()->SetMapSize(LEFT_MAP_1_1, TOP_MAP_1_1, RIGHT_MAP_1_1, BOTTOM_MAP_1_1, WIDTH_MAP_1_1, HEIGHT_MAP_1_1);
+			default:
+				break;
+			}
 		}
 		else if ((GetTickCount() - pipe_up_start) >= 2500)
 		{
@@ -388,14 +405,9 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					{
 						if (state == MARIO_STATE_TAIL)
 						{
-							if (para->GetLevel() == PARA_GOOMBA_LEVEL_WING)
-								para->SetState(PARA_GOOMBA_STATE_LOOSE_WING);
-							else
-							{
-								para->vx = -nx * 0.1f;
-								para->vy = -0.1f;
-								para->SetState(PARA_GOOMBA_STATE_LOOSE_WING);
-							}
+							para->vx = -nx * 0.05f;
+							para->vy = -0.1f;
+							para->SetState(PARA_GOOMBA_STATE_DIE_REVERSE);
 						}
 						else
 						{
@@ -1088,6 +1100,7 @@ void CMario::SetState(int state)
 		vx = nx * MARIO_RUN_SPEED;
 		break;
 	case MARIO_STATE_PIPE:
+		vx = 0;
 		if (pipe_down_start != 0)
 			vy = 0.02f;
 		else if (pipe_up_start != 0)

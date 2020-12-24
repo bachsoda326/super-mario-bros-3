@@ -131,6 +131,7 @@
     <ClCompile Include="BrickPiece.cpp" />
     <ClCompile Include="Bullet.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="CastleHelp.cpp" />
     <ClCompile Include="CloudTooth.cpp" />
     <ClCompile Include="Coin.cpp" />
     <ClCompile Include="Grid.cpp" />
@@ -155,6 +156,9 @@
     <ClCompile Include="Sprites.cpp" />
     <ClCompile Include="Textures.cpp" />
     <ClCompile Include="WarpPipe.cpp" />
+    <ClCompile Include="WorldBush.cpp" />
+    <ClCompile Include="WorldHammer.cpp" />
+    <ClCompile Include="WorldMapScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animations.h" />
@@ -164,6 +168,7 @@
     <ClInclude Include="BrickPiece.h" />
     <ClInclude Include="Bullet.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="CastleHelp.h" />
     <ClInclude Include="CloudTooth.h" />
     <ClInclude Include="Coin.h" />
     <ClInclude Include="Constants.h" />
@@ -190,6 +195,9 @@
     <ClInclude Include="Sprites.h" />
     <ClInclude Include="Textures.h" />
     <ClInclude Include="WarpPipe.h" />
+    <ClInclude Include="WorldBush.h" />
+    <ClInclude Include="WorldHammer.h" />
+    <ClInclude Include="WorldMapScene.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="05-ScenceManager.rc" />

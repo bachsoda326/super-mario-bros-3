@@ -278,11 +278,18 @@ void CPlayScene::_ParseSection_MAP(string line)
 
 	if (tokens.size() < 2) return;
 
-	int idTex = atoi(tokens[1].c_str());
+	int idTexMap = atoi(tokens[1].c_str());
 	float mapWidth = atoi(tokens[2].c_str());
 	float mapHeight = atoi(tokens[3].c_str());
-	map = new CTileMap(idTex, tokens[0]);
-	CCamera::GetInstance()->SetMapSize(mapWidth, mapHeight);
+	map = new CTileMap(idTexMap, tokens[0]);
+
+	switch (map->GetId())
+	{
+	case MAP_1_1:
+		CCamera::GetInstance()->SetMapSize(LEFT_MAP_1_1, TOP_MAP_1_1, RIGHT_MAP_1_1, BOTTOM_MAP_1_1, WIDTH_MAP_1_1, HEIGHT_MAP_1_1);
+	default:
+		break;
+	}
 }
 
 void CPlayScene::Load()
@@ -376,14 +383,14 @@ void CPlayScene::Update(DWORD dt)
 	if (player == NULL) return;
 
 	// Update camera to follow mario */// FORGET: NHỚ BỎ CHỖ NÀY SAU VÌ ĐÃ CÓ CAMERA MỚI
-	float cx, cy;
+	/*float cx, cy;
 	player->GetPosition(cx, cy);
 
 	CGame* game = CGame::GetInstance();
 	cx -= game->GetScreenWidth() / 2;
 	cy -= game->GetScreenHeight() / 2;
 
-	CGame::GetInstance()->SetCamPos(cx, cy);
+	CGame::GetInstance()->SetCamPos(cx, cy);*/
 
 	CCamera::GetInstance()->Update(player);
 }

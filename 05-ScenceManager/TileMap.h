@@ -24,5 +24,6 @@ public:
 	~CTileMap();
 
 	void Render();
+	int GetId() { return id; }
 };
 

@@ -26,10 +26,14 @@ void CCamera::SetPosition(float x, float y)
 	SetPosition(D3DXVECTOR3(x, y, 0));
 }
 
-void CCamera::SetMapSize(int width, int height)
+void CCamera::SetMapSize(int left, int top, int right, int bottom, int width, int height)
 {
-	mapWidth = width;
-	mapHeight = height;
+	leftMap = left;
+	topMap = top;
+	rightMap = right;
+	bottomMap = bottom;
+	widthMap = width;
+	heightMap = height;
 }
 
 void CCamera::Update(CMario* player)
@@ -39,31 +43,31 @@ void CCamera::Update(CMario* player)
 	player->GetPosition(cx, cy);
 	SetPosition(cx, cy);
 
-	if (GetBound().left < 0)
+	if (GetBound().left < leftMap)
 	{
 		//vi position cua Camera::GetInstance() ma chinh giua Camera::GetInstance()
 		//luc nay o vi tri goc ben trai cua the gioi thuc
-		SetPosition(GetWidth() / 2, GetPosition().y);
+		SetPosition(leftMap + GetWidth() / 2, GetPosition().y);
 	}
 
-	if (GetBound().right > mapWidth)
+	if (GetBound().right > rightMap)
 	{
 		//luc nay cham goc ben phai cua the gioi thuc
-		SetPosition(mapWidth - GetWidth() / 2, GetPosition().y);
+		SetPosition(rightMap - GetWidth() / 2, GetPosition().y);
 	}
 
-	if (GetBound().top < 0)
+	if (GetBound().top < topMap)
 	{
 		//luc nay cham goc tren the gioi thuc
-		SetPosition(GetPosition().x, GetHeight() / 2);
+		SetPosition(GetPosition().x, topMap + GetHeight() / 2);
 	}
 
-	//if (GetBound().bottom > 300)
-	///*if (GetBound().bottom > mapHeight / 2)*/
-	//{
-	//	//luc nay cham day cua the gioi thuc
-	//	SetPosition(GetPosition().x, mapHeight - GetHeight() / 2);
-	//}
+	if (GetBound().bottom > bottomMap)
+	/*if (GetBound().bottom > mapHeight / 2)*/
+	{
+		//luc nay cham day cua the gioi thuc
+		SetPosition(GetPosition().x, topMap + heightMap - GetHeight() / 2);
+	}
 }
 
 D3DXVECTOR3 CCamera::GetPosition()
