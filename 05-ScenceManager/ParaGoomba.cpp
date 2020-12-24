@@ -15,7 +15,6 @@ CParaGoomba::CParaGoomba()
 
 void CParaGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
-	DebugOut(L"Nam bay: %d\n", state);
 	CGameObject::Update(dt, coObjects);
 
 	x += dx;

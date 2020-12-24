@@ -35,6 +35,7 @@
 #define MARIO_STATE_JUMP_SHOT			114
 #define MARIO_STATE_RUNJUMP_SHOT		115
 #define MARIO_STATE_EAT_ITEM			116
+#define MARIO_STATE_PIPE				117
 #define MARIO_STATE_DIE					999
 
 //#define MARIO_ANI_BIG_IDLE_RIGHT		0
@@ -246,11 +247,13 @@ class CMario : public CGameObject
 {
 	int level;
 	int untouchable;
-	DWORD untouchable_start;
+	DWORD untouchable_start;	
 
 	float start_x;			// initial position of Mario at scene
 	float start_y; 
-public: 
+	float pipe_tele_x;
+	float pipe_tele_y;
+public:
 	DWORD run_start;
 	DWORD kick_start;
 	DWORD skid_start;
@@ -260,6 +263,8 @@ public:
 	DWORD fly_start;
 	DWORD fly_limit_start;
 	DWORD eat_item_start;
+	DWORD pipe_up_start;
+	DWORD pipe_down_start;
 
 	/*bool isPreventMoveX = false;*/
 	bool isOnGround = false;

@@ -74,9 +74,9 @@ void CPiranha::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjs)
 			wait_fire_start = GetTickCount();
 		vy = 0;
 	}
-	if (y > start_bottom)
+	if (y > start_bottom + 5)
 	{
-		y = start_bottom;
+		y = start_bottom + 5;
 		wait_down_start = GetTickCount();
 		SetState(PIRANHA_STATE_HIDE);
 	}

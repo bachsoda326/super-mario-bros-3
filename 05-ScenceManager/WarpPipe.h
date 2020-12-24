@@ -2,17 +2,21 @@
 #include "GameObject.h"
 #include "Piranha.h"
 
+#define WARPPIPE_TYPE_DOWN	3
+#define WARPPIPE_TYPE_UP	4
+
 class CWarpPipe : public CGameObject
 {
 	int mRight, mBottom;
 	CPiranha* piranha = NULL;
 
+	void Render();
+	void GetBoundingBox(float& l, float& t, float& r, float& b);
+
 public:
 	int type;
+	float tele_x, tele_y;
 
-	CWarpPipe(float x, float y, int r, int b, int type);
-
-	virtual void Render();
-	virtual void GetBoundingBox(float& l, float& t, float& r, float& b);
+	CWarpPipe(float x, float y, int r, int b, int type, float tele_x, float tele_y);
 };
 

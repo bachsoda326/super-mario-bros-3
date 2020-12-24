@@ -224,10 +224,18 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	{
 		float r = atof(tokens[4].c_str());
 		float b = atof(tokens[5].c_str());
-		int type = -1;		
+
+		int type = -1;
 		if (tokens.size() > 6)
 			type = atoi(tokens[6].c_str());
-		obj = new CWarpPipe(x, y, r, b, type);
+
+		float tele_x = -1, tele_y = -1;
+		if (tokens.size() > 8)
+		{
+			tele_x = atof(tokens[7].c_str());
+			tele_y = atof(tokens[8].c_str());
+		}
+		obj = new CWarpPipe(x, y, r, b, type, tele_x, tele_y);
 	}
 	break;
 	case OBJECT_TYPE_GROUND:
@@ -489,6 +497,9 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 	case DIK_NUMPAD5:
 		mario->SetPosition(1950, 350);
 		break;
+	case DIK_NUMPAD6:
+		mario->SetPosition(2260, 50);
+		break;
 	case DIK_NUMPAD9:
 		mario->SetPosition(2120, 500);
 		break;
@@ -640,7 +651,7 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 	int state = mario->GetState();
 	// disable control key when Mario die 
 	if (state == MARIO_STATE_DIE) return;
-	if (game->IsKeyDown(DIK_RIGHT))
+	if (game->IsKeyDown(DIK_RIGHT) && state != MARIO_STATE_PIPE)
 	{
 		mario->nx = 1;
 		if (state != MARIO_STATE_DUCK /*&& !mario->isPreventMoveX*/)
@@ -668,7 +679,7 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 					mario->SetState(MARIO_STATE_PREPARE_RUN);
 				}
 			}
-			else if (state == MARIO_STATE_PREPARE_RUN && !mario->isHold && GetTickCount() - mario->run_start >= MARIO_RUN_TIME / 3)
+			else if (state == MARIO_STATE_PREPARE_RUN && !mario->isHold && GetTickCount() - mario->run_start >= MARIO_RUN_TIME / 6)
 			{
 				mario->SetState(MARIO_STATE_RUN);
 			}
@@ -679,7 +690,7 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 			mario->vx = MARIO_WALKING_SPEED;
 		}*/
 	}
-	else if (game->IsKeyDown(DIK_LEFT))
+	else if (game->IsKeyDown(DIK_LEFT) && state != MARIO_STATE_PIPE)
 	{
 		mario->nx = -1;
 		if (state != MARIO_STATE_DUCK /*&& !mario->isPreventMoveX*/)

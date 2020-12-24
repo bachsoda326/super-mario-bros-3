@@ -34,7 +34,8 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	CGameObject::Update(dt);
 
 	// Simple fall down
-	vy += MARIO_GRAVITY * dt;
+	if (state != MARIO_STATE_PIPE)
+		vy += MARIO_GRAVITY * dt;
 
 	// Max jump
 	if (vy <= -0.2f)
@@ -116,6 +117,33 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	{
 		SetState(MARIO_STATE_JUMP_HIGH);
 	}
+	if ((GetTickCount() - pipe_down_start) < 1000)
+	{
+		SetState(MARIO_STATE_PIPE);
+	}
+	if (pipe_down_start != 0 && (GetTickCount() - pipe_down_start) >= 1000)
+	{
+		pipe_down_start = 0;
+		SetState(MARIO_STATE_JUMP_HIGH);
+		SetPosition(pipe_tele_x, pipe_tele_y);
+	}
+	if ((GetTickCount() - pipe_up_start) < 1500)
+	{
+		SetState(MARIO_STATE_PIPE);
+	}
+	if (pipe_up_start != 0)
+	{
+		if ((GetTickCount() - pipe_up_start) == 1500)
+		{			
+			//SetState(MARIO_STATE_IDLE);
+			SetPosition(pipe_tele_x, pipe_tele_y);
+		}
+		else if ((GetTickCount() - pipe_up_start) >= 2500)
+		{
+			pipe_up_start = 0;
+			SetState(MARIO_STATE_IDLE);
+		}
+	}	
 	if ((GetTickCount() - eat_item_start) < 1)
 	{
 		SetState(MARIO_STATE_EAT_ITEM);
@@ -233,7 +261,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			}
 			else if (ny > 0 && !dynamic_cast<CCoin*>(e->obj) && !dynamic_cast<CLeaf*>(e->obj) && !dynamic_cast<CBullet*>(e->obj) && !dynamic_cast<CMushRoom*>(e->obj) && !dynamic_cast<CCloudTooth*>(e->obj))
 			{
-				if (!(dynamic_cast<CBreakableBrick*>(e->obj) && e->obj->GetState() == BREAKABLE_BRICK_STATE_COIN))
+				if (!((dynamic_cast<CBreakableBrick*>(e->obj) && e->obj->GetState() == BREAKABLE_BRICK_STATE_COIN) || ((dynamic_cast<CWarpPipe*>(e->obj)/* && state == MARIO_STATE_PIPE*/))))
 				{
 					vy = 0;
 					canJump = false;
@@ -283,6 +311,36 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			{
 				if (e->nx != 0)
 					x += dx;
+			}
+			else if (dynamic_cast<CWarpPipe*>(e->obj))
+			{
+				if (state == MARIO_STATE_PIPE)
+				{	
+					y += dy;
+				}
+
+				CWarpPipe* pipe = dynamic_cast<CWarpPipe*>(e->obj);
+				switch (pipe->type)
+				{
+				case WARPPIPE_TYPE_DOWN:
+					if (CGame::GetInstance()->IsKeyDown(DIK_DOWN))
+					{
+						pipe_tele_x = pipe->tele_x;
+						pipe_tele_y = pipe->tele_y;
+						pipe_down_start = GetTickCount();
+					}
+					break;
+				case WARPPIPE_TYPE_UP:
+					if (CGame::GetInstance()->IsKeyDown(DIK_UP))
+					{
+						pipe_tele_x = pipe->tele_x;
+						pipe_tele_y = pipe->tele_y;
+						pipe_up_start = GetTickCount();
+					}
+					break;
+				default:
+					break;
+				}
 			}
 			else if (dynamic_cast<CGoomba*>(e->obj)) // if e->obj is Goomba 
 			{
@@ -673,6 +731,10 @@ void CMario::Render()
 			if (nx > 0) ani = MARIO_ANI_BIG_DUCK_RIGHT;
 			else ani = MARIO_ANI_BIG_DUCK_LEFT;
 		}
+		if (state == MARIO_STATE_PIPE)
+		{
+			ani = MARIO_ANI_BIG_PIPE;
+		}
 	}
 	else if (level == MARIO_LEVEL_RACCOON)
 	{
@@ -781,6 +843,10 @@ void CMario::Render()
 			if (nx > 0) ani = MARIO_ANI_RACCOON_WAG_RIGHT;
 			else ani = MARIO_ANI_RACCOON_WAG_LEFT;
 		}
+		if (state == MARIO_STATE_PIPE)
+		{
+			ani = MARIO_ANI_RACCOON_PIPE;
+		}
 	}
 	else if (level == MARIO_LEVEL_FIRE)
 	{
@@ -879,6 +945,10 @@ void CMario::Render()
 			if (nx > 0) ani = MARIO_ANI_FIRE_THROW_RIGHT;
 			else ani = MARIO_ANI_FIRE_THROW_LEFT;
 		}
+		if (state == MARIO_STATE_PIPE)
+		{
+			ani = MARIO_ANI_FIRE_PIPE;
+		}
 	}
 	else if (level == MARIO_LEVEL_SMALL)
 	{
@@ -967,6 +1037,10 @@ void CMario::Render()
 			if (nx > 0) ani = MARIO_ANI_SMALL_SKID_RIGHT;
 			else ani = MARIO_ANI_SMALL_SKID_LEFT;
 		}
+		if (state == MARIO_STATE_PIPE)
+		{
+			ani = MARIO_ANI_SMALL_PIPE;
+		}
 	}
 
 	int alpha = 255;
@@ -1012,6 +1086,12 @@ void CMario::SetState(int state)
 		break;
 	case MARIO_STATE_RUN:
 		vx = nx * MARIO_RUN_SPEED;
+		break;
+	case MARIO_STATE_PIPE:
+		if (pipe_down_start != 0)
+			vy = 0.02f;
+		else if (pipe_up_start != 0)
+			vy = -0.02f;
 		break;
 		//case MARIO_STATE_DUCK:
 		//	if (canDuck)
