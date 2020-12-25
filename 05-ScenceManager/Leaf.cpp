@@ -26,9 +26,11 @@ void CLeaf::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	
 	if (!isInitialized)
 	{
+		isDie = true;
 		if (y <= start_top)
 		{
 			isInitialized = true;
+			isDie = false;
 			vx = -0.06f;
 			nx = -1;
 			vy = 0.05f;

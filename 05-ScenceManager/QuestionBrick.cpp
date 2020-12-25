@@ -59,11 +59,11 @@ void CQuestionBrick::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				switch (state)
 				{
 				case QUESTION_BRICK_STATE_HIT_MUSHROOM_LEFT:
-					obj = new CMushRoom(start_x, start_y, -1, MUSHROOM_TYPE_1_UP);
+					obj = new CMushRoom(start_x, start_y, -1, MUSHROOM_TYPE_RED);
 					CGame::GetInstance()->GetCurrentScene()->GetOtherObjs()->push_back(obj);
 					break;
 				case QUESTION_BRICK_STATE_HIT_MUSHROOM_RIGHT:
-					obj = new CMushRoom(start_x, start_y, 1, MUSHROOM_TYPE_1_UP);
+					obj = new CMushRoom(start_x, start_y, 1, MUSHROOM_TYPE_RED);
 					CGame::GetInstance()->GetCurrentScene()->GetOtherObjs()->push_back(obj);
 					break;
 				default:

@@ -144,6 +144,7 @@
     <ClCompile Include="Portal.cpp" />
     <ClCompile Include="PSwitch.cpp" />
     <ClCompile Include="QuestionBrick.cpp" />
+    <ClCompile Include="WorldStation.cpp" />
     <ClCompile Include="TileMap.cpp" />
     <ClCompile Include="Utils.cpp" />
     <ClCompile Include="Game.cpp" />
@@ -159,6 +160,7 @@
     <ClCompile Include="WorldBush.cpp" />
     <ClCompile Include="WorldHammer.cpp" />
     <ClCompile Include="WorldMapScene.cpp" />
+    <ClCompile Include="WorldMario.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animations.h" />
@@ -183,6 +185,7 @@
     <ClInclude Include="PSwitch.h" />
     <ClInclude Include="QuestionBrick.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="WorldStation.h" />
     <ClInclude Include="TileMap.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="Game.h" />
@@ -198,6 +201,7 @@
     <ClInclude Include="WorldBush.h" />
     <ClInclude Include="WorldHammer.h" />
     <ClInclude Include="WorldMapScene.h" />
+    <ClInclude Include="WorldMario.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="05-ScenceManager.rc" />

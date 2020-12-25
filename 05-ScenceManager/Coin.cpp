@@ -16,6 +16,7 @@ CCoin::CCoin(float x, float y, bool isInBrick)
 		CAnimationSets* animation_sets = CAnimationSets::GetInstance();
 		LPANIMATION_SET ani_set = animation_sets->Get(COIN_ANI_SET);
 		SetAnimationSet(ani_set);
+		isDie = true;
 	}
 	vy = -0.3f;
 }

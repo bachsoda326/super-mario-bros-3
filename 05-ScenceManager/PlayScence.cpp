@@ -136,7 +136,8 @@ void CPlayScene::_ParseSection_ANIMATION_SETS(string line)
 		s->push_back(ani);
 	}
 
-	CAnimationSets::GetInstance()->Add(ani_set_id, s);
+	if (ani_set_id != -1)
+		CAnimationSets::GetInstance()->Add(ani_set_id, s);
 }
 
 /*
@@ -633,6 +634,7 @@ void CPlayScenceKeyHandler::OnKeyUp(int KeyCode)
 		{			
 			if (mario->koopas != NULL)	
 			{
+				mario->SetState(MARIO_STATE_KICK);
 				mario->kick_start = GetTickCount();
 				mario->koopas->SetState(KOOPAS_STATE_SPIN);
 				mario->koopas->vx = mario->nx * KOOPAS_SPIN_SPEED;
@@ -741,7 +743,7 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 	{
 		mario->SetState(MARIO_STATE_JUMP_HIGH);
 	}*/
-	else if (mario->isOnGround)
+	else if (mario->isOnGround && mario->kick_start == 0)
 	{
 		if (mario->nx > 0)
 		{

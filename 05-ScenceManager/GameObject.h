@@ -57,7 +57,8 @@ public:
 
 	float left, top, right, bottom;
 
-	int nx;	 
+	int nx;
+	int colX, colY;
 
 	int state;
 	bool isDie = false;
@@ -82,6 +83,8 @@ public:
 	void SetAnimationSet(LPANIMATION_SET ani_set) { animation_set = ani_set; }
 
 	LPCOLLISIONEVENT SweptAABBEx(LPGAMEOBJECT coO);
+	bool AABBCheck(CGameObject* obj1, CGameObject* obj2);
+	bool AABBCheck(float left1, float top1, float right1, float bottom1, float left2, float top2, float right2, float bottom2);
 	void ExceptionalCase(CGameObject* obj2, LPCOLLISIONEVENT& coEvent);
 	void CalcPotentialCollisions(vector<LPGAMEOBJECT> *coObjects, vector<LPCOLLISIONEVENT> &coEvents);
 	void FilterCollision(

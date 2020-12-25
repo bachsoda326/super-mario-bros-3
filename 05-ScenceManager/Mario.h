@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "GameObject.h"
 #include "Goomba.h"
 #include "MushRoom.h"
@@ -227,20 +227,22 @@
 #define MARIO_ANI_RACCOON_RUN_HOLD_RIGHT	166
 
 
-#define	MARIO_LEVEL_SMALL	1
-#define	MARIO_LEVEL_BIG		2
-#define	MARIO_LEVEL_RACCOON	3
-#define	MARIO_LEVEL_FIRE	4
+#define	MARIO_LEVEL_SMALL		1
+#define	MARIO_LEVEL_BIG			2
+#define	MARIO_LEVEL_RACCOON		3
+#define	MARIO_LEVEL_FIRE		4
 
-#define MARIO_BIG_BBOX_WIDTH  15
-#define MARIO_BIG_BBOX_HEIGHT 27
-#define MARIO_BIG_BBOX_HEIGHT_DUCK 18
+#define MARIO_TAIL_BBOX_WIDTH		14
+#define MARIO_NON_TAIL_BBOX_HEIGHT	16
+#define MARIO_BIG_BBOX_WIDTH		15
+#define MARIO_BIG_BBOX_HEIGHT		27
+#define MARIO_BIG_BBOX_HEIGHT_DUCK	18
 
 #define MARIO_SMALL_BBOX_WIDTH  16
 #define MARIO_SMALL_BBOX_HEIGHT 16
 
-#define MARIO_UNTOUCHABLE_TIME 5000
-#define MARIO_RUN_TIME 3000
+#define MARIO_UNTOUCHABLE_TIME	5000
+#define MARIO_RUN_TIME			3000
 
 
 class CMario : public CGameObject
@@ -292,6 +294,9 @@ public:
 	void Reset();
 
 	void Hurt();
+	// Giao nhau vs các obj
+	void OnIntersect(CGameObject* obj, vector<LPGAMEOBJECT>* coObjs);
+	bool isColTail(CGameObject* obj);
 
 	virtual void GetBoundingBox(float &left, float &top, float &right, float &bottom);
 };

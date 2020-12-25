@@ -30,11 +30,16 @@ void CMushRoom::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	y += dy;	
 
 	// not set to bottom yet
-	if (!isInitialized && bottom > 0 && bottom <= start_bottom)
+	if (!isInitialized)
 	{
-		isInitialized = true;
-		vy = 0;
-		vx = nx * 0.05f;
+		isDie = true;
+		if (bottom > 0 && bottom <= start_bottom)
+		{
+			isInitialized = true;
+			isDie = false;
+			vy = 0;
+			vx = nx * 0.05f;
+		}		
 	}
 
 	if (isInitialized)
@@ -106,7 +111,7 @@ void CMushRoom::Render()
 	default:
 		break;
 	}
-	animation_set->at(MUSHROOM_ANI_1_UP)->Render(x, y);
+	animation_set->at(ani)->Render(x, y);
 
 	RenderBoundingBox();
 }

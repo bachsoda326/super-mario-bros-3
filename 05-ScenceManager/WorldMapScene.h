@@ -3,28 +3,16 @@
 #include "Textures.h"
 #include "Scence.h"
 #include "Brick.h"
-#include "Mario.h"
-#include "Goomba.h"
-#include "Koopas.h"
-#include "Box.h"
-#include "Ground.h"
-#include "QuestionBrick.h"
-#include "BreakableBrick.h"
-#include "WarpPipe.h"
-#include "MushRoom.h"
-#include "Leaf.h"
 #include "TileMap.h"
-#include "Coin.h"
-#include "CloudTooth.h"
-#include "ParaGoomba.h"
 #include "WorldBush.h"
 #include "CastleHelp.h"
 #include "WorldHammer.h"
+#include "WorldMario.h"
 
 class CWorldMapScene : public CScene
 {
 protected:
-	CMario* player;					// A play scene has to have player, right? 
+	CWorldMario* player;					// A play scene has to have player, right? 
 
 	//vector<LPGAMEOBJECT> objects;
 
@@ -47,7 +35,7 @@ public:
 	virtual void Render();
 	virtual void Unload();	
 
-	CMario* GetPlayer() { return player; }
+	CWorldMario* GetPlayer() { return player; }
 	CTileMap* GetMap() { return map; }
 
 	//friend class CPlayScenceKeyHandler;

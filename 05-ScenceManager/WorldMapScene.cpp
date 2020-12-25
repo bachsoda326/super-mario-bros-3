@@ -34,7 +34,8 @@ CWorldMapScene::CWorldMapScene(int id, LPCWSTR filePath) :
 #define OBJECT_TYPE_MARIO			0
 #define OBJECT_TYPE_CASTLE_HELP		1
 #define	OBJECT_TYPE_HAMMER			2
-#define OBJECT_TYPE_BUSH			20
+#define OBJECT_TYPE_BUSH			3
+#define OBJECT_TYPE_STATION			4
 
 #define OBJECT_TYPE_PORTAL	50
 
@@ -156,6 +157,17 @@ void CWorldMapScene::_ParseSection_OBJECTS(string line)
 
 	switch (object_type)
 	{
+	case OBJECT_TYPE_MARIO:
+		if (player != NULL)
+		{
+			DebugOut(L"[ERROR] MARIO object was created before!\n");
+			return;
+		}
+		obj = new CWorldMario();
+		player = (CWorldMario*)obj;
+
+		DebugOut(L"[INFO] Player object created!\n");
+		break;
 	case OBJECT_TYPE_BUSH:
 		obj = new CWorldBush();
 		break;
@@ -169,6 +181,15 @@ void CWorldMapScene::_ParseSection_OBJECTS(string line)
 	case OBJECT_TYPE_CASTLE_HELP:
 		obj = new CCastleHelp();
 		break;
+	case OBJECT_TYPE_STATION:
+	{
+		bool left = atoi(tokens[4].c_str()) == 1 ? true : false;
+		bool top = atoi(tokens[5].c_str()) == 1 ? true : false;
+		bool right = atoi(tokens[6].c_str()) == 1 ? true : false;
+		bool bottom = atoi(tokens[7].c_str()) == 1 ? true : false;
+		obj = new CWorldStation(left, top, right, bottom);
+	}
+	break;
 	default:
 		DebugOut(L"[ERR] Invalid object type: %d\n", object_type);
 		return;
@@ -293,7 +314,7 @@ void CWorldMapScene::Update(DWORD dt)
 	}
 
 	// skip the rest if scene was already unloaded (Mario::Update might trigger PlayScene::Unload)
-	/*if (player == NULL) return;*/
+	if (player == NULL) return;
 
 	// Update camera
 

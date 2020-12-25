@@ -30,7 +30,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	/*DebugOut(L"[GROUND]: %d\n", isOnGround);
 	DebugOut(L"[VY]: %f\n", vy);*/
-	/*DebugOut(L"[State] State: %d\n", state);*/
+	DebugOut(L"[State] State: %d\n", state);
 	// Calculate dx, dy 
 	CGameObject::Update(dt);
 
@@ -54,6 +54,15 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		isHold = false;
 	}
 
+	// Giao nhau vs obj
+	for (int i = 0; i < coObjects->size(); i++)
+	{
+		if (AABBCheck(this, coObjects->at(i)))
+		{
+			OnIntersect(coObjects->at(i), coObjects);
+		}
+	}
+
 	vector<LPCOLLISIONEVENT> coEvents;
 	vector<LPCOLLISIONEVENT> coEventsResult;
 
@@ -70,9 +79,16 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		untouchable = 0;
 	}
 
-	if ((GetTickCount() - kick_start) < 100)
+	if (kick_start != 0)
 	{
-		SetState(MARIO_STATE_KICK);
+		if ((GetTickCount() - kick_start) < 100)
+		{
+			SetState(MARIO_STATE_KICK);
+		}
+		else if ((GetTickCount() - kick_start) >= 100)
+		{
+			kick_start = 0;
+		}
 	}
 
 	if ((GetTickCount() - tail_start) < 210)
@@ -80,7 +96,11 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		SetState(MARIO_STATE_TAIL);
 	}
 	else
+	{
+		if (state == MARIO_STATE_TAIL && !isOnGround)
+			SetState(MARIO_STATE_JUMP_HIGH);
 		canAttack = true;
+	}
 
 	if ((GetTickCount() - fire_start) < 150)
 	{
@@ -143,7 +163,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	if (pipe_up_start != 0)
 	{
 		if ((GetTickCount() - pipe_up_start) == 1500)
-		{			
+		{
 			//SetState(MARIO_STATE_IDLE);
 			SetPosition(pipe_tele_x, pipe_tele_y);
 
@@ -160,7 +180,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			pipe_up_start = 0;
 			SetState(MARIO_STATE_IDLE);
 		}
-	}	
+	}
 	if ((GetTickCount() - eat_item_start) < 1)
 	{
 		SetState(MARIO_STATE_EAT_ITEM);
@@ -194,8 +214,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 		// TODO: This is a very ugly designed function!!!!
 		FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny, rdx, rdy);
-		/*DebugOut(L"[NX]: %f\n", nx);
-		DebugOut(L"[NY]: %f\n", ny);*/
+
 		// how to push back Mario if collides with a moving objects, what if Mario is pushed this way into another object?
 		//if (rdx != 0 && rdx!=dx)
 		//	x += nx*abs(rdx);
@@ -240,6 +259,9 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		for (UINT i = 0; i < coEventsResult.size(); i++)
 		{
 			LPCOLLISIONEVENT e = coEventsResult[i];
+
+			e->obj->colX = e->nx;
+			e->obj->colY = e->ny;
 
 			// Stand on obj
 			if (ny < 0 && e->obj != NULL)
@@ -291,48 +313,49 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				x += dx;
 				y += dy;
 			}*/
+			// Cloud tooth
 			if (dynamic_cast<CCloudTooth*>(e->obj))
 			{
 				if (e->ny > 0)
 					y += dy;
 			}
+			// Bullet
 			else if (dynamic_cast<CBullet*>(e->obj))
 			{
 				x += dx;
 				y += dy;
 
-				CBullet* bullet = dynamic_cast<CBullet*>(e->obj);
+				/*CBullet* bullet = dynamic_cast<CBullet*>(e->obj);
 
 				if (bullet->isEnemy)
 				{
 					Hurt();
-				}
+				}*/
 			}
+			// Piranha
 			else if (dynamic_cast<CPiranha*>(e->obj))
 			{
 				x += dx;
 				y += dy;
 
-				CPiranha* piranha = dynamic_cast<CPiranha*>(e->obj);
+				/*CPiranha* piranha = dynamic_cast<CPiranha*>(e->obj);
 
-				if (piranha->GetState() == PIRANHA_STATE_NORMAL)
+				if (state != MARIO_STATE_TAIL && piranha->GetState() == PIRANHA_STATE_NORMAL)
 				{
-					if (state == MARIO_STATE_TAIL)
-						piranha->SetState(PIRANHA_STATE_DIE);
-					else
-						Hurt();
-
-				}
+					Hurt();
+				}*/
 			}
+			// Box
 			else if (dynamic_cast<CBox*>(e->obj))
 			{
 				if (e->nx != 0)
 					x += dx;
 			}
+			// Warp pipe
 			else if (dynamic_cast<CWarpPipe*>(e->obj))
 			{
 				if (state == MARIO_STATE_PIPE)
-				{	
+				{
 					y += dy;
 				}
 
@@ -359,8 +382,12 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					break;
 				}
 			}
+			// Goomba
 			else if (dynamic_cast<CGoomba*>(e->obj)) // if e->obj is Goomba 
 			{
+				x += dx;
+				y += dy;
+
 				CGoomba* goomba = dynamic_cast<CGoomba*>(e->obj);
 
 				// jump on top >> kill Goomba and deflect a bit 
@@ -371,21 +398,13 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						goomba->SetState(GOOMBA_STATE_DIE);
 						vy = -MARIO_JUMP_DEFLECT_SPEED;
 					}
-					else if (e->nx != 0)
+					/*else if (state != MARIO_STATE_TAIL && e->nx != 0)
 					{
-						if (state == MARIO_STATE_TAIL)
-						{
-							goomba->vx = -nx * 0.1f;
-							goomba->vy = -0.2f;
-							goomba->SetState(GOOMBA_STATE_DIE_REVERSE);
-						}
-						else
-						{
-							Hurt();
-						}
-					}
+						Hurt();
+					}*/
 				}
 			}
+			// Para Goomba
 			else if (dynamic_cast<CParaGoomba*>(e->obj)) // if e->obj is ParaGoomba 
 			{
 				CParaGoomba* para = dynamic_cast<CParaGoomba*>(e->obj);
@@ -401,7 +420,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 							para->SetState(PARA_GOOMBA_STATE_DIE);
 						vy = -MARIO_JUMP_DEFLECT_SPEED;
 					}
-					else if (e->nx != 0)
+					/*else if (e->nx != 0)
 					{
 						if (state == MARIO_STATE_TAIL)
 						{
@@ -413,9 +432,10 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						{
 							Hurt();
 						}
-					}
+					}*/
 				}
-			}// if Koopas
+			}
+			// Koopas
 			else if (dynamic_cast<CKoopas*>(e->obj)) // if e->obj is CKoopas 
 			{
 				CKoopas* koopas = dynamic_cast<CKoopas*>(e->obj);
@@ -448,7 +468,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				}
 				else if (e->nx != 0)
 				{
-					if (state == MARIO_STATE_TAIL)
+					/*if (state == MARIO_STATE_TAIL)
 					{
 						koopas->vx = -nx * 0.07f;
 						koopas->vy = -0.5f;
@@ -461,7 +481,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						if (untouchable == 0)
 							koopas->vx = -koopas->vx;
 					}
-					else if (koopas->GetState() == KOOPAS_STATE_HIDE)
+					else*/ if (state != MARIO_STATE_TAIL && koopas->GetState() == KOOPAS_STATE_HIDE)
 					{
 						if (canHold)
 						{
@@ -472,60 +492,36 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						}
 						else
 						{
+							SetState(MARIO_STATE_KICK);
 							kick_start = GetTickCount();
 							koopas->SetState(KOOPAS_STATE_SPIN);
 							koopas->vx = this->nx * KOOPAS_SPIN_SPEED;
 						}
 					}
 				}
-			} // if Koopas
+			}
+			// Portal
 			else if (dynamic_cast<CPortal*>(e->obj))
 			{
 				CPortal* p = dynamic_cast<CPortal*>(e->obj);
 				CGame::GetInstance()->SwitchScene(p->GetSceneId());
 			}
+			// MushRoom
 			else if (dynamic_cast<CMushRoom*>(e->obj))
 			{
 				x += dx;
 				y += dy;
-
-				CMushRoom* mushRoom = dynamic_cast<CMushRoom*>(e->obj);
-				switch (mushRoom->type)
-				{
-				case MUSHROOM_TYPE_RED:
-					if (level == MARIO_LEVEL_SMALL)
-					{
-						eat_item_start = GetTickCount();
-						SetState(MARIO_STATE_EAT_ITEM);
-						//DebugOut(L"[NAM]: %f\n", y);					
-						mushRoom->DeleteOtherObjs(coObjects);
-						//y -= MARIO_BIG_BBOX_HEIGHT - MARIO_SMALL_BBOX_HEIGHT;
-						level = MARIO_LEVEL_BIG;
-						//DebugOut(L"[NAM1]: %f\n", y);
-					}
-					break;
-				case MUSHROOM_TYPE_1_UP:
-					mushRoom->DeleteOtherObjs(coObjects);
-					break;
-				default:
-					break;
-				}
 			}
+			// Leaf
 			else if (dynamic_cast<CLeaf*>(e->obj))
 			{
 				x += dx;
 				y += dy;
-
-				eat_item_start = GetTickCount();
-				SetState(MARIO_STATE_EAT_ITEM);
-				CLeaf* leaf = dynamic_cast<CLeaf*>(e->obj);
-				leaf->DeleteObjs(coObjects);
-				//y -= MARIO_BIG_BBOX_HEIGHT - MARIO_SMALL_BBOX_HEIGHT;
-				level = MARIO_LEVEL_RACCOON;
 			}
+			// Question Brick
 			else if (dynamic_cast<CQuestionBrick*>(e->obj))
 			{
-				if (e->ny > 0 || (e->nx != 0 && state == MARIO_STATE_TAIL))
+				if (e->ny > 0/* || (e->nx != 0 && state == MARIO_STATE_TAIL)*/)
 				{
 					CQuestionBrick* qBrick = dynamic_cast<CQuestionBrick*>(e->obj);
 					if (qBrick->GetState() == QUESTION_BRICK_STATE_NORMAL)
@@ -558,6 +554,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					}
 				}
 			}
+			// Breakable Brick
 			else if (dynamic_cast<CBreakableBrick*>(e->obj))
 			{
 				CBreakableBrick* bBrick = dynamic_cast<CBreakableBrick*>(e->obj);
@@ -571,10 +568,10 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				}
 				else if (bBrick->GetState() == QUESTION_BRICK_STATE_NORMAL)
 				{
-					if (e->ny > 0 || (e->nx != 0 && state == MARIO_STATE_TAIL))
+					if (e->ny > 0 /*|| (e->nx != 0 && state == MARIO_STATE_TAIL)*/)
 					{
 						switch (bBrick->type)
-						{						
+						{
 						case BREAKABLE_BRICK_TYPE_1UP_MUSHROOM:
 							if (x <= bBrick->x)
 								bBrick->SetState(BREAKABLE_BRICK_STATE_1UP_MUSHROOM_LEFT);
@@ -593,16 +590,15 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 							bBrick->SetState(BREAKABLE_BRICK_STATE_BREAK);
 						}
 					}
-				}				
+				}
 			}
+			// Coin
 			else if (dynamic_cast<CCoin*>(e->obj))
 			{
 				x += dx;
 				y += dy;
-
-				CCoin* coin = dynamic_cast<CCoin*>(e->obj);
-				coin->DeleteObjs(coObjects);
 			}
+			// P Switch
 			else if (dynamic_cast<CPSwitch*>(e->obj))
 			{
 				if (e->ny < 0)
@@ -1106,13 +1102,9 @@ void CMario::SetState(int state)
 		else if (pipe_up_start != 0)
 			vy = -0.02f;
 		break;
-		//case MARIO_STATE_DUCK:
-		//	if (canDuck)
-		//	{
-		//		/*y += MARIO_BIG_BBOX_HEIGHT - MARIO_BIG_BBOX_HEIGHT_DUCK;*/
-		//		canDuck = false;
-		//	}
-		//	break;
+	case MARIO_STATE_DUCK:
+		canAttack = false;
+		break;
 	}
 }
 
@@ -1125,7 +1117,7 @@ void CMario::GetBoundingBox(float& left, float& top, float& right, float& bottom
 
 	if (level == MARIO_LEVEL_BIG || level == MARIO_LEVEL_RACCOON || level == MARIO_LEVEL_FIRE)
 	{
-		if (state == MARIO_STATE_TAIL)
+		/*if (state == MARIO_STATE_TAIL)
 		{
 			left = x - 8;
 			right = x + MARIO_BIG_BBOX_WIDTH + 8;
@@ -1134,7 +1126,9 @@ void CMario::GetBoundingBox(float& left, float& top, float& right, float& bottom
 		{
 			left = x;
 			right = left + MARIO_BIG_BBOX_WIDTH;
-		}
+		}*/
+		left = x;
+		right = left + MARIO_BIG_BBOX_WIDTH;
 		if (state == MARIO_STATE_DUCK)
 			bottom = top + MARIO_BIG_BBOX_HEIGHT_DUCK;
 		else
@@ -1180,5 +1174,207 @@ void CMario::Hurt()
 		else
 			SetState(MARIO_STATE_DIE);
 	}
+}
+
+void CMario::OnIntersect(CGameObject* obj, vector<LPGAMEOBJECT>* coObjs)
+{
+	if (!obj->isDie)
+	{
+		// Para Goomba
+		if (dynamic_cast<CParaGoomba*>(obj))
+		{
+			CParaGoomba* para = dynamic_cast<CParaGoomba*>(obj);
+			if (state == MARIO_STATE_TAIL)
+			{
+				para->vx = -nx * 0.05f;
+				para->vy = -0.1f;
+				para->SetState(PARA_GOOMBA_STATE_DIE_REVERSE);
+			}
+			else if (para->colY != -1)
+				Hurt();
+		}
+		// Koopas
+		else if (dynamic_cast<CKoopas*>(obj))
+		{
+			CKoopas* koopas = dynamic_cast<CKoopas*>(obj);
+			if (state == MARIO_STATE_TAIL)
+			{
+				koopas->vx = nx * 0.07f;
+				koopas->vy = -0.5f;
+				koopas->yReverse = true;
+				koopas->SetState(KOOPAS_STATE_HIDE);
+			}
+			else if (state != MARIO_STATE_KICK)
+			{
+				if (koopas->GetState() == KOOPAS_STATE_WALKING)
+				{
+					if (untouchable == 0)
+						koopas->vx = -koopas->vx;
+					Hurt();
+				}
+				else if (koopas->GetState() == KOOPAS_STATE_SPIN && koopas->colY != -1)
+				{
+					Hurt();
+				}
+			}
+		}
+		// Piranha
+		else if (dynamic_cast<CPiranha*>(obj))
+		{
+			CPiranha* piranha = dynamic_cast<CPiranha*>(obj);
+			if (state == MARIO_STATE_TAIL)
+			{
+				piranha->SetState(PIRANHA_STATE_DIE);
+			}
+			else if (piranha->GetState() == PIRANHA_STATE_NORMAL)
+				Hurt();
+		}
+		// Goomba
+		else if (dynamic_cast<CGoomba*>(obj))
+		{
+			CGoomba* goomba = dynamic_cast<CGoomba*>(obj);
+			if (state == MARIO_STATE_TAIL)
+			{
+				goomba->vx = nx * 0.1f;
+				goomba->vy = -0.2f;
+				goomba->SetState(GOOMBA_STATE_DIE_REVERSE);
+			}
+			else if (goomba->colY != -1)
+				Hurt();
+		}
+		// Bullet Enemy
+		else if (dynamic_cast<CBullet*>(obj))
+		{
+			CBullet* bullet = dynamic_cast<CBullet*>(obj);
+			if (bullet->isEnemy)
+			{
+				Hurt();
+			}
+		}
+		// MushRoom
+		else if (dynamic_cast<CMushRoom*>(obj))
+		{
+			CMushRoom* mushroom = dynamic_cast<CMushRoom*>(obj);
+			switch (mushroom->type)
+			{
+			case MUSHROOM_TYPE_RED:
+				if (level == MARIO_LEVEL_SMALL)
+				{
+					eat_item_start = GetTickCount();
+					SetState(MARIO_STATE_EAT_ITEM);
+					//DebugOut(L"[NAM]: %f\n", y);					
+					mushroom->DeleteOtherObjs(coObjs);
+					y -= MARIO_BIG_BBOX_HEIGHT - MARIO_SMALL_BBOX_HEIGHT;
+					level = MARIO_LEVEL_BIG;
+					//DebugOut(L"[NAM1]: %f\n", y);
+				}
+				break;
+			case MUSHROOM_TYPE_1_UP:
+				mushroom->DeleteOtherObjs(coObjs);
+				break;
+			default:
+				break;
+			}
+		}
+		// Leaf
+		else if (dynamic_cast<CLeaf*>(obj))
+		{
+			CLeaf* leaf = dynamic_cast<CLeaf*>(obj);
+			eat_item_start = GetTickCount();
+			SetState(MARIO_STATE_EAT_ITEM);
+			leaf->DeleteObjs(coObjs);
+			y -= MARIO_BIG_BBOX_HEIGHT - MARIO_SMALL_BBOX_HEIGHT;
+			level = MARIO_LEVEL_RACCOON;
+		}
+		// Question Brick
+		else if (dynamic_cast<CQuestionBrick*>(obj))
+		{
+			CQuestionBrick* qBrick = dynamic_cast<CQuestionBrick*>(obj);
+			if (state == MARIO_STATE_TAIL && isColTail(qBrick))
+			{
+				if (qBrick->GetState() == QUESTION_BRICK_STATE_NORMAL)
+				{
+					qBrick->vy = -0.1f;
+					switch (qBrick->type)
+					{
+					case BRICK_NORMAL:
+						qBrick->SetState(QUESTION_BRICK_STATE_HIT_COIN);
+						break;
+					case BRICK_ITEM:
+						switch (level)
+						{
+						case MARIO_LEVEL_SMALL:
+							if (x <= qBrick->x)
+								qBrick->SetState(QUESTION_BRICK_STATE_HIT_MUSHROOM_LEFT);
+							else
+								qBrick->SetState(QUESTION_BRICK_STATE_HIT_MUSHROOM_RIGHT);
+							break;
+						case MARIO_LEVEL_BIG: case MARIO_LEVEL_RACCOON: case MARIO_LEVEL_FIRE:
+							qBrick->SetState(QUESTION_BRICK_STATE_HIT_LEAF);
+							break;
+						default:
+							break;
+						}
+						break;
+					default:
+						break;
+					}
+				}
+			}
+		}
+		else if (dynamic_cast<CBreakableBrick*>(obj))
+		{
+			CBreakableBrick* bBrick = dynamic_cast<CBreakableBrick*>(obj);
+			if (state == MARIO_STATE_TAIL && isColTail(bBrick))
+			{
+				switch (bBrick->type)
+				{
+				case BREAKABLE_BRICK_TYPE_1UP_MUSHROOM:
+					if (x <= bBrick->x)
+						bBrick->SetState(BREAKABLE_BRICK_STATE_1UP_MUSHROOM_LEFT);
+					else
+						bBrick->SetState(BREAKABLE_BRICK_STATE_1UP_MUSHROOM_RIGHT);
+					break;
+				case BREAKABLE_BRICK_TYPE_P_SWITCH:
+					bBrick->SetState(BREAKABLE_BRICK_STATE_P_SWITCH);
+					break;
+				case BREAKABLE_BRICK_TYPE_COIN:
+					bBrick->SetState(BREAKABLE_BRICK_STATE_BREAK);
+					break;
+				default:
+					break;
+				}
+			}
+		}
+		// Coin
+		else if (dynamic_cast<CCoin*>(obj))
+		{
+			CCoin* coin = dynamic_cast<CCoin*>(obj);
+			coin->DeleteObjs(coObjs);
+		}
+	}
+}
+
+bool CMario::isColTail(CGameObject* obj)
+{
+	float leftTail, topTail, rightTail, bottomTail;
+	float left2, top2, right2, bottom2;
+
+	topTail = top + 16;
+	bottomTail = bottom;
+	if (nx < 0)
+	{
+		leftTail = left - 8;
+		rightTail = leftTail + MARIO_TAIL_BBOX_WIDTH;
+	}
+	else
+	{
+		rightTail = right + 8;
+		leftTail = rightTail - MARIO_TAIL_BBOX_WIDTH;
+	}
+
+	obj->GetBoundingBox(left2, top2, right2, bottom2);
+
+	return !(rightTail < left2 || leftTail > right2 || bottomTail <= top2 || topTail >= bottom2);
 }
 

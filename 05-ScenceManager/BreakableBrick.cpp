@@ -90,11 +90,11 @@ void CBreakableBrick::SetState(int state)
 		}
 		break;
 	case BREAKABLE_BRICK_STATE_1UP_MUSHROOM_LEFT:
-		obj = new CMushRoom(x, y, -1, MUSHROOM_TYPE_RED);
+		obj = new CMushRoom(x, y, -1, MUSHROOM_TYPE_1_UP);
 		CGame::GetInstance()->GetCurrentScene()->GetOtherObjs()->push_back(obj);
 		break;
 	case BREAKABLE_BRICK_STATE_1UP_MUSHROOM_RIGHT:
-		obj = new CMushRoom(x, y, 1, MUSHROOM_TYPE_RED);
+		obj = new CMushRoom(x, y, 1, MUSHROOM_TYPE_1_UP);
 		CGame::GetInstance()->GetCurrentScene()->GetOtherObjs()->push_back(obj);
 		break;
 	case BREAKABLE_BRICK_STATE_P_SWITCH:
