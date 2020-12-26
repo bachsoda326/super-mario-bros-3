@@ -6,13 +6,18 @@
 
 class CWorldStation : public CGameObject
 {
-	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects) {};
-	void Render();
-
+	int sceneId;
+	
+	void SetBoundingBox();
 public:
 	bool canLeft, canTop, canRight, canBottom;
 
-	CWorldStation(bool left, bool top, bool right, bool bottom);
+	CWorldStation(int id, bool left, bool top, bool right, bool bottom);
+
+	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects) {};
+	void Render();
 	void GetBoundingBox(float& l, float& t, float& r, float& b);
+
+	int GetSceneId() { return sceneId; }
 };
 

@@ -23,15 +23,19 @@
 
 class CBullet : public CGameObject
 {
+	void SetBoundingBox();
+public:
+	bool isEnemy = false;
+	DWORD explode_start = 0;
+
+	CBullet();
+
 	void GetBoundingBox(float& left, float& top, float& right, float& bottom);
 	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
 	void Render();
-
-public:
-	bool isEnemy = false;
-	DWORD explode_start;
-
-	CBullet();
 	void SetState(int state);
+
+	// Giao nhau vs các obj
+	void OnIntersect(CGameObject* obj, vector<LPGAMEOBJECT>* coObjs);
 };
 

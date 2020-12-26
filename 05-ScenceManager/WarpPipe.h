@@ -10,13 +10,14 @@ class CWarpPipe : public CGameObject
 	int mRight, mBottom;
 	CPiranha* piranha = NULL;
 
-	void Render();
-	void GetBoundingBox(float& l, float& t, float& r, float& b);
-
+	void SetBoundingBox();
 public:
 	int type;
-	float tele_x, tele_y;
+	float tele_x = -1, tele_y = -1;
 
 	CWarpPipe(float x, float y, int r, int b, int type, float tele_x, float tele_y);
+
+	void Render();
+	void GetBoundingBox(float& l, float& t, float& r, float& b);
 };
 

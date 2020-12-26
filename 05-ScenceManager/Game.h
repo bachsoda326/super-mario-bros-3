@@ -78,10 +78,13 @@ public:
 		float &t, 
 		float &nx, 
 		float &ny);
+	bool AABBCheck(float left1, float top1, float right1, float bottom1, float left2, float top2, float right2, float bottom2);
 
 	LPDIRECT3DDEVICE9 GetDirect3DDevice() { return this->d3ddv; }
 	LPDIRECT3DSURFACE9 GetBackBuffer() { return backBuffer; }
 	LPD3DXSPRITE GetSpriteHandler() { return this->spriteHandler; }
+
+	void CalcViewObjs(vector<LPGAMEOBJECT>* viewObjs, vector<LPGAMEOBJECT> objs);
 
 	void SetCamPos(float x, float y) { cam_x = x; cam_y = y; }
 

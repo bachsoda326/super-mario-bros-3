@@ -9,7 +9,10 @@
 
 class CBrick : public CGameObject
 {
+	void SetBoundingBox();
 public:
+	CBrick();
+
 	virtual void Render();
 	virtual void GetBoundingBox(float &l, float &t, float &r, float &b);
 };

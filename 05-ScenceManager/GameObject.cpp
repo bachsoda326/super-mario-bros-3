@@ -72,21 +72,21 @@ bool CGameObject::AABBCheck(CGameObject* obj1, CGameObject* obj2)
 	}
 
 	// return true nếu collision xảy ra
-	return AABBCheck(left1, top1, right1, bottom1, left2, top2, right2, bottom2);
+	return CGame::GetInstance()->AABBCheck(left1, top1, right1, bottom1, left2, top2, right2, bottom2);
 }
 
-bool CGameObject::AABBCheck(float left1, float top1, float right1, float bottom1, float left2, float top2, float right2, float bottom2)
-{	
-	// return true nếu collision xảy ra
-	return !(right1 < left2 || left1 > right2 || bottom1 < top2 || top1 > bottom2);
-}
+//bool CGameObject::AABBCheck(float left1, float top1, float right1, float bottom1, float left2, float top2, float right2, float bottom2)
+//{	
+//	// return true nếu collision xảy ra
+//	return !(right1 < left2 || left1 > right2 || bottom1 < top2 || top1 > bottom2);
+//}
 
 void CGameObject::ExceptionalCase(CGameObject* obj2, LPCOLLISIONEVENT& coEvent)
 {
 	if (right > obj2->left && left < obj2->right)
 	{
 		//Should check again with condition >= top && <= top + i
-		if ((int)bottom == (int)obj2->top && vy > 0)
+		if ((int)bottom >= (int)obj2->top && (int)bottom <= (int)obj2->top + 6 && vy > 0)
 		{
 			coEvent->t = 0.0f;
 			coEvent->ny = -1.0f;

@@ -175,13 +175,13 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		obj = new CMario(x, y);
 		player = (CMario*)obj;
 
-		for (int i = 0; i < 2; i++)
-		{
-			CBullet* bullet = new CBullet();
-			//bullet->SetAnimationSet(ani_set);
-			player->bullets->push_back(bullet);
-			objects.push_back(player->bullets->at(i));
-		}
+		//for (int i = 0; i < 2; i++)
+		//{
+		//	CBullet* bullet = new CBullet();
+		//	//bullet->SetAnimationSet(ani_set);
+		//	player->bullets->push_back(bullet);
+		//	objects.push_back(player->bullets->at(i));
+		//}
 
 		DebugOut(L"[INFO] Player object created!\n");
 		break;
@@ -354,30 +354,37 @@ void CPlayScene::Update(DWORD dt)
 	// We know that Mario is the first object in the list hence we won't add him into the colliable object list
 	// TO-DO: This is a "dirty" way, need a more organized way 
 	
-	// add to colliable objs
+	// calculate obj in view
+	viewOtherObjs.clear();
+	viewObjs.clear();
+	CGame::GetInstance()->CalcViewObjs(&viewOtherObjs, otherObjs);
+	CGame::GetInstance()->CalcViewObjs(&viewObjs, objects);
+
 	vector<LPGAMEOBJECT> coObjects;
-	for (size_t i = 0; i < otherObjs.size(); i++)
+	for (size_t i = 0; i < viewOtherObjs.size(); i++)
 	{
-		if (!otherObjs[i]->isDie || !otherObjs[i]->isDead)
-			coObjects.push_back(otherObjs[i]);
+		if (!viewOtherObjs[i]->isDie || !viewOtherObjs[i]->isDead)
+			coObjects.push_back(viewOtherObjs[i]);
 	}
-	for (size_t i = 0; i < objects.size(); i++)
+	for (size_t i = 0; i < viewObjs.size(); i++)
 	{
-		if (i == 2) continue;
-		if (!objects[i]->isDie || !objects[i]->isDead)
-			coObjects.push_back(objects[i]);
+		/*if (i == 2) continue;*/
+		if (dynamic_cast<CMario*>(viewObjs.at(i)))
+			continue;
+		if (!viewObjs[i]->isDie || !viewObjs[i]->isDead)
+			coObjects.push_back(viewObjs[i]);
 	}
 
 	// update all objs
-	for (size_t i = 0; i < otherObjs.size(); i++)
+	for (size_t i = 0; i < viewOtherObjs.size(); i++)
 	{
-		if (!otherObjs[i]->isDead)
-			otherObjs[i]->Update(dt, &coObjects);
+		if (!viewOtherObjs[i]->isDead)
+			viewOtherObjs[i]->Update(dt, &coObjects);
 	}
-	for (size_t i = 0; i < objects.size(); i++)
+	for (size_t i = 0; i < viewObjs.size(); i++)
 	{
-		if (!objects[i]->isDead)
-			objects[i]->Update(dt, &coObjects);
+		if (!viewObjs[i]->isDead)
+			viewObjs[i]->Update(dt, &coObjects);
 	}
 
 	// skip the rest if scene was already unloaded (Mario::Update might trigger PlayScene::Unload)
@@ -403,15 +410,20 @@ void CPlayScene::Render()
 		map->Render();
 	}
 
-	for (int i = 0; i < otherObjs.size(); i++)
+	viewOtherObjs.clear();
+	viewObjs.clear();
+	CGame::GetInstance()->CalcViewObjs(&viewOtherObjs, otherObjs);
+	CGame::GetInstance()->CalcViewObjs(&viewObjs, objects);
+
+	for (int i = 0; i < viewOtherObjs.size(); i++)
 	{
-		if (!otherObjs[i]->isDead)
-			otherObjs[i]->Render();
+		if (!viewOtherObjs[i]->isDead)
+			viewOtherObjs[i]->Render();
 	}
-	for (int i = 0; i < objects.size(); i++)
+	for (int i = 0; i < viewObjs.size(); i++)
 	{
-		if (!objects[i]->isDead)
-			objects[i]->Render();
+		if (!viewObjs[i]->isDead)
+			viewObjs[i]->Render();
 	}
 }
 
@@ -487,6 +499,9 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 	CMario* mario = ((CPlayScene*)scence)->GetPlayer();
 	switch (KeyCode)
 	{
+	case DIK_C:
+		CGame::GetInstance()->SwitchScene(WORLD_MAP_1);
+		break;
 	case DIK_NUMPAD0:
 		mario->SetPosition(1400, 130);
 		break;

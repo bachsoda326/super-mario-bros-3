@@ -14,9 +14,11 @@
 
 class CBrickPiece : public CGameObject
 {
-	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects = NULL);
-	void Render();
+	void SetBoundingBox() {};
 public:
 	CBrickPiece();
+
+	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects = NULL);
+	void Render();
 };
 

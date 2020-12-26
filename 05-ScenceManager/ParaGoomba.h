@@ -31,20 +31,20 @@
 
 class CParaGoomba : public CGameObject
 {	
-	DWORD wing_walk_start;
-	DWORD wing_pre_jump_start; 
-	DWORD die_start;
+	DWORD wing_walk_start = 0;
+	DWORD wing_pre_jump_start = 0; 
+	DWORD die_start = 0;
 
-	int level;
+	int level;	
 
-	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
-	void Render();
-	void GetBoundingBox(float& l, float& t, float& r, float& b);
-
+	void SetBoundingBox();
 public:
 	CParaGoomba();
 
+	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
+	void Render();
 	void SetState(int state);
+	void GetBoundingBox(float& l, float& t, float& r, float& b);
 	int GetLevel() { return level; }
 };
 

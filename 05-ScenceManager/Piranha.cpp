@@ -32,6 +32,8 @@ CPiranha::CPiranha(int type, float x, float y)
 		bullet->isEnemy = true;
 		CGame::GetInstance()->GetCurrentScene()->GetObjs()->push_back(bullet);
 	}
+
+	SetBoundingBox();
 }
 
 void CPiranha::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjs)
@@ -160,16 +162,6 @@ void CPiranha::Render()
 	RenderBoundingBox();
 }
 
-void CPiranha::GetBoundingBox(float& l, float& t, float& r, float& b)
-{
-	l = x - PIRANHA_BBOX_HEAD_HEIGHT;
-	t = y;
-	r = l + PIRANHA_BBOX_WIDTH + 2 * PIRANHA_BBOX_HEAD_HEIGHT;
-	b = t + height;	
-
-	CGameObject::GetBoundingBox(l, t, r, b);
-}
-
 void CPiranha::SetState(int state)
 {
 	CGameObject::SetState(state);
@@ -191,6 +183,24 @@ void CPiranha::SetState(int state)
 	default:
 		break;
 	}
+}
+
+void CPiranha::GetBoundingBox(float& l, float& t, float& r, float& b)
+{
+	l = x - PIRANHA_BBOX_HEAD_HEIGHT;
+	t = y;
+	r = l + PIRANHA_BBOX_WIDTH + 2 * PIRANHA_BBOX_HEAD_HEIGHT;
+	b = start_bottom - 8;
+
+	CGameObject::GetBoundingBox(l, t, r, b);
+}
+
+void CPiranha::SetBoundingBox()
+{
+	left = x - PIRANHA_BBOX_HEAD_HEIGHT;
+	top = y;
+	right = left + PIRANHA_BBOX_WIDTH + 2 * PIRANHA_BBOX_HEAD_HEIGHT;
+	bottom = start_bottom - 8;
 }
 
 

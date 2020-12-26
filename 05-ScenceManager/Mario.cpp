@@ -14,7 +14,7 @@
 
 CMario::CMario(float x, float y) : CGameObject()
 {
-	level = MARIO_LEVEL_BIG;
+	level = MARIO_LEVEL_SMALL;
 	untouchable = 0;
 	SetState(MARIO_STATE_IDLE);
 
@@ -24,6 +24,15 @@ CMario::CMario(float x, float y) : CGameObject()
 	this->y = y;
 
 	bullets = new vector<CBullet*>();
+	for (int i = 0; i < 2; i++)
+	{
+		CBullet* bullet = new CBullet();
+		//bullet->SetAnimationSet(ani_set);
+		bullets->push_back(bullet);
+		CGame::GetInstance()->GetCurrentScene()->GetObjs()->push_back(bullet);
+	}
+
+	SetBoundingBox();
 }
 
 void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
@@ -165,7 +174,10 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		if ((GetTickCount() - pipe_up_start) == 1500)
 		{
 			//SetState(MARIO_STATE_IDLE);
-			SetPosition(pipe_tele_x, pipe_tele_y);
+			if (level == MARIO_LEVEL_SMALL)
+				SetPosition(pipe_tele_x, pipe_tele_y + MARIO_BIG_BBOX_HEIGHT - MARIO_SMALL_BBOX_HEIGHT);
+			else
+				SetPosition(pipe_tele_x, pipe_tele_y);
 
 			switch (((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetMap()->GetId())
 			{
@@ -266,7 +278,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			// Stand on obj
 			if (ny < 0 && e->obj != NULL)
 			{
-				if (!dynamic_cast<CCoin*>(e->obj) && !dynamic_cast<CBullet*>(e->obj) && !dynamic_cast<CLeaf*>(e->obj) && !dynamic_cast<CMushRoom*>(e->obj))
+				if (!dynamic_cast<CCoin*>(e->obj) && !dynamic_cast<CBullet*>(e->obj) && !dynamic_cast<CLeaf*>(e->obj) && !dynamic_cast<CMushRoom*>(e->obj) && !dynamic_cast<CPiranha*>(e->obj))
 				{
 					if (!(dynamic_cast<CBreakableBrick*>(e->obj) && e->obj->GetState() == BREAKABLE_BRICK_STATE_COIN || dynamic_cast<CPSwitch*>(e->obj) && e->obj->GetState() == PSWITCH_STATE_HIT))
 					{
@@ -298,7 +310,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					canJumpHigher = false;
 				}
 			}
-			else if (ny > 0 && !dynamic_cast<CCoin*>(e->obj) && !dynamic_cast<CLeaf*>(e->obj) && !dynamic_cast<CBullet*>(e->obj) && !dynamic_cast<CMushRoom*>(e->obj) && !dynamic_cast<CCloudTooth*>(e->obj))
+			else if (ny > 0 && !dynamic_cast<CCoin*>(e->obj) && !dynamic_cast<CLeaf*>(e->obj) && !dynamic_cast<CBullet*>(e->obj) && !dynamic_cast<CMushRoom*>(e->obj) && !dynamic_cast<CCloudTooth*>(e->obj) && !dynamic_cast<CKoopas*>(e->obj) && !dynamic_cast<CGoomba*>(e->obj))
 			{
 				if (!((dynamic_cast<CBreakableBrick*>(e->obj) && e->obj->GetState() == BREAKABLE_BRICK_STATE_COIN) || ((dynamic_cast<CWarpPipe*>(e->obj)/* && state == MARIO_STATE_PIPE*/))))
 				{
@@ -360,26 +372,32 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				}
 
 				CWarpPipe* pipe = dynamic_cast<CWarpPipe*>(e->obj);
-				switch (pipe->type)
+				if (left > pipe->left && right < pipe->right)
 				{
-				case WARPPIPE_TYPE_DOWN:
-					if (CGame::GetInstance()->IsKeyDown(DIK_DOWN))
+					switch (pipe->type)
 					{
-						pipe_tele_x = pipe->tele_x;
-						pipe_tele_y = pipe->tele_y;
-						pipe_down_start = GetTickCount();
+					case WARPPIPE_TYPE_DOWN:
+						if (CGame::GetInstance()->IsKeyDown(DIK_DOWN))
+						{
+							pipe_tele_x = pipe->tele_x;
+							pipe_tele_y = pipe->tele_y;
+							SetState(MARIO_STATE_PIPE);
+							pipe_down_start = GetTickCount();
+							y += MARIO_PIPE_DOWN_HEIGHT;
+						}
+						break;
+					case WARPPIPE_TYPE_UP:
+						if (CGame::GetInstance()->IsKeyDown(DIK_UP))
+						{
+							pipe_tele_x = pipe->tele_x;
+							pipe_tele_y = pipe->tele_y;
+							SetState(MARIO_STATE_PIPE);
+							pipe_up_start = GetTickCount();
+						}
+						break;
+					default:
+						break;
 					}
-					break;
-				case WARPPIPE_TYPE_UP:
-					if (CGame::GetInstance()->IsKeyDown(DIK_UP))
-					{
-						pipe_tele_x = pipe->tele_x;
-						pipe_tele_y = pipe->tele_y;
-						pipe_up_start = GetTickCount();
-					}
-					break;
-				default:
-					break;
 				}
 			}
 			// Goomba
@@ -438,6 +456,9 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			// Koopas
 			else if (dynamic_cast<CKoopas*>(e->obj)) // if e->obj is CKoopas 
 			{
+				x += dx;
+				y += dy;
+
 				CKoopas* koopas = dynamic_cast<CKoopas*>(e->obj);
 
 				//if (koopas->GetState() == KOOPAS_STATE_HIDE)
@@ -564,7 +585,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					x += dx;
 					y += dy;
 
-					bBrick->DeleteObjs(coObjects);
+					/*bBrick->DeleteObjs(coObjects);*/
 				}
 				else if (bBrick->GetState() == QUESTION_BRICK_STATE_NORMAL)
 				{
@@ -610,7 +631,6 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						pSwitch->SetState(PSWITCH_STATE_HIT);
 						break;
 					case PSWITCH_STATE_HIT:
-						x += dx;
 						y += dy;
 						break;
 					default:
@@ -1144,6 +1164,40 @@ void CMario::GetBoundingBox(float& left, float& top, float& right, float& bottom
 	CGameObject::GetBoundingBox(left, top, right, bottom);
 }
 
+void CMario::SetBoundingBox()
+{
+	if (state == MARIO_STATE_DUCK)
+		top = y + MARIO_BIG_BBOX_HEIGHT - MARIO_BIG_BBOX_HEIGHT_DUCK;
+	else
+		top = y;
+
+	if (level == MARIO_LEVEL_BIG || level == MARIO_LEVEL_RACCOON || level == MARIO_LEVEL_FIRE)
+	{
+		/*if (state == MARIO_STATE_TAIL)
+		{
+			left = x - 8;
+			right = x + MARIO_BIG_BBOX_WIDTH + 8;
+		}
+		else
+		{
+			left = x;
+			right = left + MARIO_BIG_BBOX_WIDTH;
+		}*/
+		left = x;
+		right = left + MARIO_BIG_BBOX_WIDTH;
+		if (state == MARIO_STATE_DUCK)
+			bottom = top + MARIO_BIG_BBOX_HEIGHT_DUCK;
+		else
+			bottom = top + MARIO_BIG_BBOX_HEIGHT;
+	}
+	else
+	{
+		left = x;
+		right = left + MARIO_SMALL_BBOX_WIDTH;
+		bottom = top + MARIO_SMALL_BBOX_HEIGHT;
+	}
+}
+
 /*
 	Reset Mario status to the beginning state of a scene
 */
@@ -1200,16 +1254,17 @@ void CMario::OnIntersect(CGameObject* obj, vector<LPGAMEOBJECT>* coObjs)
 			if (state == MARIO_STATE_TAIL)
 			{
 				koopas->vx = nx * 0.07f;
-				koopas->vy = -0.5f;
+				koopas->vy = -0.4f;
 				koopas->yReverse = true;
 				koopas->SetState(KOOPAS_STATE_HIDE);
 			}
 			else if (state != MARIO_STATE_KICK)
 			{
-				if (koopas->GetState() == KOOPAS_STATE_WALKING)
+				if (koopas->GetState() == KOOPAS_STATE_WALKING && koopas->colY != -1)
 				{
 					if (untouchable == 0)
-						koopas->vx = -koopas->vx;
+						if (koopas->vx > 0 && koopas->colX == -1 || koopas->vx < 0 && koopas->colX == 1)
+							koopas->vx = -koopas->vx;
 					Hurt();
 				}
 				else if (koopas->GetState() == KOOPAS_STATE_SPIN && koopas->colY != -1)
@@ -1222,7 +1277,7 @@ void CMario::OnIntersect(CGameObject* obj, vector<LPGAMEOBJECT>* coObjs)
 		else if (dynamic_cast<CPiranha*>(obj))
 		{
 			CPiranha* piranha = dynamic_cast<CPiranha*>(obj);
-			if (state == MARIO_STATE_TAIL)
+			if (state == MARIO_STATE_TAIL && piranha->GetState() == PIRANHA_STATE_NORMAL)
 			{
 				piranha->SetState(PIRANHA_STATE_DIE);
 			}
@@ -1325,6 +1380,10 @@ void CMario::OnIntersect(CGameObject* obj, vector<LPGAMEOBJECT>* coObjs)
 		else if (dynamic_cast<CBreakableBrick*>(obj))
 		{
 			CBreakableBrick* bBrick = dynamic_cast<CBreakableBrick*>(obj);
+			if (bBrick->GetState() == BREAKABLE_BRICK_STATE_COIN)
+			{
+				bBrick->DeleteObjs(coObjs);
+			}
 			if (state == MARIO_STATE_TAIL && isColTail(bBrick))
 			{
 				switch (bBrick->type)
@@ -1360,8 +1419,8 @@ bool CMario::isColTail(CGameObject* obj)
 	float leftTail, topTail, rightTail, bottomTail;
 	float left2, top2, right2, bottom2;
 
-	topTail = top + 16;
-	bottomTail = bottom;
+	topTail = top + 24;
+	bottomTail = bottom - 2;
 	if (nx < 0)
 	{
 		leftTail = left - 8;

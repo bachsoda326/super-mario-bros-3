@@ -22,14 +22,15 @@
 #define GOOMBA_GRAVITY			0.001f
 
 class CGoomba : public CGameObject
-{
-	void GetBoundingBox(float &left, float &top, float &right, float &bottom);
-	void Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects);
-	void Render();
-
-public: 	
-	DWORD die_start;
+{	
+	void SetBoundingBox(); 
+public:
+	DWORD die_start = 0;
 
 	CGoomba();
+
+	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
+	void Render();
 	void SetState(int state);
+	void GetBoundingBox(float& left, float& top, float& right, float& bottom);
 };

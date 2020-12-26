@@ -70,6 +70,8 @@ public:
 
 	LPANIMATION_SET animation_set;
 
+	virtual void SetBoundingBox() = 0;
+
 public: 
 	void SetPosition(float x, float y) { this->x = x, this->y = y; }
 	void SetSpeed(float vx, float vy) { this->vx = vx, this->vy = vy; }
@@ -84,7 +86,7 @@ public:
 
 	LPCOLLISIONEVENT SweptAABBEx(LPGAMEOBJECT coO);
 	bool AABBCheck(CGameObject* obj1, CGameObject* obj2);
-	bool AABBCheck(float left1, float top1, float right1, float bottom1, float left2, float top2, float right2, float bottom2);
+	//bool AABBCheck(float left1, float top1, float right1, float bottom1, float left2, float top2, float right2, float bottom2);
 	void ExceptionalCase(CGameObject* obj2, LPCOLLISIONEVENT& coEvent);
 	void CalcPotentialCollisions(vector<LPGAMEOBJECT> *coObjects, vector<LPCOLLISIONEVENT> &coEvents);
 	void FilterCollision(

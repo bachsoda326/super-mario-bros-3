@@ -14,17 +14,19 @@
 #define MUSHROOM_GRAVITY			0.001f
 
 class CMushRoom : public CGameObject
-{
+{	
+	void SetBoundingBox();
+public:
+	int type = -1;
+	bool isInitialized = false;
+	int nx = -1;
+	float start_bottom = -1;
+
+	CMushRoom();
+	CMushRoom(float x, float y, int nx, int type);
+
 	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects = NULL);
 	void Render();
 	void GetBoundingBox(float& l, float& t, float& r, float& b);
-
-public:
-	int type;
-	bool isInitialized = false;
-	int nx;
-	float start_bottom;
-	CMushRoom();
-	CMushRoom(float x, float y, int nx, int type);
 };
 

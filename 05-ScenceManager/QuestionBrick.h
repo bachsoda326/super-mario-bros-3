@@ -21,9 +21,6 @@
 
 class CQuestionBrick : public CBrick
 {
-	void Render();
-	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects = NULL);
-
 public:
 	float start_x;			// initial position of question brick
 	float start_y;
@@ -33,6 +30,9 @@ public:
 	CGameObject *obj = NULL;
 
 	CQuestionBrick(float x, float y, int type);	
+
+	void Render();
+	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects = NULL);
 	void SetState(int state);
 };
 

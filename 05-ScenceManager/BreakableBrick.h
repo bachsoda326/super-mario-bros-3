@@ -19,18 +19,19 @@
 class CBreakableBrick : public CBrick
 {
 	DWORD coin_start;
-	DWORD break_start;
+	DWORD break_start;	
 
-	void Render();
-	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects = NULL);
-
+	void SetBoundingBox();
 public:
 	int type;
 
 	CGameObject* obj = NULL;
 
 	CBreakableBrick(int type);
-	
+
+	void Render();
+	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects = NULL);
+	void GetBoundingBox(float& l, float& t, float& r, float& b);
 	void SetState(int state);
 };
 

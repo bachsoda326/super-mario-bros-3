@@ -6,6 +6,7 @@
 
 CMushRoom::CMushRoom()
 {
+	SetBoundingBox();
 }
 
 CMushRoom::CMushRoom(float x, float y, int nx, int type)
@@ -20,6 +21,8 @@ CMushRoom::CMushRoom(float x, float y, int nx, int type)
 	SetPosition(x, y);	
 
 	vy = -0.02f;
+
+	SetBoundingBox();
 }
 
 void CMushRoom::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
@@ -124,4 +127,12 @@ void CMushRoom::GetBoundingBox(float& l, float& t, float& r, float& b)
 	b = y + MUSHROOM_BBOX_HEIGHT;
 
 	CGameObject::GetBoundingBox(l, t, r, b);
+}
+
+void CMushRoom::SetBoundingBox()
+{
+	left = x;
+	top = y;
+	right = x + MUSHROOM_BBOX_WIDTH;
+	bottom = y + MUSHROOM_BBOX_HEIGHT;
 }

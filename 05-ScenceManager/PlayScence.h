@@ -28,6 +28,9 @@ protected:
 
 	CTileMap* map;
 
+	vector<LPGAMEOBJECT> viewOtherObjs;
+	vector<LPGAMEOBJECT> viewObjs;
+
 	void _ParseSection_TEXTURES(string line);
 	void _ParseSection_SPRITES(string line);
 	void _ParseSection_ANIMATIONS(string line);

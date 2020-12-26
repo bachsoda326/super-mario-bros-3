@@ -11,6 +11,8 @@ CParaGoomba::CParaGoomba()
 	level = PARA_GOOMBA_LEVEL_WING;
 	SetState(PARA_GOOMBA_STATE_WALKING);
 	vx = -PARA_GOOMBA_WALKING_SPEED;
+
+	SetBoundingBox();
 }
 
 void CParaGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
@@ -248,7 +250,26 @@ void CParaGoomba::GetBoundingBox(float& left, float& top, float& right, float& b
 			bottom = y + PARA_GOOMBA_BBOX_HEIGHT_DIE;
 		else
 			bottom = y + PARA_GOOMBA_BBOX_HEIGHT;
-	}	
+	}
 
 	CGameObject::GetBoundingBox(left, top, right, bottom);
+}
+
+void CParaGoomba::SetBoundingBox()
+{
+	left = x;
+	top = y;
+	if (level == PARA_GOOMBA_LEVEL_WING)
+	{
+		right = x + PARA_GOOMBA_WING_BBOX_WIDTH;
+		bottom = y + PARA_GOOMBA_WING_BBOX_HEIGHT;
+	}
+	else if (level == PARA_GOOMBA_LEVEL_NOR)
+	{
+		right = x + PARA_GOOMBA_BBOX_WIDTH;
+		if (state == PARA_GOOMBA_STATE_DIE)
+			bottom = y + PARA_GOOMBA_BBOX_HEIGHT_DIE;
+		else
+			bottom = y + PARA_GOOMBA_BBOX_HEIGHT;
+	}
 }

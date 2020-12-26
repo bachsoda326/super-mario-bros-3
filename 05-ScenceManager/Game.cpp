@@ -341,6 +341,47 @@ void CGame::SweptAABB(
 
 }
 
+bool CGame::AABBCheck(float left1, float top1, float right1, float bottom1, float left2, float top2, float right2, float bottom2)
+{
+	// return true nếu collision xảy ra
+	return !(right1 < left2 || left1 > right2 || bottom1 < top2 || top1 > bottom2);
+}
+
+void CGame::CalcViewObjs(vector<LPGAMEOBJECT>* viewObjs, vector<LPGAMEOBJECT> objs)
+{	
+	float cx, cy;
+	/*player->GetPosition(cx, cy);*/
+	CCamera::GetInstance()->GetPosition();
+	cx = CCamera::GetInstance()->GetPosition().x;
+	cy = CCamera::GetInstance()->GetPosition().y;
+	// tính vị trí topleft và botright của camera
+	int xTopLeftCamera = cx - GetScreenWidth() / 2;
+	int yTopLeftCamera = cy - GetScreenHeight() / 2;
+	int xBotRightCamera = cx + GetScreenWidth() / 2;
+	int yBotRightCamera = cy + GetScreenHeight() / 2;
+	// tính vị trí topleft và botright của cell
+	int xTopLeftCell = xTopLeftCamera / CELL_SIZE;
+	int yTopLeftCell = yTopLeftCamera / CELL_SIZE;
+	int xBotRightCell = xBotRightCamera / CELL_SIZE;
+	int yBotRightCell = yBotRightCamera / CELL_SIZE;
+	// tính left, top, right, bottom của tổng các grid trọng view
+	float gridLeft = xTopLeftCell * CELL_SIZE;
+	float gridTop = yTopLeftCell * CELL_SIZE;
+	float gridRight = xBotRightCell * CELL_SIZE + CELL_SIZE;
+	float gridBottom = yBotRightCell * CELL_SIZE + CELL_SIZE;	
+		
+	for (size_t i = 0; i < objs.size(); i++)
+	{
+		float left1, top1, right1, bottom1;
+		objs.at(i)->GetBoundingBox(left1, top1, right1, bottom1);
+
+		if (AABBCheck(left1, top1, right1, bottom1, gridLeft, gridTop, gridRight, gridBottom))
+		{
+			viewObjs->push_back(objs.at(i));
+		}
+	}
+}
+
 CGame *CGame::GetInstance()
 {
 	if (__instance == NULL) __instance = new CGame();
@@ -377,11 +418,11 @@ void CGame::_ParseSection_SCENES(string line)
 	LPSCENE scene;
 	switch (id)
 	{
-	case 1:
-		scene = new CWorldMapScene(id, path);
-		break;
-	case 2:
+	case MAP_1_1:
 		scene = new CPlayScene(id, path);
+		break;
+	case WORLD_MAP_1:
+		scene = new CWorldMapScene(id, path);
 		break;
 	default:
 		scene = new CPlayScene(id, path);

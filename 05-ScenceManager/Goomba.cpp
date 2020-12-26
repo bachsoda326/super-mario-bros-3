@@ -1,21 +1,10 @@
 #include "Goomba.h"
+
 CGoomba::CGoomba()
 {
 	SetState(GOOMBA_STATE_WALKING);
-}
 
-void CGoomba::GetBoundingBox(float& left, float& top, float& right, float& bottom)
-{
-	left = x;
-	top = y;
-	right = x + GOOMBA_BBOX_WIDTH;
-
-	if (state == GOOMBA_STATE_DIE)
-		bottom = y + GOOMBA_BBOX_HEIGHT_DIE;
-	else
-		bottom = y + GOOMBA_BBOX_HEIGHT;
-
-	CGameObject::GetBoundingBox(left, top, right, bottom);
+	SetBoundingBox();
 }
 
 void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
@@ -101,10 +90,16 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 			if (e->nx != 0)
 			{
-				if (dynamic_cast<CGround*>(e->obj) || dynamic_cast<CWarpPipe*>(e->obj) || dynamic_cast<CBrick*>(e->obj) || dynamic_cast<CGoomba*>(e->obj))
+				if (dynamic_cast<CGround*>(e->obj) || dynamic_cast<CWarpPipe*>(e->obj) || dynamic_cast<CBrick*>(e->obj))
 				{
 					PreventMoveX(nx, e->obj);
 					vx = -vx;
+				}
+				else if (dynamic_cast<CGoomba*>(e->obj))
+				{
+					PreventMoveX(nx, e->obj);
+					vx = -vx;
+					e->obj->vx = -e->obj->vx;
 				}
 				else if (dynamic_cast<CKoopas*>(e->obj))
 				{
@@ -112,7 +107,8 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					if (koopas->state != KOOPAS_STATE_SPIN && koopas->state != KOOPAS_STATE_HOLD)
 					{
 						PreventMoveX(nx, e->obj);
-						vx = -vx;						
+						vx = -vx;
+						koopas->vx = -koopas->vx;
 					}
 				}
 				/*if (dynamic_cast<CGoomba*>(e->obj) || dynamic_cast<CMario*>(e->obj))
@@ -168,4 +164,30 @@ void CGoomba::SetState(int state)
 		vx = -GOOMBA_WALKING_SPEED;
 		break;
 	}
+}
+
+void CGoomba::GetBoundingBox(float& left, float& top, float& right, float& bottom)
+{
+	left = x;
+	top = y;
+	right = x + GOOMBA_BBOX_WIDTH;
+
+	if (state == GOOMBA_STATE_DIE)
+		bottom = y + GOOMBA_BBOX_HEIGHT_DIE;
+	else
+		bottom = y + GOOMBA_BBOX_HEIGHT;
+
+	CGameObject::GetBoundingBox(left, top, right, bottom);
+}
+
+void CGoomba::SetBoundingBox()
+{
+	left = x;
+	top = y;
+	right = x + GOOMBA_BBOX_WIDTH;
+
+	if (state == GOOMBA_STATE_DIE)
+		bottom = y + GOOMBA_BBOX_HEIGHT_DIE;
+	else
+		bottom = y + GOOMBA_BBOX_HEIGHT;
 }

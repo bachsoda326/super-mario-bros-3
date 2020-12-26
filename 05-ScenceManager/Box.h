@@ -3,11 +3,13 @@
 
 class CBox : public CGameObject
 {
-	int right, bottom;
+	int mRight, mBottom;
+
+	void SetBoundingBox();
 public:
 	CBox(int r, int b);
 
-	virtual void Render();
-	virtual void GetBoundingBox(float& l, float& t, float& r, float& b);
+	void Render();
+	void GetBoundingBox(float& l, float& t, float& r, float& b);
 };
 

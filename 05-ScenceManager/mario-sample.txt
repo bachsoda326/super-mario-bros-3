@@ -1,7 +1,6 @@
 [SETTINGS]
-start	1
+start	100
 #scene list
 [SCENES]
-1	world1.txt
-2	scene1.txt
-3	scene-test.txt
+1	scene1.txt
+100	world1.txt

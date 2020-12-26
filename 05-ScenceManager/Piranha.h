@@ -26,18 +26,15 @@
 
 class CPiranha : public CGameObject
 {
-	DWORD wait_up_start;
-	DWORD wait_down_start;
-	DWORD wait_fire_start;
-	DWORD explode_start;
+	DWORD wait_up_start = 0;
+	DWORD wait_down_start = 0;
+	DWORD wait_fire_start = 0;
+	DWORD explode_start = 0;
 	bool isUp = false;
 
 	CBullet* bullet = NULL;
 
-	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjs);
-	void Render();
-	void GetBoundingBox(float& l, float& t, float& r, float& b);
-
+	void SetBoundingBox();
 public:
 	int type;
 	float start_top;
@@ -46,6 +43,9 @@ public:
 
 	CPiranha(int type, float x, float y);
 
+	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjs);
+	void Render();
 	void SetState(int state);
+	void GetBoundingBox(float& l, float& t, float& r, float& b);
 };
 

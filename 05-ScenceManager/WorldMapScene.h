@@ -12,11 +12,11 @@
 class CWorldMapScene : public CScene
 {
 protected:
-	CWorldMario* player;					// A play scene has to have player, right? 
+	CWorldMario* player = NULL;					// A play scene has to have player, right? 
 
 	//vector<LPGAMEOBJECT> objects;
 
-	CTileMap* map;
+	CTileMap* map = NULL;
 
 	void _ParseSection_TEXTURES(string line);
 	void _ParseSection_SPRITES(string line);

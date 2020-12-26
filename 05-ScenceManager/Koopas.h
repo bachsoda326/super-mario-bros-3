@@ -29,8 +29,8 @@
 #define KOOPAS_ANI_WING				5
 
 #define KOOPAS_GRAVITY			0.002f
-#define KOOPAS_WING_GRAVITY		0.00025f
-#define KOOPAS_WING_JUMP		0.125f
+#define KOOPAS_WING_GRAVITY		0.0005f
+#define KOOPAS_WING_JUMP		0.175f
 
 #define KOOPAS_GREEN		1
 #define KOOPAS_RED			2
@@ -38,14 +38,15 @@
 
 class CKoopas : public CGameObject
 {
-	void GetBoundingBox(float &left, float &top, float &right, float &bottom);
-	void Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects);
-	void Render();
-
+	void SetBoundingBox();
 public:
 	int type;
 	/*float xMin, xMax;*/
 
 	CKoopas(int type);
+
+	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
+	void Render();
 	void SetState(int state);
+	void GetBoundingBox(float& left, float& top, float& right, float& bottom);
 };

@@ -7,6 +7,8 @@ CBreakableBrick::CBreakableBrick(int type)
 {
 	this->type = type;
 	SetState(BREAKABLE_BRICK_STATE_NORMAL);
+
+	SetBoundingBox();
 }
 
 void CBreakableBrick::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
@@ -103,5 +105,39 @@ void CBreakableBrick::SetState(int state)
 		break;
 	default:
 		break;
+	}
+}
+
+void CBreakableBrick::GetBoundingBox(float& l, float& t, float& r, float& b)
+{
+	l = x;
+	t = y;
+	if (state == BREAKABLE_BRICK_STATE_COIN)
+	{
+		r = x + COIN_BBOX_WIDTH;
+		b = y + COIN_BBOX_HEIGHT;
+	}
+	else
+	{		
+		r = x + BRICK_BBOX_WIDTH;
+		b = y + BRICK_BBOX_HEIGHT;
+	}
+
+	CGameObject::GetBoundingBox(l, t, r, b);
+}
+
+void CBreakableBrick::SetBoundingBox()
+{
+	left = x;
+	top = y;
+	if (state == BREAKABLE_BRICK_STATE_COIN)
+	{
+		right = x + COIN_BBOX_WIDTH;
+		bottom = y + COIN_BBOX_HEIGHT;
+	}
+	else
+	{
+		right = x + BRICK_BBOX_WIDTH;
+		bottom = y + BRICK_BBOX_HEIGHT;
 	}
 }

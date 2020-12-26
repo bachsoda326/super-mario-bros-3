@@ -6,10 +6,11 @@ class CCastleHelp : public CGameObject
 	DWORD help_start;
 	bool isHelp = false;
 
-	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
-	void Render();
-
+	void SetBoundingBox() {};
 public:
 	CCastleHelp();
+
+	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
+	void Render();
 };
 

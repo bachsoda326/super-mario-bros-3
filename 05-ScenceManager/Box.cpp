@@ -2,8 +2,10 @@
 
 CBox::CBox(int r, int b)
 {
-	right = r;
-	bottom = b;
+	mRight = r;
+	mBottom = b;
+
+	SetBoundingBox();
 }
 
 void CBox::Render()
@@ -15,8 +17,16 @@ void CBox::GetBoundingBox(float& l, float& t, float& r, float& b)
 {
 	l = x;
 	t = y;
-	r = right;
-	b = bottom;
+	r = mRight;
+	b = mBottom;
 
 	CGameObject::GetBoundingBox(l, t, r, b);
+}
+
+void CBox::SetBoundingBox()
+{
+	left = x;
+	top = y;
+	right = mRight;
+	bottom = mBottom;
 }

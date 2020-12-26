@@ -3,6 +3,7 @@
 
 CCoin::CCoin()
 {
+	SetBoundingBox();
 }
 
 CCoin::CCoin(float x, float y, bool isInBrick)
@@ -19,6 +20,8 @@ CCoin::CCoin(float x, float y, bool isInBrick)
 		isDie = true;
 	}
 	vy = -0.3f;
+
+	SetBoundingBox();
 }
 
 void CCoin::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
@@ -56,4 +59,12 @@ void CCoin::GetBoundingBox(float& l, float& t, float& r, float& b)
 	b = y + COIN_BBOX_HEIGHT;
 
 	CGameObject::GetBoundingBox(l, t, r, b);
+}
+
+void CCoin::SetBoundingBox()
+{
+	left = x;
+	top = y;
+	right = x + COIN_BBOX_WIDTH;
+	bottom = y + COIN_BBOX_HEIGHT;
 }

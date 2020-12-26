@@ -240,8 +240,9 @@
 
 #define MARIO_SMALL_BBOX_WIDTH  16
 #define MARIO_SMALL_BBOX_HEIGHT 16
+#define MARIO_PIPE_DOWN_HEIGHT  7
 
-#define MARIO_UNTOUCHABLE_TIME	5000
+#define MARIO_UNTOUCHABLE_TIME	3000
 #define MARIO_RUN_TIME			3000
 
 
@@ -255,6 +256,8 @@ class CMario : public CGameObject
 	float start_y; 
 	float pipe_tele_x;
 	float pipe_tele_y;
+
+	void SetBoundingBox();
 public:
 	DWORD run_start;
 	DWORD kick_start;

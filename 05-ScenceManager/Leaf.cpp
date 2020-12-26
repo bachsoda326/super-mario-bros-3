@@ -2,6 +2,7 @@
 
 CLeaf::CLeaf()
 {
+	SetBoundingBox();
 }
 
 CLeaf::CLeaf(float x, float y)
@@ -15,6 +16,8 @@ CLeaf::CLeaf(float x, float y)
 	SetPosition(x, y - LEAF_BBOX_WIDTH);
 
 	vy = -0.05f;
+
+	SetBoundingBox();
 }
 
 void CLeaf::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
@@ -85,4 +88,12 @@ void CLeaf::GetBoundingBox(float& l, float& t, float& r, float& b)
 	b = y + LEAF_BBOX_HEIGHT;
 
 	CGameObject::GetBoundingBox(l, t, r, b);
+}
+
+void CLeaf::SetBoundingBox()
+{
+	left = x;
+	top = y;
+	right = x + LEAF_BBOX_WIDTH;
+	bottom = y + LEAF_BBOX_HEIGHT;
 }

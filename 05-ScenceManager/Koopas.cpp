@@ -15,20 +15,8 @@ CKoopas::CKoopas(int type)
 	}*/
 
 	SetState(KOOPAS_STATE_WALKING);
-}
 
-void CKoopas::GetBoundingBox(float& left, float& top, float& right, float& bottom)
-{
-	left = x;
-	top = y;
-	right = x + KOOPAS_BBOX_WIDTH;
-
-	if (state == KOOPAS_STATE_HIDE || state == KOOPAS_STATE_SPIN || state == KOOPAS_STATE_HOLD)
-		bottom = y + KOOPAS_BBOX_HEIGHT_HIDE;
-	else
-		bottom = y + KOOPAS_BBOX_HEIGHT;
-
-	CGameObject::GetBoundingBox(left, top, right, bottom);
+	SetBoundingBox();
 }
 
 void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
@@ -109,7 +97,7 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 			if (ny < 0 && e->obj != NULL)
 			{
-				if (!dynamic_cast<CCoin*>(e->obj) && !dynamic_cast<CLeaf*>(e->obj) && !dynamic_cast<CMushRoom*>(e->obj))
+				if (!dynamic_cast<CCoin*>(e->obj) && !dynamic_cast<CLeaf*>(e->obj) && !dynamic_cast<CMushRoom*>(e->obj) && !dynamic_cast<CGoomba*>(e->obj) && !dynamic_cast<CKoopas*>(e->obj))
 				{
 					if (!(dynamic_cast<CBreakableBrick*>(e->obj) && e->obj->GetState() == BREAKABLE_BRICK_STATE_COIN || dynamic_cast<CPSwitch*>(e->obj) && e->obj->GetState() == PSWITCH_STATE_HIT))
 					{
@@ -168,7 +156,7 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						SetState(KOOPAS_STATE_DIE);
 					}
 				}
-				else
+				else if (e->nx != 0)
 				{
 					PreventMoveX(nx, goomba);
 					vx = -vx;
@@ -213,10 +201,11 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						SetState(KOOPAS_STATE_DIE);
 					}
 				}
-				else
+				else if (e->nx != 0)
 				{
 					PreventMoveX(nx, koopas);
 					vx = -vx;
+					e->obj->vx = -e->obj->vx;
 				}
 			}
 			else if ((dynamic_cast<CBox*>(e->obj) || dynamic_cast<CGround*>(e->obj) || dynamic_cast<CWarpPipe*>(e->obj) || dynamic_cast<CBrick*>(e->obj)) && !(dynamic_cast<CBreakableBrick*>(e->obj) && e->obj->GetState() == BREAKABLE_BRICK_STATE_COIN))
@@ -370,14 +359,10 @@ void CKoopas::SetState(int state)
 		isDie = true;
 		//die_start = GetTickCount();
 		break;
-		//case KOOPAS_STATE_HIDE:
-		//	//y += KOOPAS_BBOX_HEIGHT - KOOPAS_BBOX_HEIGHT_HIDE + 1;
-		//	vx = 0;
-		//	vy = 0;
-		//	break;
-		//	/*case KOOPAS_STATE_SPIN:
-		//		vx = -KOOPAS_SPIN_SPEED;
-		//		break;*/
+	case KOOPAS_STATE_HIDE:
+		if (type == KOOPAS_GREEN_WING)
+			type = KOOPAS_GREEN;
+		break;
 	case KOOPAS_STATE_WALKING:
 		if (type == KOOPAS_GREEN_WING)
 			vx = -KOOPAS_WALKING_WING_SPEED;
@@ -389,4 +374,30 @@ void CKoopas::SetState(int state)
 			break;*/
 	}
 
+}
+
+void CKoopas::GetBoundingBox(float& left, float& top, float& right, float& bottom)
+{
+	left = x;
+	top = y;
+	right = x + KOOPAS_BBOX_WIDTH;
+
+	if (state == KOOPAS_STATE_HIDE || state == KOOPAS_STATE_SPIN || state == KOOPAS_STATE_HOLD)
+		bottom = y + KOOPAS_BBOX_HEIGHT_HIDE;
+	else
+		bottom = y + KOOPAS_BBOX_HEIGHT;
+
+	CGameObject::GetBoundingBox(left, top, right, bottom);
+}
+
+void CKoopas::SetBoundingBox()
+{
+	left = x;
+	top = y;
+	right = x + KOOPAS_BBOX_WIDTH;
+
+	if (state == KOOPAS_STATE_HIDE || state == KOOPAS_STATE_SPIN || state == KOOPAS_STATE_HOLD)
+		bottom = y + KOOPAS_BBOX_HEIGHT_HIDE;
+	else
+		bottom = y + KOOPAS_BBOX_HEIGHT;
 }

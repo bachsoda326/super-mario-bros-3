@@ -9,18 +9,19 @@
 
 class CLeaf : public CGameObject
 {	
-	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects = NULL);
-	void Render();
-	void GetBoundingBox(float& l, float& t, float& r, float& b);
-
+	void SetBoundingBox();
 public:
 	DWORD stopTime_start = 0;
 	bool isStop = false;
 	bool isInitialized = false;
-	float start_top;
-	float start_x;
+	float start_top = -1;
+	float start_x = -1;
 
 	CLeaf();
 	CLeaf(float x, float y);
+
+	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects = NULL);
+	void Render();
+	void GetBoundingBox(float& l, float& t, float& r, float& b);
 };
 

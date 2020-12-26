@@ -3,6 +3,8 @@
 
 class CWorldBush : public CGameObject
 {
+	void SetBoundingBox() {};
+public:
 	void Render();
 };
 

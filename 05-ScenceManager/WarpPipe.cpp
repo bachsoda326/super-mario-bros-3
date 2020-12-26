@@ -17,6 +17,8 @@ CWarpPipe::CWarpPipe(float x, float y, int r, int b, int type, float tele_x, flo
 		this->tele_x = tele_x;
 		this->tele_y = tele_y;
 	}
+
+	SetBoundingBox();
 }
 
 void CWarpPipe::Render()
@@ -35,4 +37,12 @@ void CWarpPipe::GetBoundingBox(float& l, float& t, float& r, float& b)
 	b = mBottom;
 
 	CGameObject::GetBoundingBox(l, t, r, b);
+}
+
+void CWarpPipe::SetBoundingBox()
+{
+	left = x;
+	top = y;
+	right = mRight;
+	bottom = mBottom;
 }

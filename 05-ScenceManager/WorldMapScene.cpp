@@ -183,11 +183,12 @@ void CWorldMapScene::_ParseSection_OBJECTS(string line)
 		break;
 	case OBJECT_TYPE_STATION:
 	{
-		bool left = atoi(tokens[4].c_str()) == 1 ? true : false;
-		bool top = atoi(tokens[5].c_str()) == 1 ? true : false;
-		bool right = atoi(tokens[6].c_str()) == 1 ? true : false;
-		bool bottom = atoi(tokens[7].c_str()) == 1 ? true : false;
-		obj = new CWorldStation(left, top, right, bottom);
+		int id = atoi(tokens[4].c_str());
+		bool left = atoi(tokens[5].c_str()) == 1 ? true : false;
+		bool top = atoi(tokens[6].c_str()) == 1 ? true : false;
+		bool right = atoi(tokens[7].c_str()) == 1 ? true : false;
+		bool bottom = atoi(tokens[8].c_str()) == 1 ? true : false;
+		obj = new CWorldStation(id, left, top, right, bottom);
 	}
 	break;
 	default:
@@ -289,24 +290,23 @@ void CWorldMapScene::Update(DWORD dt)
 
 	// add to colliable objs
 	vector<LPGAMEOBJECT> coObjects;
-	for (size_t i = 0; i < otherObjs.size(); i++)
+	/*for (size_t i = 0; i < otherObjs.size(); i++)
 	{
 		if (!otherObjs[i]->isDie || !otherObjs[i]->isDead)
 			coObjects.push_back(otherObjs[i]);
-	}
-	for (size_t i = 0; i < objects.size(); i++)
+	}*/
+	for (size_t i = 1; i < objects.size(); i++)
 	{
-		if (i == 2) continue;
 		if (!objects[i]->isDie || !objects[i]->isDead)
 			coObjects.push_back(objects[i]);
 	}
 
 	// update all objs
-	for (size_t i = 0; i < otherObjs.size(); i++)
+	/*for (size_t i = 0; i < otherObjs.size(); i++)
 	{
 		if (!otherObjs[i]->isDead)
 			otherObjs[i]->Update(dt, &coObjects);
-	}
+	}*/
 	for (size_t i = 0; i < objects.size(); i++)
 	{
 		if (!objects[i]->isDead)
@@ -336,11 +336,11 @@ void CWorldMapScene::Render()
 		map->Render();
 	}
 
-	for (int i = 0; i < otherObjs.size(); i++)
+	/*for (int i = 0; i < otherObjs.size(); i++)
 	{
 		if (!otherObjs[i]->isDead)
 			otherObjs[i]->Render();
-	}
+	}*/
 	for (int i = 0; i < objects.size(); i++)
 	{
 		if (!objects[i]->isDead)
@@ -354,10 +354,10 @@ void CWorldMapScene::Render()
 void CWorldMapScene::Unload()
 {
 	// other objs
-	for (int i = 0; i < otherObjs.size(); i++)
+	/*for (int i = 0; i < otherObjs.size(); i++)
 		delete otherObjs[i];
 
-	otherObjs.clear();
+	otherObjs.clear();*/
 
 	// objs
 	for (int i = 0; i < objects.size(); i++)
@@ -371,134 +371,32 @@ void CWorldMapScene::Unload()
 
 void CWorldMapSceneKeyHandler::OnKeyDown(int KeyCode)
 {
-	///*DebugOut(L"[KEYDOWN] KeyDown: %d\n", KeyCode);*/
+	CWorldMario* mario = ((CWorldMapScene*)scence)->GetPlayer();
 
-	//CMario* mario = ((CWorldMapScene*)scence)->GetPlayer();
-	//switch (KeyCode)
-	//{
-	//case DIK_NUMPAD0:
-	//	mario->SetPosition(1400, 130);
-	//	break;
-	//case DIK_NUMPAD1:
-	//	mario->SetPosition(250, 350);
-	//	break;
-	//case DIK_NUMPAD2:
-	//	mario->SetPosition(500, 350);
-	//	break;
-	//case DIK_NUMPAD3:
-	//	mario->SetPosition(960, 350);
-	//	break;
-	//case DIK_NUMPAD4:
-	//	mario->SetPosition(1300, 350);
-	//	break;
-	//case DIK_NUMPAD5:
-	//	mario->SetPosition(1950, 350);
-	//	break;
-	//case DIK_NUMPAD6:
-	//	mario->SetPosition(2260, 50);
-	//	break;
-	//case DIK_NUMPAD9:
-	//	mario->SetPosition(2120, 500);
-	//	break;
-	//case DIK_S:
-	//	if (mario->canJump)
-	//		mario->vy = -0.15f;
-	//	mario->canRepeatJump = false;
-	//	//mario->canJump = false;
-	//	if (mario->GetLevel() == MARIO_LEVEL_RACCOON)
-	//	{
-	//		if (mario->state == MARIO_STATE_RUNJUMP)
-	//		{
-	//			if (mario->isOnGround)
-	//			{
-	//				mario->fly_limit_start = GetTickCount();
-	//			}
-	//			mario->fly_start = GetTickCount();
-	//			mario->SetState(MARIO_STATE_FLY);
-	//		}
-	//		else if (!mario->isOnGround && mario->vy >= 0)
-	//		{
-	//			mario->wag_start = GetTickCount();
-	//			mario->SetState(MARIO_STATE_WAG);
-	//		}
-	//	}
-	//	break;
-	//case DIK_A:
-	//	mario->canHold = true;
-
-	//	if (mario->GetLevel() == MARIO_LEVEL_RACCOON)
-	//	{
-	//		if (mario->canAttack)
-	//		{
-	//			mario->tail_start = GetTickCount();
-	//			mario->SetState(MARIO_STATE_TAIL);
-	//			mario->canAttack = false;
-	//		}
-	//	}
-	//	if (mario->GetLevel() == MARIO_LEVEL_FIRE)
-	//	{
-	//		if (mario->canAttack)
-	//		{
-	//			int bulletCount = 0;
-	//			for (int i = 0; i < mario->bullets->size(); i++)
-	//			{
-	//				CBullet* bullet = mario->bullets->at(i);
-
-	//				if (!bullet->isDead)
-	//					continue;
-
-	//				float bx, by;
-	//				mario->GetPosition(bx, by);
-	//				bullet->SetPosition(bx, by);
-	//				bullet->vx = mario->nx * BULLET_VX_SPEED;
-	//				bullet->vy = BULLET_VY_SPEED;
-	//				bullet->SetState(BULLET_STATE_FIRE);
-	//				bulletCount++;
-	//				break;
-	//			}
-
-	//			if (bulletCount != 0)
-	//			{
-	//				mario->fire_start = GetTickCount();
-	//				mario->canAttack = false;
-	//				if (mario->isOnGround)
-	//					mario->SetState(MARIO_STATE_SHOT);
-	//				else if (mario->state == MARIO_STATE_JUMP_HIGH || mario->state == MARIO_STATE_JUMP_SHORT)
-	//					mario->SetState(MARIO_STATE_JUMP_SHOT);
-	//				else if (mario->state == MARIO_STATE_RUNJUMP)
-	//					mario->SetState(MARIO_STATE_RUNJUMP_SHOT);
-	//			}
-	//		}
-	//	}
-	//	break;
-	//case DIK_X:
-	//	mario->SetState(MARIO_STATE_JUMP_SHORT);
-	//	break;
-	//	/*case DIK_DOWN:
-	//		mario->canDuck = true;
-	//		break;*/
-	//case DIK_R:
-	//	mario->Reset();
-	//	break;
-	//case DIK_1:
-	//	mario->SetLevel(MARIO_LEVEL_SMALL);
-	//	break;
-	//case DIK_2:
-	//	if (mario->GetLevel() == MARIO_LEVEL_SMALL)
-	//		mario->y -= MARIO_BIG_BBOX_HEIGHT - MARIO_SMALL_BBOX_HEIGHT;
-	//	mario->SetLevel(MARIO_LEVEL_BIG);
-	//	break;
-	//case DIK_3:
-	//	if (mario->GetLevel() == MARIO_LEVEL_SMALL)
-	//		mario->y -= MARIO_BIG_BBOX_HEIGHT - MARIO_SMALL_BBOX_HEIGHT;
-	//	mario->SetLevel(MARIO_LEVEL_RACCOON);
-	//	break;
-	//case DIK_4:
-	//	if (mario->GetLevel() == MARIO_LEVEL_SMALL)
-	//		mario->y -= MARIO_BIG_BBOX_HEIGHT - MARIO_SMALL_BBOX_HEIGHT;
-	//	mario->SetLevel(MARIO_LEVEL_FIRE);
-	//	break;
-	//}
+	switch (KeyCode)
+	{
+	case DIK_LEFT:
+		mario->GoLeft();
+		break;
+	case DIK_UP:
+		mario->GoTop();
+		break;
+	case DIK_RIGHT:
+		mario->GoRight();
+		break;
+	case DIK_DOWN:
+		mario->GoBottom();
+		break;
+	case DIK_S:
+	{
+		int sceneId = mario->GetCurrentStation()->GetSceneId();
+		if (sceneId == MAP_1_1 || sceneId == WORLD_MAP_1)
+			CGame::GetInstance()->SwitchScene(sceneId);
+	}
+	break;
+	default:
+		break;
+	}
 }
 
 void CWorldMapSceneKeyHandler::OnKeyUp(int KeyCode)
