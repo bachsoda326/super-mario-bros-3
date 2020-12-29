@@ -51,7 +51,7 @@ void CPiranha::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjs)
 
 	CMario* mario = ((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetPlayer();
 	float distanceX = (x + PIRANHA_BBOX_WIDTH / 2) - (mario->x + MARIO_BIG_BBOX_WIDTH / 2);
-	float distanceY = (y - (mario->y + MARIO_BIG_BBOX_HEIGHT));
+	float distanceY = (y - (mario->y + MARIO_BIG_BBOX_HEIGHT / 2));
 		
 	if (distanceX > 0)
 	{

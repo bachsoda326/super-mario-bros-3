@@ -70,7 +70,7 @@ public:
 
 	LPANIMATION_SET animation_set;
 
-	virtual void SetBoundingBox() = 0;
+	void SetBoundingBox() {};
 
 public: 
 	void SetPosition(float x, float y) { this->x = x, this->y = y; }
