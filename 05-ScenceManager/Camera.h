@@ -6,6 +6,14 @@
 
 class CCamera
 {
+	static CCamera* __instance;
+
+	int width, height;
+	int widthMap, heightMap;
+	int leftMap, topMap, rightMap, bottomMap;
+	bool isStatic = true;
+
+	D3DXVECTOR3 position;
 public:
 	CCamera();
 	static CCamera* GetInstance();
@@ -21,16 +29,8 @@ public:
 	int GetHeight();
 	// Trả về biên của camera thông qua RECT
 	RECT GetBound();
+	void SetIsStatic(bool isStatic) { this->isStatic = isStatic; };
 
 	~CCamera();
-
-private:
-	static CCamera* __instance;
-
-	int width, height;
-	int widthMap, heightMap;
-	int leftMap, topMap, rightMap, bottomMap;
-
-	D3DXVECTOR3 position;
 };
 

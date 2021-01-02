@@ -134,6 +134,7 @@
     <ClCompile Include="CastleHelp.cpp" />
     <ClCompile Include="CloudTooth.cpp" />
     <ClCompile Include="Coin.cpp" />
+    <ClCompile Include="Font.cpp" />
     <ClCompile Include="Grid.cpp" />
     <ClCompile Include="Ground.cpp" />
     <ClCompile Include="Hud.cpp" />
@@ -176,6 +177,7 @@
     <ClInclude Include="CloudTooth.h" />
     <ClInclude Include="Coin.h" />
     <ClInclude Include="Constants.h" />
+    <ClInclude Include="Font.h" />
     <ClInclude Include="Grid.h" />
     <ClInclude Include="Ground.h" />
     <ClInclude Include="Hud.h" />

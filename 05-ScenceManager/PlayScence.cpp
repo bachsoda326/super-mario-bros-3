@@ -46,6 +46,7 @@ CPlayScene::CPlayScene(int id, LPCWSTR filePath) :
 #define OBJECT_TYPE_PARA_GOOMBA		14
 
 #define OBJECT_TYPE_PORTAL	50
+#define OBJECT_TYPE_HUD		51
 
 #define MAX_SCENE_LINE 1024
 
@@ -257,20 +258,28 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	case OBJECT_TYPE_COIN:	obj = new CCoin(); break;
 	case OBJECT_TYPE_CLOUD_TOOTH:	obj = new CCloudTooth(); break;
 	case OBJECT_TYPE_PARA_GOOMBA:	obj = new CParaGoomba(); break;
+	case OBJECT_TYPE_HUD:
+	{
+		hud = new CHud();
+		break;
+	}
 	default:
 		DebugOut(L"[ERR] Invalid object type: %d\n", object_type);
 		return;
-	}
+	}	
 
 	// General object setup
-	obj->SetPosition(x, y);
+	if (obj != NULL)
+	{
+		obj->SetPosition(x, y);
 
-	/*LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);*/
+		/*LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);*/
 
-	if (ani_set_id != -1)
-		obj->SetAnimationSet(ani_set);
+		if (ani_set_id != -1)
+			obj->SetAnimationSet(ani_set);
 
-	objects.push_back(obj);
+		objects.push_back(obj);
+	}
 }
 
 void CPlayScene::_ParseSection_MAP(string line)
@@ -387,6 +396,8 @@ void CPlayScene::Update(DWORD dt)
 			viewObjs[i]->Update(dt, &coObjects);
 	}
 
+	hud->Update(dt);
+
 	// skip the rest if scene was already unloaded (Mario::Update might trigger PlayScene::Unload)
 	if (player == NULL) return;
 
@@ -425,6 +436,8 @@ void CPlayScene::Render()
 		if (!viewObjs[i]->isDead)
 			viewObjs[i]->Render();
 	}
+
+	hud->Render();
 }
 
 /*
@@ -445,52 +458,57 @@ void CPlayScene::Unload()
 	objects.clear();
 	player = NULL;
 
+	delete map;
+	delete hud;
+	map = NULL;
+	hud = NULL;
+
 	DebugOut(L"[INFO] Scene %s unloaded! \n", sceneFilePath);
 }
 
-void CPlayScene::UpdateCamera(int mapWidth, int mapHeight)
-{
-	//tính fps của game
-	/*DWORD endRender = GetTickCount();
-	if (endRender - beginRender > 0 && endRender - beginRender < 1000)
-		ifps = 1000 / (endRender - beginRender);
-	else
-		ifps = 1000;
-	beginRender = endRender;*/
-
-	// test CCamera move when Mario is not on center screen
-	//mCamera->SetPosition(mPlayer->GetPosition() + D3DXVECTOR3(100,0,0));
-	float x, y;
-	player->GetPosition(x, y);
-	CCamera::GetInstance()->SetPosition(x, y);
-
-	if (CCamera::GetInstance()->GetBound().left < 0)
-	{
-		//vi position cua CCamera::GetInstance() ma chinh giua CCamera::GetInstance()
-		//luc nay o vi tri goc ben trai cua the gioi thuc
-		CCamera::GetInstance()->SetPosition(CCamera::GetInstance()->GetWidth() / 2, CCamera::GetInstance()->GetPosition().y);
-	}
-
-	if (CCamera::GetInstance()->GetBound().right > mapWidth)
-	{
-		//luc nay cham goc ben phai cua the gioi thuc
-		CCamera::GetInstance()->SetPosition(mapWidth - CCamera::GetInstance()->GetWidth() / 2,
-			CCamera::GetInstance()->GetPosition().y);
-	}
-
-	if (CCamera::GetInstance()->GetBound().top < 0)
-	{
-		//luc nay cham goc tren the gioi thuc
-		CCamera::GetInstance()->SetPosition(CCamera::GetInstance()->GetPosition().x, CCamera::GetInstance()->GetHeight() / 2);
-	}
-
-	if (CCamera::GetInstance()->GetBound().bottom > mapHeight)
-	{
-		//luc nay cham day cua the gioi thuc
-		CCamera::GetInstance()->SetPosition(CCamera::GetInstance()->GetPosition().x,
-			mapHeight - CCamera::GetInstance()->GetHeight() / 2);
-	}
-}
+//void CPlayScene::UpdateCamera(int mapWidth, int mapHeight)
+//{
+//	//tính fps của game
+//	/*DWORD endRender = GetTickCount();
+//	if (endRender - beginRender > 0 && endRender - beginRender < 1000)
+//		ifps = 1000 / (endRender - beginRender);
+//	else
+//		ifps = 1000;
+//	beginRender = endRender;*/
+//
+//	// test CCamera move when Mario is not on center screen
+//	//mCamera->SetPosition(mPlayer->GetPosition() + D3DXVECTOR3(100,0,0));
+//	float x, y;
+//	player->GetPosition(x, y);
+//	CCamera::GetInstance()->SetPosition(x, y);
+//
+//	if (CCamera::GetInstance()->GetBound().left < 0)
+//	{
+//		//vi position cua CCamera::GetInstance() ma chinh giua CCamera::GetInstance()
+//		//luc nay o vi tri goc ben trai cua the gioi thuc
+//		CCamera::GetInstance()->SetPosition(CCamera::GetInstance()->GetWidth() / 2, CCamera::GetInstance()->GetPosition().y);
+//	}
+//
+//	if (CCamera::GetInstance()->GetBound().right > mapWidth)
+//	{
+//		//luc nay cham goc ben phai cua the gioi thuc
+//		CCamera::GetInstance()->SetPosition(mapWidth - CCamera::GetInstance()->GetWidth() / 2,
+//			CCamera::GetInstance()->GetPosition().y);
+//	}
+//
+//	if (CCamera::GetInstance()->GetBound().top < 0)
+//	{
+//		//luc nay cham goc tren the gioi thuc
+//		CCamera::GetInstance()->SetPosition(CCamera::GetInstance()->GetPosition().x, CCamera::GetInstance()->GetHeight() / 2);
+//	}
+//
+//	if (CCamera::GetInstance()->GetBound().bottom > mapHeight)
+//	{
+//		//luc nay cham day cua the gioi thuc
+//		CCamera::GetInstance()->SetPosition(CCamera::GetInstance()->GetPosition().x,
+//			mapHeight - CCamera::GetInstance()->GetHeight() / 2);
+//	}
+//}
 
 void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 {
@@ -522,6 +540,7 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 		break;
 	case DIK_NUMPAD6:
 		mario->SetPosition(2260, 50);
+		CCamera::GetInstance()->SetIsStatic(false);
 		break;
 	case DIK_NUMPAD9:
 		mario->SetPosition(2120, 500);

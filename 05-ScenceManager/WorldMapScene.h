@@ -8,6 +8,7 @@
 #include "CastleHelp.h"
 #include "WorldHammer.h"
 #include "WorldMario.h"
+#include "Hud.h"
 
 class CWorldMapScene : public CScene
 {
@@ -17,6 +18,8 @@ protected:
 	//vector<LPGAMEOBJECT> objects;
 
 	CTileMap* map = NULL;
+
+	CHud* hud = NULL;
 
 	void _ParseSection_TEXTURES(string line);
 	void _ParseSection_SPRITES(string line);

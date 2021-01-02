@@ -38,6 +38,7 @@ CWorldMapScene::CWorldMapScene(int id, LPCWSTR filePath) :
 #define OBJECT_TYPE_STATION			4
 
 #define OBJECT_TYPE_PORTAL	50
+#define OBJECT_TYPE_HUD		51
 
 #define MAX_SCENE_LINE 1024
 
@@ -191,20 +192,28 @@ void CWorldMapScene::_ParseSection_OBJECTS(string line)
 		obj = new CWorldStation(id, left, top, right, bottom);
 	}
 	break;
+	case OBJECT_TYPE_HUD:
+	{
+		hud = new CHud();
+		break;
+	}
 	default:
 		DebugOut(L"[ERR] Invalid object type: %d\n", object_type);
 		return;
 	}
 
-	// General object setup
-	obj->SetPosition(x, y);
+	if (obj != NULL)
+	{
+		// General object setup
+		obj->SetPosition(x, y);
 
-	/*LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);*/
+		/*LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);*/
 
-	if (ani_set_id != -1)
-		obj->SetAnimationSet(ani_set);
+		if (ani_set_id != -1)
+			obj->SetAnimationSet(ani_set);
 
-	objects.push_back(obj);
+		objects.push_back(obj);
+	}
 }
 
 void CWorldMapScene::_ParseSection_MAP(string line)
@@ -313,6 +322,8 @@ void CWorldMapScene::Update(DWORD dt)
 			objects[i]->Update(dt, &coObjects);
 	}
 
+	hud->Update(dt);
+
 	// skip the rest if scene was already unloaded (Mario::Update might trigger PlayScene::Unload)
 	if (player == NULL) return;
 
@@ -321,7 +332,7 @@ void CWorldMapScene::Update(DWORD dt)
 	switch (map->GetId())
 	{
 	case WORLD_MAP_1:
-		CCamera::GetInstance()->SetPosition(WIDTH_WORLD_MAP_1 / 2, HEIGHT_WORLD_MAP_1 / 2);
+		CCamera::GetInstance()->SetPosition(WIDTH_WORLD_MAP_1 / 2, HEIGHT_WORLD_MAP_1 / 2 + 10);
 		//CCamera::GetInstance()->SetPosition(CGame::GetInstance()->GetScreenWidth() / 2, CGame::GetInstance()->GetScreenHeight() / 2);
 	default:
 		break;
@@ -346,6 +357,8 @@ void CWorldMapScene::Render()
 		if (!objects[i]->isDead)
 			objects[i]->Render();
 	}
+
+	hud->Render();
 }
 
 /*
@@ -365,6 +378,11 @@ void CWorldMapScene::Unload()
 
 	objects.clear();
 	player = NULL;
+
+	delete map;
+	delete hud;
+	map = NULL;
+	hud = NULL;
 
 	DebugOut(L"[INFO] Scene %s unloaded! \n", sceneFilePath);
 }

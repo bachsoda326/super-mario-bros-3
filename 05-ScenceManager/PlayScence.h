@@ -17,16 +17,19 @@
 #include "Coin.h"
 #include "CloudTooth.h"
 #include "ParaGoomba.h"
+#include "Hud.h"
 
 
 class CPlayScene: public CScene
 {
 protected: 
-	CMario *player;					// A play scene has to have player, right? 
+	CMario *player = NULL;					// A play scene has to have player, right? 
 
 	//vector<LPGAMEOBJECT> objects;
 
-	CTileMap* map;
+	CTileMap* map = NULL;
+
+	CHud* hud = NULL;
 
 	vector<LPGAMEOBJECT> viewOtherObjs;
 	vector<LPGAMEOBJECT> viewObjs;
@@ -49,7 +52,7 @@ public:
 	virtual void Unload();
 
 	// Cập nhật vị trí camera khi đụng biên map và khi Mario di chuyển // Chưa dùng đến
-	void UpdateCamera(int mapWidth, int mapHeight);
+	//void UpdateCamera(int mapWidth, int mapHeight);
 
 	CMario * GetPlayer() { return player; }
 	CTileMap* GetMap() { return map; }

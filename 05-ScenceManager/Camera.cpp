@@ -43,6 +43,11 @@ void CCamera::Update(CMario* player)
 	player->GetPosition(cx, cy);
 	SetPosition(cx, cy);
 
+	if (player->state == MARIO_STATE_FLY || player->GetLevel() == MARIO_LEVEL_RACCOON && player->state == MARIO_STATE_RUNJUMP)
+	{
+		isStatic = false;
+	}
+
 	if (GetBound().left < leftMap)
 	{
 		//vi position cua Camera::GetInstance() ma chinh giua Camera::GetInstance()
@@ -62,12 +67,28 @@ void CCamera::Update(CMario* player)
 		SetPosition(GetPosition().x, topMap + GetHeight() / 2);
 	}
 
-	if (GetBound().bottom > bottomMap)
-	/*if (GetBound().bottom > mapHeight / 2)*/
+	//if (GetBound().bottom > bottomMap)
+	///*if (GetBound().bottom > mapHeight / 2)*/
+	//{
+	//	//luc nay cham day cua the gioi thuc
+	//	SetPosition(GetPosition().x, 48 + topMap + heightMap - GetHeight() / 2);
+	//}
+	if (!isStatic)
 	{
-		//luc nay cham day cua the gioi thuc
-		SetPosition(GetPosition().x, topMap + heightMap - GetHeight() / 2);
+		if (GetBound().bottom > bottomMap)
+		{
+			SetPosition(GetPosition().x, topMap + bottomMap - GetHeight() / 2);
+			isStatic = true;
+		}
 	}
+	else if (GetBound().bottom > bottomMap - GetHeight())
+	{
+	
+		isStatic = true;
+		//luc nay cham day cua the gioi thuc
+		SetPosition(GetPosition().x, bottomMap - GetHeight() / 2);
+	}
+	
 }
 
 D3DXVECTOR3 CCamera::GetPosition()
