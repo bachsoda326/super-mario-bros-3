@@ -250,7 +250,9 @@ class CMario : public CGameObject
 {
 	int level;
 	int untouchable;
-	DWORD untouchable_start;	
+	DWORD untouchable_start;
+
+	int power = 0;
 
 	float start_x;			// initial position of Mario at scene
 	float start_y; 
@@ -279,6 +281,7 @@ public:
 	bool canHold = false;
 	bool isHold = false;
 	bool canAttack = true;
+	bool canHit = true;
 	//bool canDuck = false;
 
 	vector<CBullet*> *bullets;
@@ -291,12 +294,15 @@ public:
 	void SetState(int state);
 	void SetLevel(int l) { level = l; }
 	int GetLevel() { return level; }
+	int GetPower() { return power; }
 	void StartUntouchable() { untouchable = 1; untouchable_start = GetTickCount(); }
 
 	void SetKoopas(CKoopas* koopas) { this->koopas = koopas; };
 	void Reset();
 
 	void Hurt();
+	void IncreasePower();
+	void DecreasePower();
 	// Giao nhau vs các obj
 	void OnIntersect(CGameObject* obj, vector<LPGAMEOBJECT>* coObjs);
 	bool isColTail(CGameObject* obj);

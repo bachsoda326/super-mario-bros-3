@@ -19,7 +19,7 @@ CCoin::CCoin(float x, float y, bool isInBrick)
 		SetAnimationSet(ani_set);
 		isDie = true;
 	}
-	vy = -0.3f;
+	vy = -0.4f;
 
 	SetBoundingBox();
 }

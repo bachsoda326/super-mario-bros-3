@@ -1,12 +1,13 @@
 #pragma once
 #include "GameObject.h"
 #include "Font.h"
+#include"Mario.h"
 
 #define LIFE_NUM_COUNT		2
 #define SCORES_NUM_COUNT	7
 #define TIME_NUM_COUNT		3
 
-#define START_TIME			3000
+#define START_TIME			300
 #define WORLD_1				1
 #define MAX_POWER_STACK		7
 
@@ -21,6 +22,9 @@
 #define SPRITE_POWER_ID					55007
 #define SPRITE_POWER_ARROW_ID			55008
 #define SPRITE_BBOX_BLACK_ID			90001	
+#define ANIMATION_FILLED_POWER_ARROW_ID		55001
+
+//#define HUD_ANI_SET		39
 
 class CHud : public CGameObject
 {
@@ -29,17 +33,21 @@ class CHud : public CGameObject
 	int world;
 	int time = 0;
 	int timeRemain = 0;
+	int power = 0;
+	CMario* mario = NULL;
 
 	LPSPRITE hud;
 	LPSPRITE cardsHud;
 	LPSPRITE background;
 
 	LPSPRITE worldSpr;
+	LPSPRITE iconSpr;
 	vector<LPSPRITE> lifeSpr;
 	vector<LPSPRITE> moneySpr;
 	vector<LPSPRITE> scoresSpr;
 	vector<LPSPRITE> powerSpr;
 	vector<LPSPRITE> filledPowerSpr;
+	CAnimation* filledPowerArrowAni;
 	vector<LPSPRITE> cardsSpr;
 	vector<LPSPRITE> timeSpr;
 

@@ -5,7 +5,7 @@
 #define COIN_BBOX_HEIGHT 16
 #define COIN_ANI_SET 25
 
-#define COIN_GRAVITY 0.001f
+#define COIN_GRAVITY 0.002f
 
 class CCoin : public CGameObject
 {

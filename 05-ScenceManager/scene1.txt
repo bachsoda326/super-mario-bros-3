@@ -1050,6 +1050,10 @@ ani_id	sprite1_id	time1	sprite2_id	time2
 # hit
 44002	54004	100
 
+# === HUD
+# Power
+55001	55006	100	55008	100
+
 #
 # id	ani1	ani2	ani3
 #
@@ -1116,6 +1120,10 @@ ani_id	sprite1_id	time1	sprite2_id	time2
 # === P SWITCH
 #	nor	hit
 36	44001	44002
+
+# === HUD
+	# power
+# 39	55001
 
 [OBJECTS]
 #	-----------------------------------------------------------------------

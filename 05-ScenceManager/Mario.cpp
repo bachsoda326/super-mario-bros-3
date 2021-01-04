@@ -39,7 +39,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	/*DebugOut(L"[GROUND]: %d\n", isOnGround);
 	DebugOut(L"[VY]: %f\n", vy);*/
-	DebugOut(L"[State] State: %d\n", state);
+	DebugOut(L"[State] VECTOR: %f\n", vx);
 	// Calculate dx, dy 
 	CGameObject::Update(dt);
 
@@ -100,12 +100,17 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		}
 	}
 
-	if ((GetTickCount() - tail_start) < 210)
+	if (tail_start != 0 && (GetTickCount() - tail_start) < 210)
 	{
 		SetState(MARIO_STATE_TAIL);
 	}
 	else
 	{
+		if (tail_start != 0 && (GetTickCount() - tail_start) >= 210)
+		{
+			tail_start = 0;
+			canHit = true;
+		}
 		if (state == MARIO_STATE_TAIL && !isOnGround)
 			SetState(MARIO_STATE_JUMP_HIGH);
 		canAttack = true;
@@ -226,6 +231,8 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 		// TODO: This is a very ugly designed function!!!!
 		FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny, rdx, rdy);
+
+		colX = nx;
 
 		// how to push back Mario if collides with a moving objects, what if Mario is pushed this way into another object?
 		//if (rdx != 0 && rdx!=dx)
@@ -425,6 +432,9 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			// Para Goomba
 			else if (dynamic_cast<CParaGoomba*>(e->obj)) // if e->obj is ParaGoomba 
 			{
+				x += dx;
+				y += dy;
+
 				CParaGoomba* para = dynamic_cast<CParaGoomba*>(e->obj);
 
 				// jump on top >> kill Para Goomba and deflect a bit 
@@ -1074,7 +1084,7 @@ void CMario::Render()
 	int alpha = 255;
 	if (untouchable) alpha = 128;
 
-	animation_set->at(ani)->Render(x, y, xReverse, yReverse, alpha);
+	animation_set->at(ani)->Render(x, y, xReverse, yReverse, false, alpha);
 
 	RenderBoundingBox();
 }
@@ -1230,9 +1240,35 @@ void CMario::Hurt()
 	}
 }
 
+void CMario::IncreasePower()
+{
+	if (isOnGround && state == MARIO_STATE_PREPARE_RUN)
+	{
+		DWORD now = GetTickCount();
+		if (power < MAX_POWER_STACK && now - run_start > 170)
+		{
+			power++;
+			run_start = now;
+		}
+	}
+}
+
+void CMario::DecreasePower()
+{
+	if (isOnGround)
+	{
+		DWORD now = GetTickCount();
+		if (power > 0 && now - run_start > 300)
+		{
+			power--;
+			run_start = now;
+		}
+	}
+}
+
 void CMario::OnIntersect(CGameObject* obj, vector<LPGAMEOBJECT>* coObjs)
 {
-	if (!obj->isDie)
+	if (!obj->isDie && canHit)
 	{
 		// Para Goomba
 		if (dynamic_cast<CParaGoomba*>(obj))
@@ -1243,6 +1279,7 @@ void CMario::OnIntersect(CGameObject* obj, vector<LPGAMEOBJECT>* coObjs)
 				para->vx = -nx * 0.05f;
 				para->vy = -0.1f;
 				para->SetState(PARA_GOOMBA_STATE_DIE_REVERSE);
+				canHit = false;
 			}
 			else if (para->colY != -1)
 				Hurt();
@@ -1257,6 +1294,7 @@ void CMario::OnIntersect(CGameObject* obj, vector<LPGAMEOBJECT>* coObjs)
 				koopas->vy = -0.4f;
 				koopas->yReverse = true;
 				koopas->SetState(KOOPAS_STATE_HIDE);
+				canHit = false;
 			}
 			else if (state != MARIO_STATE_KICK)
 			{
@@ -1280,6 +1318,7 @@ void CMario::OnIntersect(CGameObject* obj, vector<LPGAMEOBJECT>* coObjs)
 			if (state == MARIO_STATE_TAIL && piranha->GetState() == PIRANHA_STATE_NORMAL)
 			{
 				piranha->SetState(PIRANHA_STATE_DIE);
+				canHit = false;
 			}
 			else if (piranha->GetState() == PIRANHA_STATE_NORMAL)
 				Hurt();
@@ -1293,6 +1332,7 @@ void CMario::OnIntersect(CGameObject* obj, vector<LPGAMEOBJECT>* coObjs)
 				goomba->vx = nx * 0.1f;
 				goomba->vy = -0.2f;
 				goomba->SetState(GOOMBA_STATE_DIE_REVERSE);
+				canHit = false;
 			}
 			else if (goomba->colY != -1)
 				Hurt();
@@ -1374,6 +1414,7 @@ void CMario::OnIntersect(CGameObject* obj, vector<LPGAMEOBJECT>* coObjs)
 					default:
 						break;
 					}
+					canHit = false;
 				}
 			}
 		}
@@ -1403,6 +1444,7 @@ void CMario::OnIntersect(CGameObject* obj, vector<LPGAMEOBJECT>* coObjs)
 				default:
 					break;
 				}
+				canHit = false;
 			}
 		}
 		// Coin
