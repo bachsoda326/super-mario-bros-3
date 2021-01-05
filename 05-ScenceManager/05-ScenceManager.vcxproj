@@ -144,6 +144,7 @@
     <ClCompile Include="ParaGoomba.cpp" />
     <ClCompile Include="Piranha.cpp" />
     <ClCompile Include="PlayerInfo.cpp" />
+    <ClCompile Include="Point.cpp" />
     <ClCompile Include="Portal.cpp" />
     <ClCompile Include="PSwitch.cpp" />
     <ClCompile Include="QuestionBrick.cpp" />
@@ -187,6 +188,7 @@
     <ClInclude Include="ParaGoomba.h" />
     <ClInclude Include="Piranha.h" />
     <ClInclude Include="PlayerInfo.h" />
+    <ClInclude Include="Point.h" />
     <ClInclude Include="Portal.h" />
     <ClInclude Include="PSwitch.h" />
     <ClInclude Include="QuestionBrick.h" />

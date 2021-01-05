@@ -335,6 +335,8 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			// Cloud tooth
 			if (dynamic_cast<CCloudTooth*>(e->obj))
 			{
+				if (state == MARIO_STATE_FLY)
+					x += x;
 				if (e->ny > 0)
 					y += dy;
 			}

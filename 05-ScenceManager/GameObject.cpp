@@ -7,6 +7,7 @@
 #include "Game.h"
 #include "GameObject.h"
 #include "Sprites.h"
+#include "Point.h"
 
 CGameObject::CGameObject()
 {
@@ -188,6 +189,43 @@ void CGameObject::DeleteOtherObjs(vector<LPGAMEOBJECT>* coObjects)
 	otherObjs->erase(std::remove(otherObjs->begin(), otherObjs->end(), this), otherObjs->end());
 	coObjects->erase(std::remove(coObjects->begin(), coObjects->end(), this), coObjects->end());
 	delete this;
+}
+
+void CGameObject::AddPoint(int type)
+{
+	int ani = -1;
+	switch (type)
+	{
+	case POINT_100:
+		ani = POINT_ANI_100;
+		break;
+	case POINT_200:
+		ani = POINT_ANI_200;
+		break;
+	case POINT_400:
+		ani = POINT_ANI_400;
+		break;
+	case POINT_800:
+		ani = POINT_ANI_800;
+		break;
+	case POINT_1000:
+		ani = POINT_ANI_1000;
+		break;
+	case POINT_2000:
+		ani = POINT_ANI_2000;
+		break;
+	case POINT_4000:
+		ani = POINT_ANI_4000;
+		break;
+	case POINT_8000:
+		ani = POINT_ANI_8000;
+		break;
+	case POINT_1_UP:
+		ani = POINT_ANI_1_UP;
+		break;
+	default:
+		break;
+	}
 }
 
 
