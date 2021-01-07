@@ -23,8 +23,8 @@ public:
 	vector<int> GetCards() { return cards; }
 
 	void AdjustLife(int num) { life += num; }
-	void AdjustMoney(int num) { life += num; }
-	void AdjustScore(int num) { life += num; }
+	void AdjustMoney(int num) { money += num; }
+	void AdjustScore(int num) { score += num; }
 	void SetForm(int level) { form = level; }
 	void AddCard(int card) { cards.push_back(card); }
 

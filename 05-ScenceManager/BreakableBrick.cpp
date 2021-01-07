@@ -2,6 +2,7 @@
 #include "PlayScence.h"
 #include "PSwitch.h"
 #include "BrickPiece.h"
+#include "PlayerInfo.h"
 
 CBreakableBrick::CBreakableBrick(int type)
 {
@@ -13,18 +14,20 @@ CBreakableBrick::CBreakableBrick(int type)
 
 void CBreakableBrick::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
-	if (type == BREAKABLE_BRICK_TYPE_COIN && ((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->isBrickToCoin)
+	if (coin_start == 0 && type == BREAKABLE_BRICK_TYPE_COIN && ((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->isBrickToCoin)
 	{
 		SetState(BREAKABLE_BRICK_STATE_COIN);
 		coin_start = GetTickCount();
 	}
 
-	if (coin_start != 0 && (GetTickCount() - coin_start) > 3000)
+	if (coin_start != 0 && (GetTickCount() - coin_start) > 5000)
 	{
+		((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->isBrickToCoin = false;
 		SetState(BREAKABLE_BRICK_STATE_NORMAL);
+		coin_start = 0;
 	}
 
-	if (break_start != 0 && (GetTickCount() - break_start) > 3000)
+	if (break_start != 0 && (GetTickCount() - break_start) > 5000)
 	{
 		DeleteObjs(coObjects);
 	}
@@ -90,6 +93,8 @@ void CBreakableBrick::SetState(int state)
 			}
 			CGame::GetInstance()->GetCurrentScene()->GetObjs()->push_back(piece);
 		}
+		CPlayerInfo::GetInstance()->AdjustScore(10);
+
 		break;
 	case BREAKABLE_BRICK_STATE_1UP_MUSHROOM_LEFT:
 		obj = new CMushRoom(x, y, -1, MUSHROOM_TYPE_1_UP);

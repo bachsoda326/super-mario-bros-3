@@ -1,4 +1,5 @@
 #include "Goomba.h"
+#include "Point.h"
 
 CGoomba::CGoomba()
 {
@@ -149,6 +150,7 @@ void CGoomba::SetState(int state)
 	switch (state)
 	{
 	case GOOMBA_STATE_DIE:
+		AddPoint(/*POINT_100*/);
 		y += GOOMBA_BBOX_HEIGHT - GOOMBA_BBOX_HEIGHT_DIE;
 		vx = 0;
 		vy = 0;
@@ -156,6 +158,7 @@ void CGoomba::SetState(int state)
 		die_start = GetTickCount();
 		break;
 	case GOOMBA_STATE_DIE_REVERSE:
+		AddPoint(/*POINT_100*/);
 		yReverse = true;
 		isDie = true;
 		die_start = GetTickCount();

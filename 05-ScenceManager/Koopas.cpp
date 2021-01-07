@@ -37,6 +37,9 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		isDead = true;
 	}
 
+	if (isDie)
+		((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetPlayer()->canMultiScoreLand = false;
+
 	if (state == KOOPAS_STATE_HOLD)
 		vy = 0;
 
@@ -353,6 +356,7 @@ void CKoopas::SetState(int state)
 	switch (state)
 	{
 	case KOOPAS_STATE_DIE:
+		AddPoint(/*POINT_100*/);
 		if (type == KOOPAS_GREEN_WING)
 			type = KOOPAS_GREEN;
 		yReverse = true;
@@ -362,6 +366,9 @@ void CKoopas::SetState(int state)
 	case KOOPAS_STATE_HIDE:
 		if (type == KOOPAS_GREEN_WING)
 			type = KOOPAS_GREEN;
+		break;	
+	case KOOPAS_STATE_SPIN:
+		((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetPlayer()->canMultiScoreLand = true;
 		break;
 	case KOOPAS_STATE_WALKING:
 		if (type == KOOPAS_GREEN_WING)

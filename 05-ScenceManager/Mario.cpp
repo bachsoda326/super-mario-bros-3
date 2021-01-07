@@ -11,6 +11,8 @@
 #include "BreakableBrick.h"
 #include "PSwitch.h"
 #include "PlayScence.h"
+#include "PlayerInfo.h"
+#include "Point.h"
 
 CMario::CMario(float x, float y) : CGameObject()
 {
@@ -39,7 +41,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	/*DebugOut(L"[GROUND]: %d\n", isOnGround);
 	DebugOut(L"[VY]: %f\n", vy);*/
-	DebugOut(L"[State] VECTOR: %f\n", vx);
+	DebugOut(L"[State] fator: %d\n", pointFactor);
 	// Calculate dx, dy 
 	CGameObject::Update(dt);
 
@@ -285,6 +287,11 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			// Stand on obj
 			if (ny < 0 && e->obj != NULL)
 			{
+				if (canMultiScoreJump && isOnGround)
+				{
+					canMultiScoreJump = false;
+					pointFactor = 0;
+				}
 				if (!dynamic_cast<CCoin*>(e->obj) && !dynamic_cast<CBullet*>(e->obj) && !dynamic_cast<CLeaf*>(e->obj) && !dynamic_cast<CMushRoom*>(e->obj) && !dynamic_cast<CPiranha*>(e->obj))
 				{
 					if (!(dynamic_cast<CBreakableBrick*>(e->obj) && e->obj->GetState() == BREAKABLE_BRICK_STATE_COIN || dynamic_cast<CPSwitch*>(e->obj) && e->obj->GetState() == PSWITCH_STATE_HIT))
@@ -422,6 +429,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				{
 					if (e->ny < 0)
 					{
+						canMultiScoreJump = true;
 						goomba->SetState(GOOMBA_STATE_DIE);
 						vy = -MARIO_JUMP_DEFLECT_SPEED;
 					}
@@ -444,6 +452,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				{
 					if (e->ny < 0)
 					{
+						canMultiScoreJump = true;
 						if (para->GetLevel() == PARA_GOOMBA_LEVEL_WING)
 							para->SetState(PARA_GOOMBA_STATE_LOOSE_WING);
 						else
@@ -480,6 +489,8 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				// jump on top >> kill CKoopas, can kick or throw
 				if (e->ny < 0)
 				{
+					canMultiScoreJump = true;
+					koopas->AddPoint(/*POINT_100*/);
 					if (koopas->type == KOOPAS_GREEN_WING)
 					{
 						koopas->type = KOOPAS_GREEN;
@@ -1210,6 +1221,12 @@ void CMario::SetBoundingBox()
 	}
 }
 
+void CMario::AddPointFactor()
+{
+	if (canMultiScoreJump || canMultiScoreLand)
+		pointFactor++;
+}
+
 /*
 	Reset Mario status to the beginning state of a scene
 */
@@ -1352,6 +1369,7 @@ void CMario::OnIntersect(CGameObject* obj, vector<LPGAMEOBJECT>* coObjs)
 		else if (dynamic_cast<CMushRoom*>(obj))
 		{
 			CMushRoom* mushroom = dynamic_cast<CMushRoom*>(obj);
+			AddPoint(POINT_1000);
 			switch (mushroom->type)
 			{
 			case MUSHROOM_TYPE_RED:
@@ -1379,6 +1397,7 @@ void CMario::OnIntersect(CGameObject* obj, vector<LPGAMEOBJECT>* coObjs)
 			CLeaf* leaf = dynamic_cast<CLeaf*>(obj);
 			eat_item_start = GetTickCount();
 			SetState(MARIO_STATE_EAT_ITEM);
+			AddPoint(POINT_1000);
 			leaf->DeleteObjs(coObjs);
 			y -= MARIO_BIG_BBOX_HEIGHT - MARIO_SMALL_BBOX_HEIGHT;
 			level = MARIO_LEVEL_RACCOON;
@@ -1425,34 +1444,42 @@ void CMario::OnIntersect(CGameObject* obj, vector<LPGAMEOBJECT>* coObjs)
 			CBreakableBrick* bBrick = dynamic_cast<CBreakableBrick*>(obj);
 			if (bBrick->GetState() == BREAKABLE_BRICK_STATE_COIN)
 			{
-				bBrick->DeleteObjs(coObjs);
-			}
-			if (state == MARIO_STATE_TAIL && isColTail(bBrick))
-			{
-				switch (bBrick->type)
+				if (state != MARIO_STATE_TAIL)
 				{
-				case BREAKABLE_BRICK_TYPE_1UP_MUSHROOM:
-					if (x <= bBrick->x)
-						bBrick->SetState(BREAKABLE_BRICK_STATE_1UP_MUSHROOM_LEFT);
-					else
-						bBrick->SetState(BREAKABLE_BRICK_STATE_1UP_MUSHROOM_RIGHT);
-					break;
-				case BREAKABLE_BRICK_TYPE_P_SWITCH:
-					bBrick->SetState(BREAKABLE_BRICK_STATE_P_SWITCH);
-					break;
-				case BREAKABLE_BRICK_TYPE_COIN:
-					bBrick->SetState(BREAKABLE_BRICK_STATE_BREAK);
-					break;
-				default:
-					break;
+					CPlayerInfo::GetInstance()->AdjustScore(50);
+					bBrick->DeleteObjs(coObjs);
 				}
-				canHit = false;
 			}
+			else
+			{
+				if (state == MARIO_STATE_TAIL && isColTail(bBrick))
+				{
+					switch (bBrick->type)
+					{
+					case BREAKABLE_BRICK_TYPE_1UP_MUSHROOM:
+						if (x <= bBrick->x)
+							bBrick->SetState(BREAKABLE_BRICK_STATE_1UP_MUSHROOM_LEFT);
+						else
+							bBrick->SetState(BREAKABLE_BRICK_STATE_1UP_MUSHROOM_RIGHT);
+						break;
+					case BREAKABLE_BRICK_TYPE_P_SWITCH:
+						bBrick->SetState(BREAKABLE_BRICK_STATE_P_SWITCH);
+						break;
+					case BREAKABLE_BRICK_TYPE_COIN:
+						bBrick->SetState(BREAKABLE_BRICK_STATE_BREAK);
+						break;
+					default:
+						break;
+					}
+					canHit = false;
+				}
+			}			
 		}
 		// Coin
 		else if (dynamic_cast<CCoin*>(obj))
 		{
 			CCoin* coin = dynamic_cast<CCoin*>(obj);
+			CPlayerInfo::GetInstance()->AdjustScore(50);
 			coin->DeleteObjs(coObjs);
 		}
 	}

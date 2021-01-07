@@ -3,6 +3,7 @@
 #include "MushRoom.h"
 #include "Leaf.h"
 #include "Game.h"
+#include "PlayerInfo.h"
 
 CQuestionBrick::CQuestionBrick(float x, float y, int type)
 {
@@ -85,6 +86,7 @@ void CQuestionBrick::SetState(int state)
 	case QUESTION_BRICK_STATE_HIT_COIN:
 		obj = new CCoin(start_x, start_y - COIN_BBOX_HEIGHT, true);
 		CGame::GetInstance()->GetCurrentScene()->GetOtherObjs()->push_back(obj);
+		CPlayerInfo::GetInstance()->AdjustMoney(1);
 		//obj->vy = -0.5f;
 		break;
 		/*case QUESTION_BRICK_STATE_HIT_MUSHROOM_LEFT:

@@ -9,8 +9,8 @@ class CCamera
 	static CCamera* __instance;
 
 	int width, height;
-	int widthMap, heightMap;
-	int leftMap, topMap, rightMap, bottomMap;
+	int widthMap = -1, heightMap = -1;
+	int leftMap = -1, topMap = -1, rightMap = -1, bottomMap = -1;
 	bool isStatic = true;
 
 	D3DXVECTOR3 position;

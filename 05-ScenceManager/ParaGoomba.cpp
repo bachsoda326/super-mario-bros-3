@@ -214,6 +214,7 @@ void CParaGoomba::SetState(int state)
 		vy = -0.18f;
 		break;
 	case PARA_GOOMBA_STATE_DIE:
+		AddPoint(/*POINT_100*/);
 		y += PARA_GOOMBA_BBOX_HEIGHT - PARA_GOOMBA_BBOX_HEIGHT_DIE;
 		vx = 0;
 		vy = 0;
@@ -221,12 +222,14 @@ void CParaGoomba::SetState(int state)
 		die_start = GetTickCount();
 		break;
 	case PARA_GOOMBA_STATE_DIE_REVERSE:
+		AddPoint(/*POINT_100*/);
 		level = PARA_GOOMBA_LEVEL_NOR;
 		yReverse = true;
 		isDie = true;
 		die_start = GetTickCount();
 		break;	
 	case PARA_GOOMBA_STATE_LOOSE_WING:
+		AddPoint(/*POINT_100*/);
 		level = PARA_GOOMBA_LEVEL_NOR;
 		state = PARA_GOOMBA_STATE_WALKING;
 		vy = 0;

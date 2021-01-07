@@ -175,6 +175,7 @@ void CPiranha::SetState(int state)
 		vy = 0;
 		break;
 	case PIRANHA_STATE_DIE:
+		AddPoint(/*POINT_100*/);
 		vy = 0;
 		isDie = true;
 		SetPosition(x + PIRANHA_BBOX_WIDTH / 5, y);

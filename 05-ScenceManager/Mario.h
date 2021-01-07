@@ -253,6 +253,7 @@ class CMario : public CGameObject
 	DWORD untouchable_start;
 
 	int power = 0;
+	int pointFactor = 0;
 
 	float start_x;			// initial position of Mario at scene
 	float start_y; 
@@ -282,6 +283,8 @@ public:
 	bool isHold = false;
 	bool canAttack = true;
 	bool canHit = true;
+	bool canMultiScoreLand = false;
+	bool canMultiScoreJump = false;
 	//bool canDuck = false;
 
 	vector<CBullet*> *bullets;
@@ -295,6 +298,8 @@ public:
 	void SetLevel(int l) { level = l; }
 	int GetLevel() { return level; }
 	int GetPower() { return power; }
+	int GetPointFactor() { return pointFactor; }
+	void AddPointFactor();
 	void StartUntouchable() { untouchable = 1; untouchable_start = GetTickCount(); }
 
 	void SetKoopas(CKoopas* koopas) { this->koopas = koopas; };

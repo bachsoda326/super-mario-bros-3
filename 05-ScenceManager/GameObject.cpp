@@ -8,6 +8,8 @@
 #include "GameObject.h"
 #include "Sprites.h"
 #include "Point.h"
+#include "PlayerInfo.h"
+#include "PlayScence.h"
 
 CGameObject::CGameObject()
 {
@@ -191,41 +193,96 @@ void CGameObject::DeleteOtherObjs(vector<LPGAMEOBJECT>* coObjects)
 	delete this;
 }
 
-void CGameObject::AddPoint(int type)
+void CGameObject::AddPoint(int types)
 {
-	int ani = -1;
-	switch (type)
+	int score = 0;
+	int type = types;
+
+	if (type == -1)
 	{
-	case POINT_100:
-		ani = POINT_ANI_100;
-		break;
-	case POINT_200:
-		ani = POINT_ANI_200;
-		break;
-	case POINT_400:
-		ani = POINT_ANI_400;
-		break;
-	case POINT_800:
-		ani = POINT_ANI_800;
-		break;
-	case POINT_1000:
-		ani = POINT_ANI_1000;
-		break;
-	case POINT_2000:
-		ani = POINT_ANI_2000;
-		break;
-	case POINT_4000:
-		ani = POINT_ANI_4000;
-		break;
-	case POINT_8000:
-		ani = POINT_ANI_8000;
-		break;
-	case POINT_1_UP:
-		ani = POINT_ANI_1_UP;
-		break;
-	default:
-		break;
+		int scoreFactor = ((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetPlayer()->GetPointFactor();
+		switch (scoreFactor)
+		{
+		case 0:
+			score = 100;
+			type = POINT_100;
+			break;
+		case 1:
+			score = 200;
+			type = POINT_200;
+			break;
+		case 2:
+			score = 400;
+			type = POINT_400;
+			break;
+		case 3:
+			score = 800;
+			type = POINT_800;
+			break;
+		case 4:
+			score = 1000;
+			type = POINT_1000;
+			break;
+		case 5:
+			score = 2000;
+			type = POINT_2000;
+			break;
+		case 6:
+			score = 4000;
+			type = POINT_4000;
+			break;
+		case 7:
+			score = 8000;
+			type = POINT_8000;
+			break;
+		/*case POINT_1_UP:
+			score = 1000;
+			type = POINT_1_UP;
+			break;*/
+		default:
+			break;
+		}
 	}
+	else
+	{
+		switch (type)
+		{
+		case POINT_100:
+			score = 100;
+			break;
+		case POINT_200:
+			score = 200;
+			break;
+		case POINT_400:
+			score = 400;
+			break;
+		case POINT_800:
+			score = 800;
+			break;
+		case POINT_1000:
+			score = 1000;
+			break;
+		case POINT_2000:
+			score = 2000;
+			break;
+		case POINT_4000:
+			score = 4000;
+			break;
+		case POINT_8000:
+			score = 8000;
+			break;
+		case POINT_1_UP:
+			score = 1000;
+			break;
+		default:
+			break;
+		}
+	}
+
+	CPoint* point = new CPoint(x, y - bottom + top, type);
+	CGame::GetInstance()->GetCurrentScene()->GetOtherObjs()->push_back(point);
+	CPlayerInfo::GetInstance()->AdjustScore(score);
+	((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetPlayer()->AddPointFactor();
 }
 
 

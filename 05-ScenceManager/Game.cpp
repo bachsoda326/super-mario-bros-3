@@ -6,6 +6,8 @@
 
 #include "PlayScence.h"
 #include "WorldMapScene.h"
+#include "BrickPiece.h"
+#include "Point.h"
 
 CGame * CGame::__instance = NULL;
 
@@ -385,12 +387,19 @@ void CGame::CalcViewObjs(vector<LPGAMEOBJECT>* viewObjs, vector<LPGAMEOBJECT> ob
 		
 	for (size_t i = 0; i < objs.size(); i++)
 	{
-		float left1, top1, right1, bottom1;
-		objs.at(i)->GetBoundingBox(left1, top1, right1, bottom1);
-
-		if (AABBCheck(left1, top1, right1, bottom1, gridLeft, gridTop, gridRight, gridBottom))
+		if (dynamic_cast<CBrickPiece*>(objs.at(i)) || dynamic_cast<CPoint*>(objs.at(i)))
 		{
 			viewObjs->push_back(objs.at(i));
+		}
+		else
+		{
+			float left1, top1, right1, bottom1;
+			objs.at(i)->GetBoundingBox(left1, top1, right1, bottom1);
+
+			if (AABBCheck(left1, top1, right1, bottom1, gridLeft, gridTop, gridRight, gridBottom))
+			{
+				viewObjs->push_back(objs.at(i));
+			}
 		}
 	}
 }

@@ -103,7 +103,7 @@ public:
 
 	void DeleteObjs(vector<LPGAMEOBJECT>* coObjects);
 	void DeleteOtherObjs(vector<LPGAMEOBJECT>* coObjects);
-	void AddPoint(int type);
+	void AddPoint(int type = -1);
 
 	CGameObject();
 
