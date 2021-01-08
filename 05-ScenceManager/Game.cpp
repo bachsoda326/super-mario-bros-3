@@ -6,6 +6,7 @@
 
 #include "PlayScence.h"
 #include "WorldMapScene.h"
+#include "TitleScene.h"
 #include "BrickPiece.h"
 #include "Point.h"
 
@@ -440,6 +441,9 @@ void CGame::_ParseSection_SCENES(string line)
 	LPSCENE scene;
 	switch (id)
 	{
+	case TITLE_SCREEN:
+		scene = new CTitleScene(id, path);
+		break;
 	case MAP_1_1:
 		scene = new CPlayScene(id, path);
 		break;

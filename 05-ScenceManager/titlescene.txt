@@ -1,0 +1,27 @@
+# id	file_path	transparent_color_r	g	b
+[TEXTURES]
+10	textures\titlescreen.png	0	0	0
+20	textures\titlescreen.png	255	255	255
+
+# id	left	top	right	bottom	texture_id	xD	yD
+[SPRITES]
+#	-----------------------------------------------------------
+# === TITLE SCREEN
+#10001	516	226	772	449	10
+10001	614	269	919	535	10
+
+# === ARROW
+#10101	36	364	45	374	20
+10101	184	384	193	394	20
+
+# === NUM3
+10201	231	432	265	475	20
+10202	286	432	320	475	20
+10203	342	432	376	475	20
+10204	397	432	431	475	20
+						
+# ani_id	sprite1_id	time1	sprite2_id	time2	...
+[ANIMATIONS]
+#	-----------------------------------------------------------
+# === NUM3
+10201	10201	100	10202	100	10203	100	10204	100

@@ -3,6 +3,8 @@
 #define SCREEN_WIDTH			320
 #define SCREEN_HEIGHT			280
 
+#define TITLE_SCREEN			0
+
 #define MAP_1_1					1
 #define LEFT_MAP_1_1			0
 #define TOP_MAP_1_1				0
