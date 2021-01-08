@@ -55,8 +55,8 @@ void CHud::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	}
 
 	string lifeStr = to_string(CPlayerInfo::GetInstance()->GetLife());
-	while (lifeStr.size() < LIFE_NUM_COUNT)
-		lifeStr = "0" + lifeStr;
+	/*while (lifeStr.size() < LIFE_NUM_COUNT)
+		lifeStr = "0" + lifeStr;*/
 	lifeSpr = font->ToSprites(lifeStr);
 
 	string moneyStr = to_string(CPlayerInfo::GetInstance()->GetMoney());	
@@ -84,9 +84,9 @@ void CHud::Render()
 	worldSpr->DrawSprite(x + 36, y + 7);
 	iconSpr->DrawSprite(x + 4, y + 15);
 
-	for (int i = 0; i < lifeSpr.size(); i++)
+	for (int i = lifeSpr.size() - 1; i >= 0; i--)
 	{
-		lifeSpr[i]->DrawSprite(x + 28 + i*8, y + 15);
+		lifeSpr[i]->DrawSprite(x + 44 - (lifeSpr.size() - i) * 8, y + 15);
 	}
 
 	for (int i = 0; i < timeSpr.size(); i++)
@@ -94,9 +94,9 @@ void CHud::Render()
 		timeSpr[i]->DrawSprite(x + 124 + i * 8, y + 15);
 	}
 
-	for (int i = 0; i < moneySpr.size(); i++)
+	for (int i = moneySpr.size() - 1; i >= 0; i--)
 	{
-		moneySpr[i]->DrawSprite(x + 132 + i * 8, y + 7);
+		moneySpr[i]->DrawSprite(x + 148 - (moneySpr.size() - i) * 8, y + 7);
 	}
 
 	for (int i = 0; i < scoresSpr.size(); i++)

@@ -41,7 +41,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	/*DebugOut(L"[GROUND]: %d\n", isOnGround);
 	DebugOut(L"[VY]: %f\n", vy);*/
-	DebugOut(L"[State] fator: %d\n", pointFactor);
+	DebugOut(L"[State] STATE: %d\n", state);
 	// Calculate dx, dy 
 	CGameObject::Update(dt);
 
@@ -88,6 +88,11 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	{
 		untouchable_start = 0;
 		untouchable = 0;
+	}
+
+	if (!isOnGround && state != MARIO_STATE_FLY && state != MARIO_STATE_RUNJUMP)
+	{
+		DecreasePower();
 	}
 
 	if (kick_start != 0)
@@ -152,6 +157,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	}
 	if (state == MARIO_STATE_FLY && (GetTickCount() - fly_limit_start) > 5000)
 	{
+		//canJump = false;
 		SetState(MARIO_STATE_JUMP_HIGH);
 	}
 	if ((GetTickCount() - pipe_down_start) < 1000)
@@ -692,7 +698,7 @@ void CMario::Render()
 		ani = MARIO_ANI_SMALL_DIE;
 	else if (level == MARIO_LEVEL_BIG)
 	{
-		if (state == MARIO_STATE_IDLE || state == MARIO_STATE_EAT_ITEM || state == MARIO_STATE_TAIL || state == MARIO_STATE_SHOT || state == MARIO_STATE_JUMP_SHOT || state == MARIO_STATE_RUNJUMP_SHOT || state == MARIO_STATE_FLY)
+		if (state == MARIO_STATE_IDLE || state == MARIO_STATE_EAT_ITEM || state == MARIO_STATE_TAIL || state == MARIO_STATE_SHOT || state == MARIO_STATE_JUMP_SHOT || state == MARIO_STATE_RUNJUMP_SHOT || state == MARIO_STATE_FLY || state == MARIO_STATE_WAG)
 		{
 			if (isHold)
 			{
@@ -1246,11 +1252,13 @@ void CMario::Hurt()
 	{
 		if (level > MARIO_LEVEL_BIG)
 		{
+			SetState(MARIO_STATE_IDLE);
 			level = MARIO_LEVEL_BIG;
 			StartUntouchable();
 		}
 		else if (level > MARIO_LEVEL_SMALL)
 		{
+			SetState(MARIO_STATE_IDLE);
 			level = MARIO_LEVEL_SMALL;
 			StartUntouchable();
 		}
@@ -1274,14 +1282,11 @@ void CMario::IncreasePower()
 
 void CMario::DecreasePower()
 {
-	if (isOnGround)
+	DWORD now = GetTickCount();
+	if (power > 0 && now - run_start > 300)
 	{
-		DWORD now = GetTickCount();
-		if (power > 0 && now - run_start > 300)
-		{
-			power--;
-			run_start = now;
-		}
+		power--;
+		run_start = now;
 	}
 }
 
@@ -1369,7 +1374,6 @@ void CMario::OnIntersect(CGameObject* obj, vector<LPGAMEOBJECT>* coObjs)
 		else if (dynamic_cast<CMushRoom*>(obj))
 		{
 			CMushRoom* mushroom = dynamic_cast<CMushRoom*>(obj);
-			AddPoint(POINT_1000);
 			switch (mushroom->type)
 			{
 			case MUSHROOM_TYPE_RED:
@@ -1377,6 +1381,7 @@ void CMario::OnIntersect(CGameObject* obj, vector<LPGAMEOBJECT>* coObjs)
 				{
 					eat_item_start = GetTickCount();
 					SetState(MARIO_STATE_EAT_ITEM);
+					AddPoint(POINT_1000);
 					//DebugOut(L"[NAM]: %f\n", y);					
 					mushroom->DeleteOtherObjs(coObjs);
 					y -= MARIO_BIG_BBOX_HEIGHT - MARIO_SMALL_BBOX_HEIGHT;
@@ -1386,6 +1391,7 @@ void CMario::OnIntersect(CGameObject* obj, vector<LPGAMEOBJECT>* coObjs)
 				break;
 			case MUSHROOM_TYPE_1_UP:
 				mushroom->DeleteOtherObjs(coObjs);
+				AddPoint(POINT_1_UP); 
 				break;
 			default:
 				break;
@@ -1480,6 +1486,7 @@ void CMario::OnIntersect(CGameObject* obj, vector<LPGAMEOBJECT>* coObjs)
 		{
 			CCoin* coin = dynamic_cast<CCoin*>(obj);
 			CPlayerInfo::GetInstance()->AdjustScore(50);
+			CPlayerInfo::GetInstance()->AdjustMoney(1);
 			coin->DeleteObjs(coObjs);
 		}
 	}

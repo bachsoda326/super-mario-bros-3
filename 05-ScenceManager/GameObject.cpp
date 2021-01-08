@@ -272,7 +272,7 @@ void CGameObject::AddPoint(int types)
 			score = 8000;
 			break;
 		case POINT_1_UP:
-			score = 1000;
+			CPlayerInfo::GetInstance()->AdjustLife(1);
 			break;
 		default:
 			break;
