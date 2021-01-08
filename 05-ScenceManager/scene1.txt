@@ -13,6 +13,7 @@
 40	textures\enemies.png	0	255	255
 50	textures\map1-1.png	156	252	240
 60	textures\hud-font.png	0	224	142
+70	textures\goal_roulette.png	0	183	239
 -101	textures\bbox_black.png	255	255	255
 
 
@@ -459,7 +460,7 @@ map1-1.txt	1	2816	432
 # Power empty icon-P
 55008	99	161	116	170	60
 # Empty card
-55009	160	159	183	186	60
+55009	160	160	183	186	60
 # Mushroom card
 55010	184	160	208	186	60
 # Fire flower card
@@ -559,6 +560,27 @@ map1-1.txt	1	2816	432
 # 1-UP
 55057	195	89	211	97	60
 
+# === PORTAL
+# == CARD
+# Mushroom
+56001	435	347	461	373	70
+# Star
+56002	379	347	405	373	70
+# Flower
+56003	407	347	433	373	70
+# == PICKED 
+# Mushroom
+56004	257	373	273	389	70
+56005	316	375	329	390	70
+# Star
+56006	297	373	313	390	70
+56007	344	373	357	391	70
+# Flower
+56008	277	374	293	390	70
+56009	329	375	342	391	70
+# == CONGRAT
+56010	4	348	252	421	70
+#56010	435	347	461	373	70
 						
 # ani_id	sprite1_id	time1	sprite2_id	time2	...
 [ANIMATIONS]
@@ -1053,6 +1075,12 @@ ani_id	sprite1_id	time1	sprite2_id	time2
 # === HUD
 # Power
 55001	55006	100	55008	100
+# Mushroom card
+55002	55009	100	55010	100
+# Star card
+55003	55009	100	55012	100
+# Flower card
+55004	55009	100	55011	100
 
 # === EFFECT POINT
 # 100
@@ -1073,6 +1101,16 @@ ani_id	sprite1_id	time1	sprite2_id	time2
 55108	55056	100
 # 1-Up
 55109	55057	100
+
+# === PORTAL
+# Cards
+56001	56001	100	56002	100	56003	100
+# Pick Mushroom
+56002	56004	100	56005	100
+# Pick Star
+56003	56006	100	56007	100
+# Pick Flower
+56004	56008	100	56009	100
 
 #
 # id	ani1	ani2	ani3
@@ -1147,6 +1185,9 @@ ani_id	sprite1_id	time1	sprite2_id	time2
 # point effect
 #	100	200	400	800	1000	2000	4000	8000	1-Up
 40	55101	55102	55103	55104	55105	55106	55107	55108	55109
+# === PORTAL
+#	cards	pMRoom	pStar	pFlower
+41	56001	56002	56003	56004
 
 [OBJECTS]
 #	-----------------------------------------------------------------------
@@ -1361,6 +1402,6 @@ ani_id	sprite1_id	time1	sprite2_id	time2
 51	0	0	-1
 
 # === SCENE PORTAL
-# type	l	t	ani_set_id	r	b	scene_id
-#50	300	98	0	316	150	2
+# type	l	t	ani_set_id	scene_id
+50	2683	331	41	100
 

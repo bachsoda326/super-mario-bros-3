@@ -27,6 +27,7 @@ public:
 	void AdjustScore(int num) { score += num; }
 	void SetForm(int level) { form = level; }
 	void AddCard(int card) { cards.push_back(card); }
+	void ClearCard() { cards.clear(); }
 
 	static CPlayerInfo* GetInstance();
 };

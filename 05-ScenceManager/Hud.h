@@ -21,8 +21,16 @@
 #define SPRITE_FILLED_POWER_ARROW_ID	55006
 #define SPRITE_POWER_ID					55007
 #define SPRITE_POWER_ARROW_ID			55008
+#define SPRITE_CARD_EMPTY_ID			55009
+#define SPRITE_CARD_MUSHROOM_ID			55010
+#define SPRITE_CARD_FLOWER_ID			55011
+#define SPRITE_CARD_STAR_ID				55012
 #define SPRITE_BBOX_BLACK_ID			90001	
+
 #define ANIMATION_FILLED_POWER_ARROW_ID		55001
+#define ANIMATION_MUSHROOM_CARD_ID			55002
+#define ANIMATION_STAR_CARD_ID				55003
+#define ANIMATION_FLOWER_CARD_ID			55004
 
 //#define HUD_ANI_SET		39
 
@@ -47,8 +55,9 @@ class CHud : public CGameObject
 	vector<LPSPRITE> scoresSpr;
 	vector<LPSPRITE> powerSpr;
 	vector<LPSPRITE> filledPowerSpr;
-	CAnimation* filledPowerArrowAni;
+	LPANIMATION filledPowerArrowAni;
 	vector<LPSPRITE> cardsSpr;
+	LPANIMATION cardsAni = NULL;
 	vector<LPSPRITE> timeSpr;
 
 public:
@@ -56,5 +65,7 @@ public:
 
 	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects = NULL);
 	void Render();
+
+	void EndScene();
 };
 

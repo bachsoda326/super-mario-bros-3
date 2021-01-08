@@ -248,11 +248,9 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	}
 	break;
 	case OBJECT_TYPE_PORTAL:
-	{
-		float r = atof(tokens[4].c_str());
-		float b = atof(tokens[5].c_str());
-		int scene_id = atoi(tokens[6].c_str());
-		obj = new CPortal(x, y, r, b, scene_id);
+	{		
+		int scene_id = atoi(tokens[4].c_str());
+		obj = new CPortal(x, y,scene_id);
 	}
 	break;
 	case OBJECT_TYPE_COIN:	obj = new CCoin(); break;
@@ -395,11 +393,10 @@ void CPlayScene::Update(DWORD dt)
 		if (!viewObjs[i]->isDead)
 			viewObjs[i]->Update(dt, &coObjects);
 	}
-
-	hud->Update(dt);
-
 	// skip the rest if scene was already unloaded (Mario::Update might trigger PlayScene::Unload)
 	if (player == NULL) return;
+
+	hud->Update(dt);	
 
 	// Update camera to follow mario */// FORGET: NHỚ BỎ CHỖ NÀY SAU VÌ ĐÃ CÓ CAMERA MỚI
 	/*float cx, cy;
@@ -437,6 +434,9 @@ void CPlayScene::Render()
 			viewObjs[i]->Render();
 	}
 
+	// skip the rest if scene was already unloaded (Mario::Update might trigger PlayScene::Unload)
+	if (player == NULL) return;
+
 	hud->Render();
 }
 
@@ -464,6 +464,11 @@ void CPlayScene::Unload()
 	hud = NULL;
 
 	DebugOut(L"[INFO] Scene %s unloaded! \n", sceneFilePath);
+}
+
+void CPlayScene::EndScene()
+{
+	hud->EndScene();
 }
 
 //void CPlayScene::UpdateCamera(int mapWidth, int mapHeight)
@@ -515,6 +520,8 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 	/*DebugOut(L"[KEYDOWN] KeyDown: %d\n", KeyCode);*/
 
 	CMario* mario = ((CPlayScene*)scence)->GetPlayer();
+	if (mario->state == MARIO_STATE_DIE || mario->state == MARIO_STATE_END_SCENE) return;
+	
 	switch (KeyCode)
 	{
 	case DIK_C:
@@ -546,6 +553,10 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 		break;
 	case DIK_NUMPAD6:
 		mario->SetPosition(2260, 50);
+		CCamera::GetInstance()->SetIsStatic(false);
+		break;
+	case DIK_NUMPAD7:
+		mario->SetPosition(2600, 350);
 		CCamera::GetInstance()->SetIsStatic(false);
 		break;
 	case DIK_NUMPAD0:
@@ -659,6 +670,7 @@ void CPlayScenceKeyHandler::OnKeyUp(int KeyCode)
 
 	CGame* game = CGame::GetInstance();
 	CMario* mario = ((CPlayScene*)scence)->GetPlayer();
+	if (mario->state == MARIO_STATE_DIE || mario->state == MARIO_STATE_END_SCENE) return;
 
 	switch (KeyCode)
 	{
@@ -700,7 +712,7 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 	CMario* mario = ((CPlayScene*)scence)->GetPlayer();
 	int state = mario->GetState();
 	// disable control key when Mario die 
-	if (state == MARIO_STATE_DIE) return;
+	if (state == MARIO_STATE_DIE || state == MARIO_STATE_END_SCENE) return;
 	if (game->IsKeyDown(DIK_RIGHT) && state != MARIO_STATE_PIPE)
 	{
 		mario->nx = 1;

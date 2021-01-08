@@ -90,6 +90,17 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		untouchable = 0;
 	}
 
+	if (state == MARIO_STATE_END_SCENE)
+	{
+		if (isOnGround)
+			vx = 0.1f;
+		if (x >= RIGHT_MAP_1_1)
+		{
+			isEndScene = true;
+			vx = 0;
+		}
+	}
+
 	if (!isOnGround && state != MARIO_STATE_FLY && state != MARIO_STATE_RUNJUMP)
 	{
 		DecreasePower();
@@ -554,7 +565,9 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			else if (dynamic_cast<CPortal*>(e->obj))
 			{
 				CPortal* p = dynamic_cast<CPortal*>(e->obj);
-				CGame::GetInstance()->SwitchScene(p->GetSceneId());
+				//CGame::GetInstance()->SwitchScene(p->GetSceneId());
+				p->SetState(PORTAL_STATE_PICK_CARD);
+				SetState(MARIO_STATE_END_SCENE);
 			}
 			// MushRoom
 			else if (dynamic_cast<CMushRoom*>(e->obj))
@@ -698,6 +711,13 @@ void CMario::Render()
 		ani = MARIO_ANI_SMALL_DIE;
 	else if (level == MARIO_LEVEL_BIG)
 	{
+		if (state == MARIO_STATE_END_SCENE)
+		{
+			if (isOnGround)
+				ani = MARIO_ANI_BIG_WALKING_RIGHT;
+			else
+				ani = MARIO_ANI_BIG_JUMP_RIGHT;
+		}
 		if (state == MARIO_STATE_IDLE || state == MARIO_STATE_EAT_ITEM || state == MARIO_STATE_TAIL || state == MARIO_STATE_SHOT || state == MARIO_STATE_JUMP_SHOT || state == MARIO_STATE_RUNJUMP_SHOT || state == MARIO_STATE_FLY || state == MARIO_STATE_WAG)
 		{
 			if (isHold)
@@ -795,6 +815,13 @@ void CMario::Render()
 	}
 	else if (level == MARIO_LEVEL_RACCOON)
 	{
+		if (state == MARIO_STATE_END_SCENE)
+		{
+			if (isOnGround)
+				ani = MARIO_ANI_RACCOON_WALKING_RIGHT;
+			else
+				ani = MARIO_ANI_RACCOON_JUMP_RIGHT;
+		}
 		if (state == MARIO_STATE_IDLE || state == MARIO_STATE_EAT_ITEM)
 		{
 			if (isHold)
@@ -907,6 +934,13 @@ void CMario::Render()
 	}
 	else if (level == MARIO_LEVEL_FIRE)
 	{
+		if (state == MARIO_STATE_END_SCENE)
+		{
+			if (isOnGround)
+				ani = MARIO_ANI_FIRE_WALKING_RIGHT;
+			else
+				ani = MARIO_ANI_FIRE_JUMP_RIGHT;
+		}
 		if (state == MARIO_STATE_IDLE || state == MARIO_STATE_EAT_ITEM)
 		{
 			if (isHold)
@@ -1009,6 +1043,13 @@ void CMario::Render()
 	}
 	else if (level == MARIO_LEVEL_SMALL)
 	{
+		if (state == MARIO_STATE_END_SCENE)
+		{
+			if (isOnGround)
+				ani = MARIO_ANI_SMALL_WALKING_RIGHT;
+			else
+				ani = MARIO_ANI_SMALL_JUMP_RIGHT;
+		}
 		if (state == MARIO_STATE_IDLE || state == MARIO_STATE_EAT_ITEM || state == MARIO_STATE_TAIL || state == MARIO_STATE_SHOT || state == MARIO_STATE_JUMP_SHOT || state == MARIO_STATE_RUNJUMP_SHOT || state == MARIO_STATE_FLY)
 		{
 			if (isHold)
@@ -1153,6 +1194,10 @@ void CMario::SetState(int state)
 		break;
 	case MARIO_STATE_DUCK:
 		canAttack = false;
+		break;
+	case MARIO_STATE_END_SCENE:
+		vx = 0;
+		vy = 0;
 		break;
 	}
 }
@@ -1391,7 +1436,7 @@ void CMario::OnIntersect(CGameObject* obj, vector<LPGAMEOBJECT>* coObjs)
 				break;
 			case MUSHROOM_TYPE_1_UP:
 				mushroom->DeleteOtherObjs(coObjs);
-				AddPoint(POINT_1_UP); 
+				AddPoint(POINT_1_UP);
 				break;
 			default:
 				break;
@@ -1479,7 +1524,7 @@ void CMario::OnIntersect(CGameObject* obj, vector<LPGAMEOBJECT>* coObjs)
 					}
 					canHit = false;
 				}
-			}			
+			}
 		}
 		// Coin
 		else if (dynamic_cast<CCoin*>(obj))

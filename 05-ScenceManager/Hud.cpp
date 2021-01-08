@@ -8,6 +8,7 @@ CHud::CHud()
 	/*CAnimationSets* animation_sets = CAnimationSets::GetInstance();
 	LPANIMATION_SET ani_set = animation_sets->Get(HUD_ANI_SET);
 	SetAnimationSet(ani_set);*/
+	CPlayerInfo* info = CPlayerInfo::GetInstance();
 
 	font = new CFont();
 	world = WORLD_1;
@@ -35,6 +36,16 @@ CHud::CHud()
 			filledPowerSpr.push_back(CSprites::GetInstance()->Get(SPRITE_FILLED_POWER_ID));
 		else
 			filledPowerSpr.push_back(CSprites::GetInstance()->Get(SPRITE_FILLED_POWER_ARROW_ID));
+	}
+
+	if (info->GetCards().size() == 3)
+	{
+		info->ClearCard();
+	}
+
+	for (int i : info->GetCards())
+	{
+		cardsSpr.push_back(CSprites::GetInstance()->Get(i));
 	}
 }
 
@@ -120,4 +131,33 @@ void CHud::Render()
 			/*filledPowerSpr[i]->DrawSprite(x + 53 + i * 8, y + 7);*/
 			filledPowerArrowAni->Render(x + 53 + i * 8, y + 7, xReverse, yReverse, true);
 	}
+
+	for (int i = 0; i < cardsSpr.size(); i++)
+	{
+		cardsSpr[i]->DrawSprite(x + 161 + i * 24, y + 2);
+	}
+
+	if (cardsAni != NULL)
+		cardsAni->Render(x + 161 + (CPlayerInfo::GetInstance()->GetCards().size() - 1) * 24, y + 2, xReverse, yReverse, true);
+}
+
+void CHud::EndScene()
+{
+	int idCard = CPlayerInfo::GetInstance()->GetCards().back();
+	int ani = -1;
+	switch (idCard)
+	{
+	case SPRITE_CARD_MUSHROOM_ID:
+		ani = ANIMATION_MUSHROOM_CARD_ID;
+		break;
+	case SPRITE_CARD_STAR_ID:
+		ani = ANIMATION_STAR_CARD_ID;
+		break;
+	case SPRITE_CARD_FLOWER_ID:
+		ani = ANIMATION_FLOWER_CARD_ID;
+		break;
+	default:
+		return;
+	}
+	cardsAni = CAnimations::GetInstance()->Get(ani);
 }

@@ -36,6 +36,7 @@
 #define MARIO_STATE_RUNJUMP_SHOT		115
 #define MARIO_STATE_EAT_ITEM			116
 #define MARIO_STATE_PIPE				117
+#define MARIO_STATE_END_SCENE			118
 #define MARIO_STATE_DIE					999
 
 //#define MARIO_ANI_BIG_IDLE_RIGHT		0
@@ -251,6 +252,7 @@ class CMario : public CGameObject
 	int level;
 	int untouchable;
 	DWORD untouchable_start;
+	bool isEndScene = false;
 
 	int power = 0;
 	int pointFactor = 0;
@@ -299,6 +301,8 @@ public:
 	int GetLevel() { return level; }
 	int GetPower() { return power; }
 	int GetPointFactor() { return pointFactor; }
+	bool IsEndScene() { return isEndScene; }
+
 	void AddPointFactor();
 	void StartUntouchable() { untouchable = 1; untouchable_start = GetTickCount(); }
 
