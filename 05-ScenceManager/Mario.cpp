@@ -41,7 +41,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	/*DebugOut(L"[GROUND]: %d\n", isOnGround);
 	DebugOut(L"[VY]: %f\n", vy);*/
-	DebugOut(L"[State] DEAD: %d\n", isDead);
+	DebugOut(L"[State] state: %d\n", state);
 	// Calculate dx, dy 
 	CGameObject::Update(dt);
 
@@ -54,17 +54,6 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	{
 		vy = -0.2f;
 		canJumpHigher = false;
-	}
-
-	// Edge map
-	if (x <= 5) x = 5;
-	// Edge map
-	if (state != MARIO_STATE_END_SCENE && x + MARIO_BIG_BBOX_WIDTH >= RIGHT_MAP_1_1) x = RIGHT_MAP_1_1 - MARIO_BIG_BBOX_WIDTH;
-
-	if (koopas != NULL && koopas->state == KOOPAS_STATE_DIE)
-	{
-		koopas = NULL;
-		isHold = false;
 	}
 
 	if (state == MARIO_STATE_DIE)
@@ -82,6 +71,20 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 		return;
 	}
+
+	// Edge map
+	if (x <= 5) x = 5;
+	// Edge map
+	if (state != MARIO_STATE_END_SCENE && x + MARIO_BIG_BBOX_WIDTH >= RIGHT_MAP_1_1) x = RIGHT_MAP_1_1 - MARIO_BIG_BBOX_WIDTH;
+	// Edge map
+	if (y > HEIGHT_MAP_1_1) SetState(MARIO_STATE_DIE);
+
+	if (koopas != NULL && koopas->state == KOOPAS_STATE_DIE)
+	{
+		koopas = NULL;
+		isHold = false;
+	}
+	
 	// Giao nhau vs obj
 	for (int i = 0; i < coObjects->size(); i++)
 	{
@@ -135,13 +138,13 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		}
 	}
 
-	if (tail_start != 0 && (GetTickCount() - tail_start) < 210)
+	/*if (tail_start != 0 && (GetTickCount() - tail_start) < 5000)
 	{
 		SetState(MARIO_STATE_TAIL);
 	}
 	else
 	{
-		if (tail_start != 0 && (GetTickCount() - tail_start) >= 210)
+		if (tail_start != 0 && (GetTickCount() - tail_start) >= 5000)
 		{
 			tail_start = 0;
 			canHit = true;
@@ -149,7 +152,26 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		if (state == MARIO_STATE_TAIL && !isOnGround)
 			SetState(MARIO_STATE_JUMP_HIGH);
 		canAttack = true;
-	}
+	}*/
+
+	if (tail_start != 0)
+	{
+		if (GetTickCount() - tail_start < 210)
+			SetState(MARIO_STATE_TAIL);
+		else
+		{
+			tail_start = 0;
+			canHit = true;
+			canAttack = true;
+
+			if (!isOnGround)
+				SetState(MARIO_STATE_JUMP_HIGH);
+			else if (vx == 0)
+				SetState(MARIO_STATE_IDLE);
+			else
+				SetState(MARIO_STATE_WALKING);
+		}
+	}	
 
 	if ((GetTickCount() - fire_start) < 150)
 	{
@@ -589,14 +611,14 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			// MushRoom
 			else if (dynamic_cast<CMushRoom*>(e->obj))
 			{
-				x += dx;
-				y += dy;
+				/*x += dx;
+				y += dy;*/
 			}
 			// Leaf
 			else if (dynamic_cast<CLeaf*>(e->obj))
 			{
-				x += dx;
-				y += dy;
+				/*x += dx;
+				y += dy;*/
 			}
 			// Question Brick
 			else if (dynamic_cast<CQuestionBrick*>(e->obj))
@@ -1561,16 +1583,16 @@ bool CMario::isColTail(CGameObject* obj)
 	float leftTail, topTail, rightTail, bottomTail;
 	float left2, top2, right2, bottom2;
 
-	topTail = top + 24;
+	topTail = top + 17;
 	bottomTail = bottom - 2;
 	if (nx < 0)
 	{
-		leftTail = left - 8;
+		leftTail = left - 9;
 		rightTail = leftTail + MARIO_TAIL_BBOX_WIDTH;
 	}
 	else
 	{
-		rightTail = right + 8;
+		rightTail = right + 9;
 		leftTail = rightTail - MARIO_TAIL_BBOX_WIDTH;
 	}
 

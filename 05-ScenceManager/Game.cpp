@@ -388,7 +388,7 @@ void CGame::CalcViewObjs(vector<LPGAMEOBJECT>* viewObjs, vector<LPGAMEOBJECT> ob
 		
 	for (size_t i = 0; i < objs.size(); i++)
 	{
-		if (dynamic_cast<CBrickPiece*>(objs.at(i)) || dynamic_cast<CPoint*>(objs.at(i)) || dynamic_cast<CMario*>(objs.at(i)))
+		if (dynamic_cast<CBullet*>(objs.at(i)) || dynamic_cast<CBrickPiece*>(objs.at(i)) || dynamic_cast<CPoint*>(objs.at(i)) || dynamic_cast<CMario*>(objs.at(i)))
 		{
 			viewObjs->push_back(objs.at(i));
 		}

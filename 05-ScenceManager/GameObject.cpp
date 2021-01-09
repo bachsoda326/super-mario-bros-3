@@ -70,8 +70,8 @@ bool CGameObject::AABBCheck(CGameObject* obj1, CGameObject* obj2)
 
 	if (obj1->state == MARIO_STATE_TAIL)
 	{
-		left1 -= 8;
-		right1 += 8;
+		left1 -= 9;
+		right1 += 9;
 	}
 
 	// return true nếu collision xảy ra
@@ -288,7 +288,7 @@ void CGameObject::AddPoint(int types)
 
 void CGameObject::RenderBoundingBox()
 {
-	D3DXVECTOR3 p(x, y, 0);
+	/*D3DXVECTOR3 p(x, y, 0);
 	RECT rect;
 
 	LPDIRECT3DTEXTURE9 bbox = CTextures::GetInstance()->Get(ID_TEX_BBOX);
@@ -301,7 +301,7 @@ void CGameObject::RenderBoundingBox()
 	rect.right = (int)r - (int)l;
 	rect.bottom = (int)b - (int)t;
 
-	CGame::GetInstance()->Draw(l, t, bbox, rect.left, rect.top, rect.right, rect.bottom, 0, 0, xReverse, yReverse, 128);
+	CGame::GetInstance()->Draw(l, t, bbox, rect.left, rect.top, rect.right, rect.bottom, 0, 0, xReverse, yReverse, 128);*/
 }
 
 

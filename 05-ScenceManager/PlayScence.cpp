@@ -541,6 +541,9 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 	case DIK_C:
 		CGame::GetInstance()->SwitchScene(WORLD_MAP_1);
 		break;
+	case DIK_V:
+		CGame::GetInstance()->SwitchScene(TITLE_SCREEN);
+		break;
 	case DIK_NUMPAD9:
 		mario->SetPosition(1400, 130);
 		CCamera::GetInstance()->SetIsStatic(false);
@@ -554,7 +557,7 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 		CCamera::GetInstance()->SetIsStatic(true);
 		break;
 	case DIK_NUMPAD3:
-		mario->SetPosition(675, 350);
+		mario->SetPosition(680, 350);
 		CCamera::GetInstance()->SetIsStatic(true);
 		break;
 	case DIK_NUMPAD4:
@@ -744,7 +747,7 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 			mario->SetState(MARIO_STATE_SKID);
 			mario->DecreasePower();
 		}
-		else if (mario->vx >= 0 && mario->vy == 0 && state != MARIO_STATE_PREPARE_RUN && state != MARIO_STATE_RUN)
+		else if (mario->vx >= 0 && mario->vy == 0 && state != MARIO_STATE_PREPARE_RUN && state != MARIO_STATE_RUN && state != MARIO_STATE_TAIL)
 			mario->SetState(MARIO_STATE_WALKING);
 		if (game->IsKeyDown(DIK_A))
 		{
@@ -795,7 +798,7 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 			mario->SetState(MARIO_STATE_SKID);
 			mario->DecreasePower();
 		}
-		else if (mario->vx <= 0 && mario->vy == 0 && state != MARIO_STATE_PREPARE_RUN && state != MARIO_STATE_RUN)
+		else if (mario->vx <= 0 && mario->vy == 0 && state != MARIO_STATE_PREPARE_RUN && state != MARIO_STATE_RUN && state != MARIO_STATE_TAIL)
 			mario->SetState(MARIO_STATE_WALKING);
 
 		if (game->IsKeyDown(DIK_A))
@@ -833,7 +836,7 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 	{
 		mario->SetState(MARIO_STATE_JUMP_HIGH);
 	}*/
-	else if (mario->isOnGround && mario->kick_start == 0)
+	else if (mario->isOnGround && mario->kick_start == 0 && mario->tail_start == 0)
 	{
 		if (mario->GetPower() > 0)
 		{

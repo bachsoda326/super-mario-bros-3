@@ -20,7 +20,8 @@ CHud::CHud()
 	worldSpr = font->ToSprite(world + '0');
 	filledPowerArrowAni = CAnimations::GetInstance()->Get(ANIMATION_FILLED_POWER_ARROW_ID);
 
-	mario = ((CPlayScene*)(CGame::GetInstance()->GetCurrentScene()))->GetPlayer();
+	if (CGame::GetInstance()->GetCurrentScene()->GetSceneId() == MAP_1_1)
+		mario = ((CPlayScene*)(CGame::GetInstance()->GetCurrentScene()))->GetPlayer();
 
 	for (int i = 0; i < MAX_POWER_STACK; i++)
 	{

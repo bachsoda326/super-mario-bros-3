@@ -175,6 +175,12 @@ void CTitleSceneKeyHandler::OnKeyDown(int KeyCode)
 {
 	switch (KeyCode)
 	{	
+	case DIK_C:
+		CGame::GetInstance()->SwitchScene(WORLD_MAP_1);
+		break;
+	case DIK_V:
+		CGame::GetInstance()->SwitchScene(MAP_1_1);
+		break;
 	case DIK_UP:
 		((CTitleScene*)scence)->SetPlayType(ONE_PLAYER_TYPE);
 		break;	

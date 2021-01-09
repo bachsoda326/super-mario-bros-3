@@ -393,6 +393,12 @@ void CWorldMapSceneKeyHandler::OnKeyDown(int KeyCode)
 
 	switch (KeyCode)
 	{
+	case DIK_C:
+		CGame::GetInstance()->SwitchScene(MAP_1_1);
+		break;
+	case DIK_V:
+		CGame::GetInstance()->SwitchScene(TITLE_SCREEN);
+		break;
 	case DIK_LEFT:
 		mario->GoLeft();
 		break;
