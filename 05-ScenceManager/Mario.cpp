@@ -77,7 +77,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	// Edge map
 	if (state != MARIO_STATE_END_SCENE && x + MARIO_BIG_BBOX_WIDTH >= RIGHT_MAP_1_1) x = RIGHT_MAP_1_1 - MARIO_BIG_BBOX_WIDTH;
 	// Edge map
-	if (y > HEIGHT_MAP_1_1) SetState(MARIO_STATE_DIE);
+	/*if (y > HEIGHT_MAP_1_1) SetState(MARIO_STATE_DIE);*/
 
 	if (koopas != NULL && koopas->state == KOOPAS_STATE_DIE)
 	{
@@ -173,20 +173,24 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		}
 	}	
 
-	if ((GetTickCount() - fire_start) < 150)
+	if (fire_start != 0)
 	{
-		if (isOnGround)
-			SetState(MARIO_STATE_SHOT);
+		if ((GetTickCount() - fire_start) < 150)
+		{
+			if (isOnGround)
+				SetState(MARIO_STATE_SHOT);
+			else
+				SetState(MARIO_STATE_JUMP_SHOT);
+		}
 		else
-			SetState(MARIO_STATE_JUMP_SHOT);
-	}
-	else
-	{
-		canAttack = true;
-		if (state == MARIO_STATE_JUMP_SHOT)
-			SetState(MARIO_STATE_JUMP_HIGH);
-		else if (state == MARIO_STATE_RUNJUMP_SHOT)
-			SetState(MARIO_STATE_RUNJUMP);
+		{
+			fire_start = 0;
+			canAttack = true;
+			if (state == MARIO_STATE_JUMP_SHOT)
+				SetState(MARIO_STATE_JUMP_HIGH);
+			else if (state == MARIO_STATE_RUNJUMP_SHOT)
+				SetState(MARIO_STATE_RUNJUMP);
+		}
 	}
 
 	if ((GetTickCount() - wag_start) < 300)
@@ -683,14 +687,11 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						case BREAKABLE_BRICK_TYPE_P_SWITCH:
 							bBrick->SetState(BREAKABLE_BRICK_STATE_P_SWITCH);
 							break;
+						case BREAKABLE_BRICK_TYPE_COIN:
+							bBrick->SetState(BREAKABLE_BRICK_STATE_BREAK);
 						default:
 							break;
-						}
-
-						if (!(e->ny > 0) && bBrick->type == BREAKABLE_BRICK_TYPE_COIN)
-						{
-							bBrick->SetState(BREAKABLE_BRICK_STATE_BREAK);
-						}
+						}						
 					}
 				}
 			}
@@ -1542,7 +1543,7 @@ void CMario::OnIntersect(CGameObject* obj, vector<LPGAMEOBJECT>* coObjs)
 					bBrick->DeleteObjs(coObjs);
 				}
 			}
-			else
+			else if (bBrick->GetState() == QUESTION_BRICK_STATE_NORMAL)
 			{
 				if (state == MARIO_STATE_TAIL && isColTail(bBrick))
 				{

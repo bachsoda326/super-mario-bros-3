@@ -21,6 +21,7 @@ CKoopas::CKoopas(int type)
 
 void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
+	DebugOut(L"[State] state: %d\n", state);
 	CGameObject::Update(dt, coObjects);
 
 	x += dx;
@@ -283,7 +284,7 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						SetState(KOOPAS_STATE_DIE);
 					}
 				}
-				else*/ if (e->nx != 0 && !(state == KOOPAS_STATE_SPIN || state == KOOPAS_STATE_HOLD))
+				else*/ if (e->nx != 0 && !(state == KOOPAS_STATE_SPIN || state == KOOPAS_STATE_HOLD) && !(koopas->state == KOOPAS_STATE_SPIN || koopas->state == KOOPAS_STATE_HOLD))
 				{
 					PreventMoveX(nx, koopas);
 					vx = -vx;
