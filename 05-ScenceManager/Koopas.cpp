@@ -31,17 +31,96 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	else
 		vy += KOOPAS_GRAVITY * dt;
 
-	if (y + KOOPAS_BBOX_HEIGHT_HIDE > 432)
+	// Giao nhau vs obj
+	for (int i = 0; i < coObjects->size(); i++)
+	{		
+		if (this == coObjects->at(i))
+			continue;
+		if (AABBCheck(this, coObjects->at(i)))
+		{
+			OnIntersect(coObjects->at(i), coObjects);
+		}
+	}
+
+	if (y > 432)
 	{
 		isDie = true;
 		isDead = true;
 	}
 
-	if (isDie)
-		((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetPlayer()->canMultiScoreLand = false;
+	CMario* mario = ((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetPlayer();
 
-	if (state == KOOPAS_STATE_HOLD)
+	if (isDie)
+		mario->canMultiScoreLand = false;
+
+	if (state == KOOPAS_STATE_HOLD /*|| state == KOOPAS_STATE_SHAKE && mario->isHold*/)
+	{
 		vy = 0;
+
+		if (mario != NULL)
+		{
+			if (mario->nx > 0)
+			{
+				if (mario->GetLevel() == MARIO_LEVEL_SMALL)
+					SetPosition(mario->x + MARIO_SMALL_BBOX_WIDTH - 3, mario->y - MARIO_SMALL_BBOX_HEIGHT / 4);
+				else
+					SetPosition(mario->x + MARIO_BIG_BBOX_WIDTH - 3, mario->y + MARIO_BIG_BBOX_HEIGHT / 9);
+			}
+			else
+			{
+				if (mario->GetLevel() == MARIO_LEVEL_SMALL)
+					SetPosition(mario->x + 3 - KOOPAS_BBOX_WIDTH, mario->y - MARIO_SMALL_BBOX_HEIGHT / 4);
+				else
+					SetPosition(mario->x + 3 - KOOPAS_BBOX_WIDTH, mario->y + MARIO_BIG_BBOX_HEIGHT / 9);
+			}
+		}
+	}	
+
+	if (/*state == KOOPAS_STATE_SHAKE*/isShaking == true)
+	{
+		if (state == KOOPAS_STATE_HIDE || state == KOOPAS_STATE_HOLD)
+		{
+			if (GetTickCount() - shake_start > 1000)
+			{
+				isShaking = false;
+				SetState(KOOPAS_STATE_WALKING);
+				y -= KOOPAS_BBOX_HEIGHT - KOOPAS_BBOX_HEIGHT_HIDE;
+
+				if (mario != NULL)
+				{
+					mario->canHold = false;
+					mario->koopas = NULL;
+					mario->isHold = false;
+				}
+			}
+		}
+	}
+	else
+	{
+		if (state == KOOPAS_STATE_HIDE || state == KOOPAS_STATE_HOLD)
+		{
+			if (mario->isHold)
+			{
+				if (GetTickCount() - hide_start > 8000)
+				{
+					/*SetState(KOOPAS_STATE_SHAKE);*/
+					isShaking = true;
+					shake_start = GetTickCount();
+					hide_start = 0;
+				}
+			}
+			else
+			{
+				if (GetTickCount() - hide_start > 5000)
+				{
+					//SetState(KOOPAS_STATE_SHAKE);
+					isShaking = true;
+					shake_start = GetTickCount();
+					hide_start = 0;
+				}
+			}
+		}
+	}
 
 	if (state == KOOPAS_STATE_DIE)
 	{
@@ -119,7 +198,7 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 							}
 						}
 					}
-				}				
+				}
 			}
 
 			//if (dynamic_cast<CBox*>(e->obj) && type == KOOPAS_RED && state == KOOPAS_STATE_WALKING)
@@ -143,7 +222,7 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			if (dynamic_cast<CGoomba*>(e->obj))
 			{
 				CGoomba* goomba = dynamic_cast<CGoomba*>(e->obj);
-				if (state == KOOPAS_STATE_SPIN || state == KOOPAS_STATE_HOLD)
+				/*if (state == KOOPAS_STATE_SPIN || state == KOOPAS_STATE_HOLD)
 				{
 					if (!goomba->isDie)
 					{
@@ -159,7 +238,7 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						SetState(KOOPAS_STATE_DIE);
 					}
 				}
-				else if (e->nx != 0)
+				else*/ if (e->nx != 0 && !((state == KOOPAS_STATE_SPIN || state == KOOPAS_STATE_HOLD)))
 				{
 					PreventMoveX(nx, goomba);
 					vx = -vx;
@@ -167,7 +246,7 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			}
 			else if (dynamic_cast<CParaGoomba*>(e->obj))
 			{
-				if (state == KOOPAS_STATE_SPIN || state == KOOPAS_STATE_HOLD)
+				/*if (state == KOOPAS_STATE_SPIN || state == KOOPAS_STATE_HOLD)
 				{
 					CParaGoomba* para = dynamic_cast<CParaGoomba*>(e->obj);
 					if (!para->isDie)
@@ -183,12 +262,12 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						vy = -0.2f;
 						SetState(KOOPAS_STATE_DIE);
 					}
-				}
+				}*/
 			}
 			else if (dynamic_cast<CKoopas*>(e->obj))
 			{
 				CKoopas* koopas = dynamic_cast<CKoopas*>(e->obj);
-				if (state == KOOPAS_STATE_SPIN)
+				/*if (state == KOOPAS_STATE_SPIN)
 				{
 					if (!koopas->isDie)
 					{
@@ -204,7 +283,7 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						SetState(KOOPAS_STATE_DIE);
 					}
 				}
-				else if (e->nx != 0)
+				else*/ if (e->nx != 0 && !(state == KOOPAS_STATE_SPIN || state == KOOPAS_STATE_HOLD))
 				{
 					PreventMoveX(nx, koopas);
 					vx = -vx;
@@ -226,7 +305,6 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 									CQuestionBrick* qBrick = dynamic_cast<CQuestionBrick*>(e->obj);
 									if (qBrick->GetState() == QUESTION_BRICK_STATE_NORMAL)
 									{
-										CMario* mario = ((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetPlayer();
 										switch (qBrick->type)
 										{
 										case BRICK_NORMAL:
@@ -270,9 +348,9 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 										else
 											bBrick->SetState(BREAKABLE_BRICK_STATE_1UP_MUSHROOM_RIGHT);
 										break;
-									/*case BREAKABLE_BRICK_TYPE_P_SWITCH:
-										bBrick->SetState(BREAKABLE_BRICK_STATE_P_SWITCH);
-										break;*/
+										/*case BREAKABLE_BRICK_TYPE_P_SWITCH:
+											bBrick->SetState(BREAKABLE_BRICK_STATE_P_SWITCH);
+											break;*/
 									default:
 										break;
 									}
@@ -336,12 +414,16 @@ void CKoopas::Render()
 		ani = KOOPAS_ANI_WING;
 	}
 	else if (state == KOOPAS_STATE_HIDE || state == KOOPAS_STATE_HOLD || state == KOOPAS_STATE_DIE) {
-		ani = KOOPAS_ANI_HIDE;
+		if (isShaking)
+			ani = KOOPAS_ANI_SHAKE;
+		else
+			ani = KOOPAS_ANI_HIDE;
 	}
 	else if (state == KOOPAS_STATE_SPIN) {
 		if (vx > 0) ani = KOOPAS_ANI_SPIN_RIGHT;
 		else if (vx <= 0) ani = KOOPAS_ANI_SPIN_LEFT;
 	}
+	/*else if (state == KOOPAS_STATE_SHAKE) ani = KOOPAS_ANI_SHAKE;*/
 	else if (vx > 0) ani = KOOPAS_ANI_WALKING_RIGHT;
 	else if (vx <= 0) ani = KOOPAS_ANI_WALKING_LEFT;
 
@@ -366,11 +448,14 @@ void CKoopas::SetState(int state)
 	case KOOPAS_STATE_HIDE:
 		if (type == KOOPAS_GREEN_WING)
 			type = KOOPAS_GREEN;
-		break;	
+		else
+			hide_start = GetTickCount();
+		break;
 	case KOOPAS_STATE_SPIN:
 		((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetPlayer()->canMultiScoreLand = true;
 		break;
 	case KOOPAS_STATE_WALKING:
+		yReverse = false;
 		if (type == KOOPAS_GREEN_WING)
 			vx = -KOOPAS_WALKING_WING_SPEED;
 		else
@@ -379,6 +464,9 @@ void CKoopas::SetState(int state)
 		/*case KOOPAS_STATE_HOLD:
 			vx = -KOOPAS_WALKING_SPEED;
 			break;*/
+	case KOOPAS_STATE_SHAKE:
+		shake_start = GetTickCount();
+		break;
 	}
 
 }
@@ -389,12 +477,94 @@ void CKoopas::GetBoundingBox(float& left, float& top, float& right, float& botto
 	top = y;
 	right = x + KOOPAS_BBOX_WIDTH;
 
-	if (state == KOOPAS_STATE_HIDE || state == KOOPAS_STATE_SPIN || state == KOOPAS_STATE_HOLD)
-		bottom = y + KOOPAS_BBOX_HEIGHT_HIDE;
-	else
+	if (state == KOOPAS_STATE_WALKING)
 		bottom = y + KOOPAS_BBOX_HEIGHT;
+	else
+		bottom = y + KOOPAS_BBOX_HEIGHT_HIDE;
 
 	CGameObject::GetBoundingBox(left, top, right, bottom);
+}
+
+void CKoopas::OnIntersect(CGameObject* obj, vector<LPGAMEOBJECT>* coObjs)
+{
+	if (!obj->isDie)
+	{	
+		if (dynamic_cast<CGoomba*>(obj))
+		{
+			CGoomba* goomba = dynamic_cast<CGoomba*>(obj);
+			if (state == KOOPAS_STATE_SPIN || state == KOOPAS_STATE_HOLD)
+			{
+				if (!goomba->isDie)
+				{
+					goomba->vx = -nx * 0.1f;
+					goomba->vy = -0.2f;
+					goomba->SetState(GOOMBA_STATE_DIE_REVERSE);
+				}
+
+				if (state == KOOPAS_STATE_HOLD)
+				{
+					vx = -nx * 0.07f;
+					vy = -0.2f;
+					SetState(KOOPAS_STATE_DIE);
+				}
+			}
+		}
+		else if (dynamic_cast<CParaGoomba*>(obj))
+		{
+			if (state == KOOPAS_STATE_SPIN || state == KOOPAS_STATE_HOLD)
+			{
+				CParaGoomba* para = dynamic_cast<CParaGoomba*>(obj);
+				if (!para->isDie)
+				{
+					para->vx = -nx * 0.05f;
+					para->vy = -0.1f;
+					para->SetState(PARA_GOOMBA_STATE_DIE_REVERSE);
+				}
+
+				if (state == KOOPAS_STATE_HOLD)
+				{
+					vx = -nx * 0.07f;
+					vy = -0.2f;
+					SetState(KOOPAS_STATE_DIE);
+				}
+			}
+		}
+		else if (dynamic_cast<CKoopas*>(obj))
+		{
+			CKoopas* koopas = dynamic_cast<CKoopas*>(obj);
+			if (state == KOOPAS_STATE_SPIN || state == KOOPAS_STATE_HOLD)
+			{
+				if (!koopas->isDie)
+				{
+					koopas->vx = -nx * 0.07f;
+					koopas->vy = -0.2f;
+					koopas->SetState(KOOPAS_STATE_DIE);
+				}
+
+				if (state == KOOPAS_STATE_HOLD)
+				{
+					vx = -nx * 0.07f;
+					vy = -0.2f;
+					SetState(KOOPAS_STATE_DIE);
+				}
+			}
+		}
+		else if (dynamic_cast<CPiranha*>(obj))
+		{
+			CPiranha* piranha = dynamic_cast<CPiranha*>(obj);
+			if (state == KOOPAS_STATE_SPIN || state == KOOPAS_STATE_HOLD)
+			{
+				piranha->SetState(PIRANHA_STATE_DIE);
+			}
+
+			if (state == KOOPAS_STATE_HOLD)
+			{
+				vx = -nx * 0.07f;
+				vy = -0.2f;
+				SetState(KOOPAS_STATE_DIE);
+			}
+		}
+	}
 }
 
 void CKoopas::SetBoundingBox()

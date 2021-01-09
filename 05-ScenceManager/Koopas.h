@@ -15,18 +15,20 @@
 #define KOOPAS_BBOX_HEIGHT 27
 #define KOOPAS_BBOX_HEIGHT_HIDE 17
 
-#define KOOPAS_STATE_WALKING 100
-#define KOOPAS_STATE_HIDE 200
-#define KOOPAS_STATE_SPIN 300
-#define KOOPAS_STATE_HOLD 400
-#define KOOPAS_STATE_DIE 500
+#define KOOPAS_STATE_WALKING	100
+#define KOOPAS_STATE_HIDE		200
+#define KOOPAS_STATE_SPIN		300
+#define KOOPAS_STATE_HOLD		400
+#define KOOPAS_STATE_SHAKE		500
+#define KOOPAS_STATE_DIE		999
 
 #define KOOPAS_ANI_WALKING_LEFT		0
 #define KOOPAS_ANI_WALKING_RIGHT	1
 #define KOOPAS_ANI_SPIN_LEFT		2
 #define KOOPAS_ANI_SPIN_RIGHT		3
 #define KOOPAS_ANI_HIDE				4
-#define KOOPAS_ANI_WING				5
+#define KOOPAS_ANI_SHAKE			5
+#define KOOPAS_ANI_WING				6
 
 #define KOOPAS_GRAVITY			0.002f
 #define KOOPAS_WING_GRAVITY		0.0005f
@@ -38,6 +40,11 @@
 
 class CKoopas : public CGameObject
 {
+	DWORD hide_start;
+	DWORD shake_start;
+
+	bool isShaking = false;
+
 	void SetBoundingBox();
 public:
 	int type;
@@ -49,4 +56,7 @@ public:
 	void Render();
 	void SetState(int state);
 	void GetBoundingBox(float& left, float& top, float& right, float& bottom);
+
+	// Giao nhau vs các obj
+	void OnIntersect(CGameObject* obj, vector<LPGAMEOBJECT>* coObjs);
 };

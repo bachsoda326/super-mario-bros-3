@@ -431,11 +431,17 @@ void CPlayScene::Render()
 	for (int i = 0; i < viewObjs.size(); i++)
 	{
 		if (!viewObjs[i]->isDead)
+		{
+			if (dynamic_cast<CMario*>(viewObjs[i]))
+				continue;
 			viewObjs[i]->Render();
+		}
 	}
 
 	// skip the rest if scene was already unloaded (Mario::Update might trigger PlayScene::Unload)
 	if (player == NULL) return;
+
+	player->Render();
 
 	hud->Render();
 }
@@ -540,7 +546,7 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 		CCamera::GetInstance()->SetIsStatic(true);
 		break;
 	case DIK_NUMPAD3:
-		mario->SetPosition(700, 350);
+		mario->SetPosition(675, 350);
 		CCamera::GetInstance()->SetIsStatic(true);
 		break;
 	case DIK_NUMPAD4:
@@ -855,30 +861,30 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 	{
 		mario->SetState(MARIO_STATE_DUCK);
 	}
-	if (game->IsKeyDown(DIK_A) && mario->isHold)
-	{
-		/*mario->SetState(MARIO_STATE_IDLE_HOLD);*/
-		if (mario->koopas != NULL)
-		{
-			float l, t, r, b;
-			mario->GetBoundingBox(l, t, r, b);
+	//if (game->IsKeyDown(DIK_A) && mario->isHold)
+	//{
+	//	/*mario->SetState(MARIO_STATE_IDLE_HOLD);*/
+	//	if (mario->koopas != NULL)
+	//	{
+	//		float l, t, r, b;
+	//		mario->GetBoundingBox(l, t, r, b);
 
-			if (mario->nx > 0)
-			{
-				if (mario->GetLevel() == MARIO_LEVEL_SMALL)
-					mario->koopas->SetPosition(r - 4, t - MARIO_SMALL_BBOX_HEIGHT / 4);
-				else
-					mario->koopas->SetPosition(r - 4, t + MARIO_BIG_BBOX_HEIGHT / 9);
-			}
-			else
-			{
-				if (mario->GetLevel() == MARIO_LEVEL_SMALL)
-					mario->koopas->SetPosition(l - (mario->koopas->right - mario->koopas->left) + 4, t - MARIO_SMALL_BBOX_HEIGHT / 4);
-				else
-					mario->koopas->SetPosition(l - (mario->koopas->right - mario->koopas->left) + 4, t + MARIO_BIG_BBOX_HEIGHT / 9);
-			}
-		}
-	}
+	//		if (mario->nx > 0)
+	//		{
+	//			if (mario->GetLevel() == MARIO_LEVEL_SMALL)
+	//				mario->koopas->SetPosition(r - 4, t - MARIO_SMALL_BBOX_HEIGHT / 4);
+	//			else
+	//				mario->koopas->SetPosition(r - 4, t + MARIO_BIG_BBOX_HEIGHT / 9);
+	//		}
+	//		else
+	//		{
+	//			if (mario->GetLevel() == MARIO_LEVEL_SMALL)
+	//				mario->koopas->SetPosition(l - (mario->koopas->right - mario->koopas->left) + 4, t - MARIO_SMALL_BBOX_HEIGHT / 4);
+	//			else
+	//				mario->koopas->SetPosition(l - (mario->koopas->right - mario->koopas->left) + 4, t + MARIO_BIG_BBOX_HEIGHT / 9);
+	//		}
+	//	}
+	//}
 	/*if (game->IsKeyDown(DIK_A))
 	{
 		if (state != MARIO_STATE_IDLE && mario->vx != 0)

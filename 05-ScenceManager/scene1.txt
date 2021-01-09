@@ -385,6 +385,9 @@ map1-1.txt	1	2816	432
 50009	279	96	296	113	40
 50010	258	95	275	112	40
 50011	237	95	254	112	40
+# Shake
+50012	392	74	413	91	40
+
 # == GREEN
 # Left
 50051	354	118	371	145	40
@@ -399,6 +402,8 @@ map1-1.txt	1	2816	432
 50059	276	148	293	165	40
 50060	255	147	272	164	40
 50061	234	147	251	164	40
+# Shake
+50062	395	126	416	143	40
 # Wing
 50101	428	129	444	156	40
 50102	449	129	465	156	40
@@ -1014,6 +1019,9 @@ ani_id	sprite1_id	time1	sprite2_id	time2
 40004	50009	40	50010	40	50011	40
 # Hide
 40005	50003	100
+# Shake
+40006	50012	10	50003	10
+
 # == GREEN
 # Walk Left
 40051	50051	100	50052	100
@@ -1025,6 +1033,8 @@ ani_id	sprite1_id	time1	sprite2_id	time2
 40054	50059	40	50060	40	50061	40
 # Hide
 40055	50053	100
+# Shake
+40056	50062	10	50053	10
 # Para-wing
 40101	50101	100	50102	100	50103	100
 
@@ -1139,11 +1149,11 @@ ani_id	sprite1_id	time1	sprite2_id	time2
 4	20001	20002
 
 # === KOOPAS	
-#	walk 		spin 		hide 	para-wing
+#	walk 		spin 		hide 	shake	para-wing
 # Red
-5	40001	40003	40002	40004	40005
+5	40001	40003	40002	40004	40005	40006
 # Green						
-6	40051	40053	40052	40054	40055	40101
+6	40051	40053	40052	40054	40055	40056	40101
 
 # === CLOUD AND BRICK
 24	30003
@@ -1193,6 +1203,7 @@ ani_id	sprite1_id	time1	sprite2_id	time2
 #	-----------------------------------------------------------------------
 # type	x	y	ani_set_id	extra_settings per object type
 # type: 0 = Mario , 1 = Brick, 2 = Goomba, 4 = Box
+
 # === MARIO
 0	10	350	2
 
@@ -1404,4 +1415,7 @@ ani_id	sprite1_id	time1	sprite2_id	time2
 # === SCENE PORTAL
 # type	l	t	ani_set_id	scene_id
 50	2683	331	41	100
+
+# === MARIO
+#0	10	350	2
 
