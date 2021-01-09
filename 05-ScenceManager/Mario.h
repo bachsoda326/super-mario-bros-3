@@ -275,6 +275,7 @@ public:
 	DWORD eat_item_start;
 	DWORD pipe_up_start;
 	DWORD pipe_down_start;
+	DWORD die_start;
 
 	/*bool isPreventMoveX = false;*/
 	bool isOnGround = false;

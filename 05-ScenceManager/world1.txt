@@ -151,6 +151,10 @@ worldmap1.txt	100	256	176
 # ==== CASTLE HELP =========
 40001	40001	100
 
+# === HUD
+# Power
+55001	55006	100	55008	100
+
 #
 # id	ani1	ani2	ani3
 #

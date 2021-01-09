@@ -451,17 +451,25 @@ void CPlayScene::Render()
 */
 void CPlayScene::Unload()
 {
+	// view objs
+	/*for (int i = 0; i < viewOtherObjs.size(); i++)
+		delete viewOtherObjs[i];*/
+	viewOtherObjs.clear();
+
+	/*for (int i = 0; i < viewObjs.size(); i++)
+		delete viewObjs[i];*/
+	viewObjs.clear();
+
 	// other objs
 	for (int i = 0; i < otherObjs.size(); i++)
 		delete otherObjs[i];
-
 	otherObjs.clear();
 
 	// objs
 	for (int i = 0; i < objects.size(); i++)
 		delete objects[i];
+	objects.clear();	
 
-	objects.clear();
 	player = NULL;
 
 	delete map;

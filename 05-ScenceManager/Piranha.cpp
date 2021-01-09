@@ -28,9 +28,9 @@ CPiranha::CPiranha(int type, float x, float y)
 
 	if (this->type != PIRANHA_NOR)
 	{
-		bullet = new CBullet();
+		/*bullet = new CBullet();
 		bullet->isEnemy = true;
-		CGame::GetInstance()->GetCurrentScene()->GetObjs()->push_back(bullet);
+		CGame::GetInstance()->GetCurrentScene()->GetObjs()->push_back(bullet);*/
 	}
 
 	SetBoundingBox();
@@ -97,8 +97,12 @@ void CPiranha::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjs)
 			wait_down_start = 0;
 			SetState(PIRANHA_STATE_NORMAL);
 		}
-		if (type != PIRANHA_NOR && wait_fire_start != 0 && GetTickCount() - wait_fire_start > 1000)
+		if (type != PIRANHA_NOR && wait_fire_start != 0 && wait_up_start != 0 && GetTickCount() - wait_fire_start > 1000)
 		{
+			CBullet* bullet = new CBullet();
+			bullet->isEnemy = true;
+			CGame::GetInstance()->GetCurrentScene()->GetObjs()->push_back(bullet);
+
 			wait_fire_start = 0;
 			if (nx < 0)
 			{

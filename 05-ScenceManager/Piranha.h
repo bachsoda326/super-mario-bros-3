@@ -32,7 +32,7 @@ class CPiranha : public CGameObject
 	DWORD explode_start = 0;
 	bool isUp = false;
 
-	CBullet* bullet = NULL;
+	//CBullet* bullet = NULL;
 
 	void SetBoundingBox();
 public:

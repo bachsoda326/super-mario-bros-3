@@ -41,7 +41,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	/*DebugOut(L"[GROUND]: %d\n", isOnGround);
 	DebugOut(L"[VY]: %f\n", vy);*/
-	DebugOut(L"[State] STATE: %d\n", state);
+	DebugOut(L"[State] DEAD: %d\n", isDead);
 	// Calculate dx, dy 
 	CGameObject::Update(dt);
 
@@ -58,6 +58,8 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 	// Edge map
 	if (x <= 5) x = 5;
+	// Edge map
+	if (state != MARIO_STATE_END_SCENE && x + MARIO_BIG_BBOX_WIDTH >= RIGHT_MAP_1_1) x = RIGHT_MAP_1_1 - MARIO_BIG_BBOX_WIDTH;
 
 	if (koopas != NULL && koopas->state == KOOPAS_STATE_DIE)
 	{
@@ -65,6 +67,21 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		isHold = false;
 	}
 
+	if (state == MARIO_STATE_DIE)
+	{
+		x += dx;
+		y += dy;
+
+		DecreasePower();
+
+		if (GetTickCount() - die_start > 3000)
+		{
+			CPlayerInfo::GetInstance()->AdjustLife(-1);
+			CGame::GetInstance()->SwitchScene(WORLD_MAP_1);
+		}
+
+		return;
+	}
 	// Giao nhau vs obj
 	for (int i = 0; i < coObjects->size(); i++)
 	{
@@ -1174,7 +1191,9 @@ void CMario::SetState(int state)
 		vx = 0;
 		break;
 	case MARIO_STATE_DIE:
+		vx = 0;
 		vy = -MARIO_DIE_DEFLECT_SPEED;
+		die_start = GetTickCount();
 		break;
 	case MARIO_STATE_WAG:
 		vy = 0.05f;
