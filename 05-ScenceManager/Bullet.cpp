@@ -10,8 +10,7 @@ CBullet::CBullet()
 	LPANIMATION_SET ani_set = animation_sets->Get(BULLET_ANI_SET);
 	SetAnimationSet(ani_set);
 
-	isDie = true;
-	isDead = true;
+	Dead();
 
 	SetBoundingBox();
 }
@@ -29,10 +28,7 @@ void CBullet::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	float distanceY = ((y + BULLET_BBOX_HEIGHT / 2) - (mario->y + MARIO_BIG_BBOX_HEIGHT / 2));
 
 	if (x < 0 || x > RIGHT_MAP_1_1 || y < 0 || y > HEIGHT_MAP_1_1 + HEIGHT_UNDER_MAP_1_1 || distanceX > SCREEN_WIDTH || distanceY > SCREEN_HEIGHT)
-	{
-		isDie = true;
-		isDead = true;
-	}
+		Dead();
 
 	/*if (isEnemy)
 	{
@@ -69,7 +65,6 @@ void CBullet::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 		CalcPotentialCollisions(coObjects, coEvents);
 
-		// No collision occured, proceed normally
 		if (coEvents.size() == 0)
 		{
 			/*x += dx;
@@ -85,99 +80,20 @@ void CBullet::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny, rdx, rdy);
 						
 			colX = nx;
-
-			/*if (ny < 0)
-			{
-				y += min_ty * dy + ny * 0.4f;
-				vy = -0.2f;
-			}*/
-
-			//
-			// Collision logic with other objects
-			//
+			
+			// Collision logic with other objects			
 			for (UINT i = 0; i < coEventsResult.size(); i++)
 			{
 				LPCOLLISIONEVENT e = coEventsResult[i];
 
-				if (ny < 0 && e->obj != NULL && !isEnemy && (dynamic_cast<CGround*>(e->obj) || dynamic_cast<CBox*>(e->obj) || dynamic_cast<CWarpPipe*>(e->obj) || dynamic_cast<CBrick*>(e->obj)))
+				if (ny < 0 && e->obj != NULL && !isEnemy && (dynamic_cast<CGround*>(e->obj) || dynamic_cast<CBox*>(e->obj) || dynamic_cast<CWarpPipe*>(e->obj) || dynamic_cast<CBrick*>(e->obj) || dynamic_cast<CCloudTooth*>(e->obj)))
 				{
 					if (!(dynamic_cast<CBreakableBrick*>(e->obj) && e->obj->GetState() == BREAKABLE_BRICK_STATE_COIN))
 					{
-						vy = -0.2f;
+						vy = -BULLET_BOUND_Y_SPEED;
 						y = e->obj->y - (bottom - top);
 					}
 				}
-
-				/*if (dynamic_cast<CMario*>(e->obj) || dynamic_cast<CBullet*>(e->obj))
-				{
-					x += dx;
-					y += dy;
-				}
-				else if (dynamic_cast<CBox*>(e->obj))
-				{
-					if (e->nx != 0)
-						x += dx;
-				}
-				else*/ /*if (nx != 0 && !dynamic_cast<CBox*>(e->obj) && !dynamic_cast<CMushRoom*>(e->obj) && !dynamic_cast<CLeaf*>(e->obj) && !dynamic_cast<CCoin*>(e->obj))
-				{
-					if (!(dynamic_cast<CBreakableBrick*>(e->obj) && e->obj->GetState() == BREAKABLE_BRICK_STATE_COIN))
-					{
-						vx = 0;
-						vy = 0;
-						SetState(BULLET_STATE_EXPLODE);
-					}
-				}*/
-				//if (dynamic_cast<CGoomba*>(e->obj))
-				//{
-				//	/*vx = 0;
-				//	vy = 0;
-				//	SetState(BULLET_STATE_EXPLODE);*/
-
-				//	CGoomba* goomba = dynamic_cast<CGoomba*>(e->obj);
-				//	if (!goomba->isDie)
-				//	{
-				//		goomba->vx = -nx * 0.05f;
-				//		goomba->vy = -0.2f;
-				//		goomba->SetState(GOOMBA_STATE_DIE_REVERSE);
-				//	}
-				//}
-				//else if (dynamic_cast<CParaGoomba*>(e->obj))
-				//{
-				//	/*vx = 0;
-				//	vy = 0;
-				//	SetState(BULLET_STATE_EXPLODE);*/
-
-				//	CParaGoomba* para = dynamic_cast<CParaGoomba*>(e->obj);
-				//	if (!para->isDie)
-				//	{
-				//		para->vx = -nx * 0.05f;
-				//		para->vy = -0.1f;
-				//		para->SetState(PARA_GOOMBA_STATE_DIE_REVERSE);
-				//	}
-				//}
-				//else if (dynamic_cast<CKoopas*>(e->obj))
-				//{
-				//	/*vx = 0;
-				//	vy = 0;
-				//	SetState(BULLET_STATE_EXPLODE);*/
-
-				//	CKoopas* koopas = dynamic_cast<CKoopas*>(e->obj);
-				//	if (!koopas->isDie)
-				//	{
-				//		koopas->vx = -nx * 0.07f;
-				//		koopas->SetState(KOOPAS_STATE_DIE);
-				//	}
-				//}
-				//else if (dynamic_cast<CPiranha*>(e->obj))
-				//{
-				//	/*vx = 0;
-				//	vy = 0;
-				//	SetState(BULLET_STATE_EXPLODE);*/
-
-				//	CPiranha* piranha = dynamic_cast<CPiranha*>(e->obj);
-				//	if (piranha->state == PIRANHA_STATE_NORMAL)
-				//		piranha->SetState(PIRANHA_STATE_DIE);
-				//}
 			}
 
 			// clean up collision events

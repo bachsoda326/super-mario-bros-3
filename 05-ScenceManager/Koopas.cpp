@@ -177,6 +177,7 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					e->obj->vx = -e->obj->vx;
 				}
 			}
+			// Others
 			else if ((dynamic_cast<CBox*>(e->obj) || dynamic_cast<CGround*>(e->obj) || dynamic_cast<CWarpPipe*>(e->obj) || dynamic_cast<CBrick*>(e->obj)) && !(dynamic_cast<CBreakableBrick*>(e->obj) && e->obj->GetState() == BREAKABLE_BRICK_STATE_COIN))
 			{
 				if (e->nx != 0)
@@ -185,6 +186,7 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					{
 						if (state == KOOPAS_STATE_SPIN)
 						{
+							// Question brick
 							if (dynamic_cast<CQuestionBrick*>(e->obj))
 							{
 								if (e->nx != 0)
@@ -219,8 +221,9 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 									}
 								}
 							}
+							// Breakable brick
 							else if (dynamic_cast<CBreakableBrick*>(e->obj))
-							{
+							{								
 								CBreakableBrick* bBrick = dynamic_cast<CBreakableBrick*>(e->obj);
 								if (bBrick->GetState() == QUESTION_BRICK_STATE_NORMAL)
 								{
@@ -244,7 +247,7 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 								}
 							}
 						}
-
+						// Col-X
 						if (!(dynamic_cast<CBreakableBrick*>(e->obj) && e->obj->GetState() == BREAKABLE_BRICK_STATE_COIN))
 						{
 							PreventMoveX(nx, e->obj);
@@ -316,7 +319,6 @@ void CKoopas::SetState(int state)
 		vy = -KOOPAS_DIE_Y_SPEED;
 		yReverse = true;
 		isDie = true;
-		//die_start = GetTickCount();
 		break;
 	case KOOPAS_STATE_HIDE:
 		if (type == KOOPAS_GREEN_WING)

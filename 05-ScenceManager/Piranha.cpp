@@ -112,20 +112,20 @@ void CPiranha::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjs)
 			{
 				bullet->SetPosition(right - BULLET_BBOX_WIDTH / 2, y + PIRANHA_BBOX_HEAD_HEIGHT);
 			}
-			bullet->vx = nx * BULLET_ENEMY_VX_SPEED;
+			bullet->vx = nx * BULLET_ENEMY_X_SPEED;
 			if (abs(distanceX) <= 75)
 			{
 				if (isUp)
-					bullet->vy = -BULLET_ENEMY_NEAR_VY_SPEED;
+					bullet->vy = -BULLET_ENEMY_NEAR_Y_SPEED;
 				else
-					bullet->vy = BULLET_ENEMY_NEAR_VY_SPEED;
+					bullet->vy = BULLET_ENEMY_NEAR_Y_SPEED;
 			}
 			else
 			{
 				if (isUp)
-					bullet->vy = -BULLET_ENEMY_FAR_VY_SPEED;
+					bullet->vy = -BULLET_ENEMY_FAR_Y_SPEED;
 				else
-					bullet->vy = BULLET_ENEMY_FAR_VY_SPEED;
+					bullet->vy = BULLET_ENEMY_FAR_Y_SPEED;
 			}
 			bullet->SetState(BULLET_STATE_FIRE);
 		}

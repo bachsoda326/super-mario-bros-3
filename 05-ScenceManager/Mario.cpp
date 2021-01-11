@@ -1011,8 +1011,10 @@ void CMario::Render()
 		{
 			if (isHold)
 			{
-				if (nx > 0) ani = MARIO_ANI_FIRE_JUMP_HOLD_RIGHT;
-				else ani = MARIO_ANI_FIRE_JUMP_HOLD_LEFT;
+				/*if (nx > 0) ani = MARIO_ANI_FIRE_JUMP_HOLD_RIGHT;
+				else ani = MARIO_ANI_FIRE_JUMP_HOLD_LEFT;*/
+				if (nx > 0) ani = MARIO_ANI_FIRE_JUMP_RIGHT;
+				else ani = MARIO_ANI_FIRE_JUMP_LEFT;
 			}
 			else
 			{
@@ -1029,8 +1031,10 @@ void CMario::Render()
 		{
 			if (isHold)
 			{
-				if (nx > 0) ani = MARIO_ANI_FIRE_RUN_HOLD_RIGHT;
-				else ani = MARIO_ANI_FIRE_RUN_HOLD_LEFT;
+				/*if (nx > 0) ani = MARIO_ANI_FIRE_RUN_HOLD_RIGHT;
+				else ani = MARIO_ANI_FIRE_RUN_HOLD_LEFT;*/
+				if (nx > 0) ani = MARIO_ANI_FIRE_PREPARE_RUN_RIGHT;
+				else ani = MARIO_ANI_FIRE_PREPARE_RUN_LEFT;
 			}
 			else
 			{

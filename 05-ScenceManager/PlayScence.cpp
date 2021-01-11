@@ -630,8 +630,8 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 					float bx, by;
 					mario->GetPosition(bx, by);
 					bullet->SetPosition(bx, by);
-					bullet->vx = mario->nx * BULLET_VX_SPEED;
-					bullet->vy = BULLET_VY_SPEED;
+					bullet->vx = mario->nx * BULLET_X_SPEED;
+					bullet->vy = BULLET_Y_SPEED;
 					bullet->SetState(BULLET_STATE_FIRE);
 					bulletCount++;
 					break;
