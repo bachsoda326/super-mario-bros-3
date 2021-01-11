@@ -5,7 +5,7 @@
 #include "Leaf.h"
 #include "Bullet.h"
 #include "QuestionBrick.h"
-
+#include "Koopas.h"
 
 #define MARIO_WALKING_SPEED		0.1f 
 #define MARIO_PREPARE_RUN_SPEED		0.15f

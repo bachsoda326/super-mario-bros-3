@@ -41,7 +41,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	/*DebugOut(L"[GROUND]: %d\n", isOnGround);
 	DebugOut(L"[VY]: %f\n", vy);*/
-	DebugOut(L"[State] state: %d\n", state);
+	/*DebugOut(L"[State] state: %d\n", state);*/
 	// Calculate dx, dy 
 	CGameObject::Update(dt);
 
@@ -550,7 +550,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				if (e->ny < 0)
 				{
 					canMultiScoreJump = true;
-					koopas->AddPoint(/*POINT_100*/);
+					koopas->AddPoint();
 					if (koopas->type == KOOPAS_GREEN_WING)
 					{
 						koopas->type = KOOPAS_GREEN;
@@ -1387,8 +1387,8 @@ void CMario::OnIntersect(CGameObject* obj, vector<LPGAMEOBJECT>* coObjs)
 			CParaGoomba* para = dynamic_cast<CParaGoomba*>(obj);
 			if (state == MARIO_STATE_TAIL)
 			{
-				para->vx = -nx * 0.05f;
-				para->vy = -0.1f;
+				para->vx = nx * ENEMY_DIE_X_SPEED;
+				para->vy = -ENEMY_DIE_Y_SPEED;
 				para->SetState(PARA_GOOMBA_STATE_DIE_REVERSE);
 				canHit = false;
 			}
@@ -1401,8 +1401,11 @@ void CMario::OnIntersect(CGameObject* obj, vector<LPGAMEOBJECT>* coObjs)
 			CKoopas* koopas = dynamic_cast<CKoopas*>(obj);
 			if (state == MARIO_STATE_TAIL)
 			{
-				koopas->vx = nx * 0.07f;
-				koopas->vy = -0.4f;
+				koopas->vx = nx * ENEMY_DIE_X_SPEED;
+				if (koopas->GetState() == KOOPAS_STATE_WALKING)
+					koopas->vy = -ENEMY_DIE_TAIL_Y_SPEED;
+				else
+					koopas->vy = -ENEMY_HIDE_TAIL_Y_SPEED;
 				koopas->yReverse = true;
 				koopas->SetState(KOOPAS_STATE_HIDE);
 				canHit = false;
@@ -1440,8 +1443,8 @@ void CMario::OnIntersect(CGameObject* obj, vector<LPGAMEOBJECT>* coObjs)
 			CGoomba* goomba = dynamic_cast<CGoomba*>(obj);
 			if (state == MARIO_STATE_TAIL)
 			{
-				goomba->vx = nx * 0.1f;
-				goomba->vy = -0.2f;
+				goomba->vx = nx * ENEMY_DIE_X_SPEED;
+				goomba->vy = -ENEMY_DIE_TAIL_Y_SPEED;
 				goomba->SetState(GOOMBA_STATE_DIE_REVERSE);
 				canHit = false;
 			}

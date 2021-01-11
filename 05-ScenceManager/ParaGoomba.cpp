@@ -17,76 +17,52 @@ CParaGoomba::CParaGoomba()
 
 void CParaGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
-	CGameObject::Update(dt, coObjects);
+	CEnemy::Update(dt, coObjects);
 
-	x += dx;
-	y += dy;
 	// Simple fall down
 	if (state != PARA_GOOMBA_STATE_DIE_REVERSE)
 		vy += PARA_GOOMBA_GRAVITY * dt;
 	else
-		vy += PARA_GOOMBA_DIE_GRAVITY * dt;
+		vy += ENEMY_GRAVITY * dt;
 
-	if (y + PARA_GOOMBA_BBOX_HEIGHT > 432)
-	{
-		isDie = true;
+	if (state == PARA_GOOMBA_STATE_DIE && GetTickCount() - die_start > GOOMBA_DIE_TIME)
 		isDead = true;
-	}
-
-	float distanceX = -1;
+	
+	// Movement
 	if (level == PARA_GOOMBA_LEVEL_WING)
 	{
+		// Follow Mario
 		CMario* mario = ((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetPlayer();
-		distanceX = (x + PARA_GOOMBA_WING_BBOX_WIDTH / 2) - (mario->x + MARIO_BIG_BBOX_WIDTH / 2);
+		float distanceX = (x + PARA_GOOMBA_WING_BBOX_WIDTH / 2) - (mario->x + MARIO_BIG_BBOX_WIDTH / 2);
 
-		if (abs(distanceX) >= 30 && abs(distanceX) <= 50)
+		if (abs(distanceX) >= PARA_GOOMBA_DISTANCE_MIN_X && abs(distanceX) <= PARA_GOOMBA_DISTANCE_MAX_X)
 		{
 			if (distanceX < 0)
 				vx = PARA_GOOMBA_WALKING_SPEED;
 			else
 				vx = -PARA_GOOMBA_WALKING_SPEED;
 		}
+
+		// Wing movement
+		if (state == PARA_GOOMBA_STATE_WALKING && GetTickCount() - wing_walk_start > PARA_GOOMBA_WALK_TIME)
+		{
+			SetState(PARA_GOOMBA_STATE_PREPARE_JUMP);
+		}
+		if (state == PARA_GOOMBA_STATE_PREPARE_JUMP && GetTickCount() - wing_pre_jump_start > PARA_GOOMBA_PREPARE_JUMP_TIME)
+		{
+			SetState(PARA_GOOMBA_STATE_JUMP);
+		}
 	}
 
-	if (state == PARA_GOOMBA_STATE_DIE && GetTickCount() - die_start > 300)
-		isDead = true;
-
-	if (state == PARA_GOOMBA_STATE_DIE_REVERSE)
+	if (state != PARA_GOOMBA_STATE_DIE_REVERSE)
 	{
-		/*x += dx;
-		y += dy;*/
+		vector<LPCOLLISIONEVENT> coEvents;
+		vector<LPCOLLISIONEVENT> coEventsResult;
 
-		if (GetTickCount() - die_start > 1000)
-			isDead = true;
-		return;
-	}
+		coEvents.clear();
 
-	if (level == PARA_GOOMBA_LEVEL_WING && wing_walk_start != 0 && GetTickCount() - wing_walk_start > 800)
-	{		
-		SetState(PARA_GOOMBA_STATE_PREPARE_JUMP);
-	}
-	if (level == PARA_GOOMBA_LEVEL_WING && wing_pre_jump_start != 0 && GetTickCount() - wing_pre_jump_start > 600)
-	{		
-		SetState(PARA_GOOMBA_STATE_JUMP);
-	}
+		CalcPotentialCollisions(coObjects, coEvents);
 
-	vector<LPCOLLISIONEVENT> coEvents;
-	vector<LPCOLLISIONEVENT> coEventsResult;
-
-	coEvents.clear();
-
-	CalcPotentialCollisions(coObjects, coEvents);
-
-	// No collision occured, proceed normally
-	if (coEvents.size() == 0)
-	{
-		/*x += dx;
-		y += dy;*/
-	}
-	else
-	{
-		/*x += dx;
-		y += dy;*/
 		float min_tx, min_ty, nx = 0, ny;
 		float rdx = 0;
 		float rdy = 0;
@@ -94,32 +70,20 @@ void CParaGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		// TODO: This is a very ugly designed function!!!!
 		FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny, rdx, rdy);
 
-		/*x += min_tx * dx + nx * 0.1f;
-		y += min_ty * dy + ny * 0.1f;*/
-
-
-		/*if (ny < 0)
-		{
-			y += min_ty * dy + ny * 0.4f;
-			vy = 0;
-		}*/
-
-		//
-		// Collision logic with other objects
-		//
+		// Collision logic with other objects		
 		for (UINT i = 0; i < coEventsResult.size(); i++)
 		{
 			LPCOLLISIONEVENT e = coEventsResult[i];
 
-			if (ny < 0 && e->obj != NULL && !dynamic_cast<CMario*>(e->obj) && !dynamic_cast<CGoomba*>(e->obj) && !dynamic_cast<CKoopas*>(e->obj))
+			if (ny < 0 && e->obj != NULL && !dynamic_cast<CMario*>(e->obj) && !dynamic_cast<CEnemy*>(e->obj))
 			{
 				switch (state)
 				{
 				case PARA_GOOMBA_STATE_WALKING: case PARA_GOOMBA_STATE_LOOSE_WING: case PARA_GOOMBA_STATE_DIE:
 					vy = 0;
 					break;
-				case PARA_GOOMBA_STATE_PREPARE_JUMP:					
-					vy = -0.07f;
+				case PARA_GOOMBA_STATE_PREPARE_JUMP:
+					vy = -PARA_GOOMBA_PREPARE_JUMP_SPEED;
 					break;
 				case PARA_GOOMBA_STATE_JUMP:
 					SetState(PARA_GOOMBA_STATE_WALKING);
@@ -129,14 +93,11 @@ void CParaGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				}
 
 				y = e->obj->y - (bottom - top);
-			}
+			}		
 
-			/*if (dynamic_cast<CBox*>(e->obj))
-			{
-				if (e->nx != 0)
-					x += dx;
-			}*/
-			/*if (dynamic_cast<CGround*>(e->obj) || dynamic_cast<CWarpPipe*>(e->obj) || dynamic_cast<CBrick*>(e->obj))*/
+			// If isDie, do not coll
+			if (isDie)
+				return;
 
 			if (e->nx != 0)
 			{
@@ -144,7 +105,7 @@ void CParaGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				{
 					PreventMoveX(nx, e->obj);
 					vx = -vx;
-				}							
+				}
 			}
 			else if (e->ny > 0 && dynamic_cast<CBrick*>(e->obj))
 			{
@@ -190,13 +151,13 @@ void CParaGoomba::Render()
 	}
 
 	animation_set->at(ani)->Render(x, y, xReverse, yReverse);
-
 	RenderBoundingBox();
 }
 
 void CParaGoomba::SetState(int state)
 {
 	CGameObject::SetState(state);
+
 	switch (state)
 	{
 	case PARA_GOOMBA_STATE_WALKING:
@@ -205,16 +166,14 @@ void CParaGoomba::SetState(int state)
 			wing_walk_start = GetTickCount();
 		break;
 	case PARA_GOOMBA_STATE_PREPARE_JUMP:
-		wing_walk_start = 0;
 		wing_pre_jump_start = GetTickCount();
-		vy = -0.07f;
+		vy = -PARA_GOOMBA_PREPARE_JUMP_SPEED;
 		break;
 	case PARA_GOOMBA_STATE_JUMP:
-		wing_pre_jump_start = 0;
-		vy = -0.18f;
+		vy = -PARA_GOOMBA_JUMP_SPEED;
 		break;
 	case PARA_GOOMBA_STATE_DIE:
-		AddPoint(/*POINT_100*/);
+		AddPoint();
 		y += PARA_GOOMBA_BBOX_HEIGHT - PARA_GOOMBA_BBOX_HEIGHT_DIE;
 		vx = 0;
 		vy = 0;
@@ -222,14 +181,14 @@ void CParaGoomba::SetState(int state)
 		die_start = GetTickCount();
 		break;
 	case PARA_GOOMBA_STATE_DIE_REVERSE:
-		AddPoint(/*POINT_100*/);
+		AddPoint();
 		level = PARA_GOOMBA_LEVEL_NOR;
 		yReverse = true;
 		isDie = true;
 		die_start = GetTickCount();
 		break;	
 	case PARA_GOOMBA_STATE_LOOSE_WING:
-		AddPoint(/*POINT_100*/);
+		AddPoint();
 		level = PARA_GOOMBA_LEVEL_NOR;
 		state = PARA_GOOMBA_STATE_WALKING;
 		vy = 0;

@@ -38,7 +38,7 @@ void CCoin::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		// delete coin
 		if (y >= start_y)
 		{
-			AddPoint(/*POINT_100*/);
+			AddPoint();
 			DeleteOtherObjs(coObjects);
 		}
 	}

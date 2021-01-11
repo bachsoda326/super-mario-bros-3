@@ -7,7 +7,7 @@
 #include "Sprites.h"
 #include "Animations.h"
 #include "Utils.h"
-
+#include "Constants.h"
 
 using namespace std;
 
@@ -105,6 +105,9 @@ public:
 	void DeleteOtherObjs(vector<LPGAMEOBJECT>* coObjects);
 	void AddPoint(int type = -1);
 
+	void UpdateDirection();
+	void Dead();
+
 	CGameObject();
 
 	virtual void GetBoundingBox(float& left, float& top, float& right, float& bottom) 
@@ -117,7 +120,6 @@ public:
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects = NULL);
 	virtual void Render() = 0;
 	virtual void SetState(int state) { this->state = state; }
-
 
 	~CGameObject();
 };

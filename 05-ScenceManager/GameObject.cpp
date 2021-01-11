@@ -285,6 +285,20 @@ void CGameObject::AddPoint(int types)
 	((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetPlayer()->AddPointFactor();
 }
 
+void CGameObject::UpdateDirection()
+{
+	if (vx >= 0)
+		nx = 1;
+	else
+		nx = -1;
+}
+
+void CGameObject::Dead()
+{
+	isDie = true;
+	isDead = true;
+}
+
 
 void CGameObject::RenderBoundingBox()
 {

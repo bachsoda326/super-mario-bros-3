@@ -1,27 +1,22 @@
 #pragma once
-#include "GameObject.h"
-#include "Box.h"
-#include "Ground.h"
-#include "WarpPipe.h"
-#include "Koopas.h"
-#include "Brick.h"
+#include "Enemy.h"
+// State
+#define GOOMBA_STATE_WALKING		100
+#define GOOMBA_STATE_DIE			200
+#define GOOMBA_STATE_DIE_REVERSE	300
+// Animation
+#define GOOMBA_ANI_WALKING			0
+#define GOOMBA_ANI_DIE				1
+// BBox
+#define GOOMBA_BBOX_WIDTH			17
+#define GOOMBA_BBOX_HEIGHT			16
+#define GOOMBA_BBOX_HEIGHT_DIE		9
+// Speed
+#define GOOMBA_WALKING_SPEED		0.035f
+// Time
+#define GOOMBA_DIE_TIME				300
 
-#define GOOMBA_WALKING_SPEED 0.035f
-
-#define GOOMBA_BBOX_WIDTH 17
-#define GOOMBA_BBOX_HEIGHT 16
-#define GOOMBA_BBOX_HEIGHT_DIE 9
-
-#define GOOMBA_STATE_WALKING 100
-#define GOOMBA_STATE_DIE 200
-#define GOOMBA_STATE_DIE_REVERSE 300
-
-#define GOOMBA_ANI_WALKING 0
-#define GOOMBA_ANI_DIE 1
-
-#define GOOMBA_GRAVITY			0.001f
-
-class CGoomba : public CGameObject
+class CGoomba : public CEnemy
 {	
 	void SetBoundingBox(); 
 public:

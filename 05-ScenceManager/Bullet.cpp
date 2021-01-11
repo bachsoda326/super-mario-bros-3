@@ -19,6 +19,7 @@ CBullet::CBullet()
 void CBullet::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	CGameObject::Update(dt, coObjects);
+	UpdateDirection();
 
 	x += dx;
 	y += dy;
@@ -164,7 +165,6 @@ void CBullet::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				//	if (!koopas->isDie)
 				//	{
 				//		koopas->vx = -nx * 0.07f;
-				//		koopas->vy = -0.2f;
 				//		koopas->SetState(KOOPAS_STATE_DIE);
 				//	}
 				//}
@@ -226,58 +226,44 @@ void CBullet::OnIntersect(CGameObject* obj, vector<LPGAMEOBJECT>* coObjs)
 	if (!obj->isDie)
 	{
 		if (colX != 0 && !dynamic_cast<CBox*>(obj) && !dynamic_cast<CMushRoom*>(obj) && !dynamic_cast<CLeaf*>(obj) && !dynamic_cast<CMushRoom*>(obj) && !dynamic_cast<CCoin*>(obj))
-		{
-			vx = 0;
-			vy = 0;
+		{			
 			SetState(BULLET_STATE_EXPLODE);
 		}
 
 		if (dynamic_cast<CGoomba*>(obj))
-		{
-			vx = 0;
-			vy = 0;
+		{			
 			SetState(BULLET_STATE_EXPLODE);
 
 			CGoomba* goomba = dynamic_cast<CGoomba*>(obj);
-			if (!goomba->isDie)
-			{
-				goomba->vx = -nx * 0.05f;
-				goomba->vy = -0.2f;
-				goomba->SetState(GOOMBA_STATE_DIE_REVERSE);
-			}
+			goomba->vx = nx * ENEMY_DIE_X_SPEED;
+			goomba->vy = -ENEMY_DIE_Y_SPEED;
+			goomba->SetState(GOOMBA_STATE_DIE_REVERSE);
 		}
 		else if (dynamic_cast<CParaGoomba*>(obj))
-		{
-			vx = 0;
-			vy = 0;
+		{			
 			SetState(BULLET_STATE_EXPLODE);
 
 			CParaGoomba* para = dynamic_cast<CParaGoomba*>(obj);
 			if (!para->isDie)
 			{
-				para->vx = -nx * 0.05f;
-				para->vy = -0.1f;
+				para->vx = nx * ENEMY_DIE_X_SPEED;
+				para->vy = -ENEMY_DIE_Y_SPEED;
 				para->SetState(PARA_GOOMBA_STATE_DIE_REVERSE);
 			}
 		}
 		else if (dynamic_cast<CKoopas*>(obj))
-		{
-			vx = 0;
-			vy = 0;
+		{			
 			SetState(BULLET_STATE_EXPLODE);
 
 			CKoopas* koopas = dynamic_cast<CKoopas*>(obj);
 			if (!koopas->isDie)
 			{
-				koopas->vx = -nx * 0.07f;
-				koopas->vy = -0.2f;
+				koopas->vx = nx * KOOPAS_DIE_X_SPEED;
 				koopas->SetState(KOOPAS_STATE_DIE);
 			}
 		}
 		else if (dynamic_cast<CPiranha*>(obj))
-		{
-			vx = 0;
-			vy = 0;
+		{			
 			SetState(BULLET_STATE_EXPLODE);
 
 			CPiranha* piranha = dynamic_cast<CPiranha*>(obj);
