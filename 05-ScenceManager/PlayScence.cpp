@@ -22,33 +22,34 @@ CPlayScene::CPlayScene(int id, LPCWSTR filePath) :
 	See scene1.txt, scene2.txt for detail format specification
 */
 
-#define SCENE_SECTION_UNKNOWN -1
-#define SCENE_SECTION_TEXTURES 2
-#define SCENE_SECTION_SPRITES 3
-#define SCENE_SECTION_ANIMATIONS 4
+#define SCENE_SECTION_UNKNOWN			-1
+#define SCENE_SECTION_TEXTURES			2
+#define SCENE_SECTION_SPRITES			3
+#define SCENE_SECTION_ANIMATIONS		4
 #define SCENE_SECTION_ANIMATION_SETS	5
-#define SCENE_SECTION_OBJECTS	6
-#define SCENE_SECTION_MAP 7
+#define SCENE_SECTION_OBJECTS			6
+#define SCENE_SECTION_MAP				7
+#define SCENE_SECTION_GRID				8
 
-#define OBJECT_TYPE_MARIO			0
-#define OBJECT_TYPE_BRICK			1
-#define OBJECT_TYPE_GOOMBA			2
-#define OBJECT_TYPE_KOOPAS			3
-#define OBJECT_TYPE_BOX				4
-#define OBJECT_TYPE_GROUND			5
-#define OBJECT_TYPE_QUESTION_BRICK	6
-#define OBJECT_TYPE_WARPPIPE		7
-#define OBJECT_TYPE_BREAKABLE_BRICK	9
-#define OBJECT_TYPE_MUSHROOM		10
-#define OBJECT_TYPE_LEAF			11
-#define OBJECT_TYPE_COIN			12
-#define OBJECT_TYPE_CLOUD_TOOTH		13
-#define OBJECT_TYPE_PARA_GOOMBA		14
+#define OBJECT_TYPE_MARIO				0
+#define OBJECT_TYPE_BRICK				1
+#define OBJECT_TYPE_GOOMBA				2
+#define OBJECT_TYPE_KOOPAS				3
+#define OBJECT_TYPE_BOX					4
+#define OBJECT_TYPE_GROUND				5
+#define OBJECT_TYPE_QUESTION_BRICK		6
+#define OBJECT_TYPE_WARPPIPE			7
+#define OBJECT_TYPE_BREAKABLE_BRICK		9
+#define OBJECT_TYPE_MUSHROOM			10
+#define OBJECT_TYPE_LEAF				11
+#define OBJECT_TYPE_COIN				12
+#define OBJECT_TYPE_CLOUD_TOOTH			13
+#define OBJECT_TYPE_PARA_GOOMBA			14
 
-#define OBJECT_TYPE_PORTAL	50
-#define OBJECT_TYPE_HUD		51
+#define OBJECT_TYPE_PORTAL				50
+#define OBJECT_TYPE_HUD					51
 
-#define MAX_SCENE_LINE 1024
+//#define MAX_SCENE_LINE					1024
 
 
 void CPlayScene::_ParseSection_TEXTURES(string line)
@@ -153,10 +154,11 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	if (tokens.size() < 3) return; // skip invalid lines - an object set must have at least id, x, y
 
 	int object_type = atoi(tokens[0].c_str());
-	float x = atof(tokens[1].c_str());
-	float y = atof(tokens[2].c_str());
+	int objId = atoi(tokens[1].c_str());
+	float x = atof(tokens[2].c_str());
+	float y = atof(tokens[3].c_str());
 
-	int ani_set_id = atoi(tokens[3].c_str());
+	int ani_set_id = atoi(tokens[4].c_str());
 
 	CAnimationSets* animation_sets = CAnimationSets::GetInstance();
 	LPANIMATION_SET ani_set = LPANIMATION_SET();
@@ -190,13 +192,13 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	case OBJECT_TYPE_BRICK: obj = new CBrick(); break;
 	case OBJECT_TYPE_QUESTION_BRICK:
 	{
-		int type = atoi(tokens[4].c_str());
+		int type = atoi(tokens[5].c_str());
 		obj = new CQuestionBrick(x, y, type);
 		break;
 	}
 	case OBJECT_TYPE_BREAKABLE_BRICK:
 	{
-		int type = atoi(tokens[4].c_str());
+		int type = atoi(tokens[5].c_str());
 		obj = new CBreakableBrick(type);
 		break;
 	}
@@ -204,7 +206,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	case OBJECT_TYPE_LEAF: obj = new CLeaf(); break;
 	case OBJECT_TYPE_KOOPAS:
 	{
-		int type = atoi(tokens[4].c_str());
+		int type = atoi(tokens[5].c_str());
 		/*if (type == 2)
 		{
 			float min = atof(tokens[5].c_str());
@@ -217,39 +219,39 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	break;
 	case OBJECT_TYPE_BOX:
 	{
-		float r = atof(tokens[4].c_str());
-		float b = atof(tokens[5].c_str());
+		float r = atof(tokens[5].c_str());
+		float b = atof(tokens[6].c_str());
 		obj = new CBox(r, b);
 	}
 	break;
 	case OBJECT_TYPE_WARPPIPE:
 	{
-		float r = atof(tokens[4].c_str());
-		float b = atof(tokens[5].c_str());
+		float r = atof(tokens[5].c_str());
+		float b = atof(tokens[6].c_str());
 
 		int type = -1;
-		if (tokens.size() > 6)
-			type = atoi(tokens[6].c_str());
+		if (tokens.size() > 7)
+			type = atoi(tokens[7].c_str());
 
 		float tele_x = -1, tele_y = -1;
-		if (tokens.size() > 8)
+		if (tokens.size() > 9)
 		{
-			tele_x = atof(tokens[7].c_str());
-			tele_y = atof(tokens[8].c_str());
+			tele_x = atof(tokens[8].c_str());
+			tele_y = atof(tokens[9].c_str());
 		}
 		obj = new CWarpPipe(x, y, r, b, type, tele_x, tele_y);
 	}
 	break;
 	case OBJECT_TYPE_GROUND:
 	{
-		float r = atof(tokens[4].c_str());
-		float b = atof(tokens[5].c_str());
+		float r = atof(tokens[5].c_str());
+		float b = atof(tokens[6].c_str());
 		obj = new CGround(r, b);
 	}
 	break;
 	case OBJECT_TYPE_PORTAL:
 	{		
-		int scene_id = atoi(tokens[4].c_str());
+		int scene_id = atoi(tokens[5].c_str());
 		obj = new CPortal(x, y,scene_id);
 	}
 	break;
@@ -269,6 +271,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	// General object setup
 	if (obj != NULL)
 	{
+		obj->SetId(objId);
 		obj->SetPosition(x, y);
 
 		/*LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);*/
@@ -298,6 +301,54 @@ void CPlayScene::_ParseSection_MAP(string line)
 	default:
 		break;
 	}
+}
+
+void CPlayScene::_ParseSection_GRID(string line)
+{
+	vector<string> tokens = split(line);
+	
+	if (tokens.size() < 1) return;
+
+	switch (map->GetId())
+	{
+	case MAP_1_1:
+		grid = new CGrid(WIDTH_MAP_1_1, HEIGHT_ALL_MAP_1_1, CELL_SIZE);
+	default:
+		break;
+	}
+
+	ifstream f;
+	f.open(tokens[0]);
+
+	char str[MAX_SCENE_LINE];
+	while (f.getline(str, MAX_SCENE_LINE))
+	{
+		string line(str);
+
+		vector<string> tokens = split(line, " ");
+
+		if (tokens.size() < 1) return;
+
+		int cellIndex = 0;
+		int objIndex = 0;
+
+		cellIndex = atoi(tokens[0].c_str());
+		for (int i = 1; i < tokens.size(); i++)
+		{
+			objIndex = atoi(tokens[i].c_str());
+			for (int t = 0; t < objects.size(); t++)
+			{
+				if (objects[t]->id == objIndex)
+				{
+					// thêm obj vào cell của grid
+					grid->AddObjToCell(cellIndex, objects[t]);
+					break;
+				}
+			}
+		}
+	}
+
+	f.close();
 }
 
 void CPlayScene::Load()
@@ -333,6 +384,9 @@ void CPlayScene::Load()
 		if (line == "[MAP]") {
 			section = SCENE_SECTION_MAP; continue;
 		}
+		if (line == "[GRID]") {
+			section = SCENE_SECTION_GRID; continue;
+		}
 		if (line[0] == '[') { section = SCENE_SECTION_UNKNOWN; continue; }
 
 		//
@@ -346,6 +400,7 @@ void CPlayScene::Load()
 		case SCENE_SECTION_ANIMATION_SETS: _ParseSection_ANIMATION_SETS(line); break;
 		case SCENE_SECTION_OBJECTS: _ParseSection_OBJECTS(line); break;
 		case SCENE_SECTION_MAP: _ParseSection_MAP(line); break;
+		case SCENE_SECTION_GRID: _ParseSection_GRID(line); break;
 		}
 	}
 

@@ -18,17 +18,16 @@
 #include "CloudTooth.h"
 #include "ParaGoomba.h"
 #include "Hud.h"
+#include "Grid.h"
 
 
 class CPlayScene: public CScene
 {
 protected: 
-	CMario *player = NULL;					// A play scene has to have player, right? 
-
+	CMario *player = NULL;					// A play scene has to have player, right?
 	//vector<LPGAMEOBJECT> objects;
-
 	CTileMap* map = NULL;
-
+	CGrid* grid = NULL;
 	CHud* hud = NULL;
 
 	vector<LPGAMEOBJECT> viewOtherObjs;
@@ -40,6 +39,7 @@ protected:
 	void _ParseSection_ANIMATION_SETS(string line);
 	void _ParseSection_OBJECTS(string line);
 	void _ParseSection_MAP(string line);
+	void _ParseSection_GRID(string line);
 	
 public: 
 	bool isBrickToCoin = false;
