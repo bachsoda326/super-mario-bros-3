@@ -273,6 +273,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	{
 		obj->SetId(objId);
 		obj->SetPosition(x, y);
+		obj->SetRespawnPosition(x, y);
 
 		/*LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);*/
 
@@ -425,16 +426,16 @@ void CPlayScene::Update(DWORD dt)
 	/*CGame::GetInstance()->CalcViewObjs(&viewOtherObjs, otherObjs);
 	CGame::GetInstance()->CalcViewObjs(&viewObjs, objects);*/	
 	grid->CalcColliableObjs(CCamera::GetInstance(), viewObjs, viewAfterObjs);
-	DebugOut(L"[Obj]: %d\n", viewObjs.size());
+	/*DebugOut(L"[Obj]: %d\n", viewObjs.size());
 	DebugOut(L"[AfterObj]: %d\n", viewAfterObjs.size());
 	DebugOut(L"[BehindObj]: %d\n", behindObjs.size());
-	DebugOut(L"[FrontObj]: %d\n", frontObjs.size());
+	DebugOut(L"[FrontObj]: %d\n", frontObjs.size());*/
 
 	// Cal colliable objs
 	vector<LPGAMEOBJECT> coObjects;
 	for (size_t i = 0; i < behindObjs.size(); i++)
 	{
-		if (!behindObjs[i]->isDie && !behindObjs[i]->isDead)
+		if (behindObjs[i]->isActive && !behindObjs[i]->isDie && !behindObjs[i]->isDead)
 			coObjects.push_back(behindObjs[i]);
 	}
 	for (size_t i = 0; i < viewObjs.size(); i++)
@@ -442,17 +443,17 @@ void CPlayScene::Update(DWORD dt)
 		/*if (i == 2) continue;*/
 		if (dynamic_cast<CMario*>(viewObjs.at(i)))
 			continue;
-		if (!viewObjs[i]->isDie && !viewObjs[i]->isDead)
+		if (viewObjs[i]->isActive && !viewObjs[i]->isDie && !viewObjs[i]->isDead)
 			coObjects.push_back(viewObjs[i]);
 	}
 	for (size_t i = 0; i < viewAfterObjs.size(); i++)
 	{
-		if (!viewAfterObjs[i]->isDie && !viewAfterObjs[i]->isDead)
+		if (viewAfterObjs[i]->isActive && !viewAfterObjs[i]->isDie && !viewAfterObjs[i]->isDead)
 			coObjects.push_back(viewAfterObjs[i]);
 	}
 	for (size_t i = 0; i < frontObjs.size(); i++)
 	{
-		if (!frontObjs[i]->isDie && !frontObjs[i]->isDead)
+		if (frontObjs[i]->isActive && !frontObjs[i]->isDie && !frontObjs[i]->isDead)
 			coObjects.push_back(frontObjs[i]);
 	}
 

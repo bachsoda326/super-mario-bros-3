@@ -6,9 +6,11 @@
 #include "WarpPipe.h"
 #include "Koopas.h"
 #include "Brick.h"
+#include "PlayScence.h"
 
 CGoomba::CGoomba()
 {
+	vxSpawn = GOOMBA_WALKING_SPEED;
 	SetState(GOOMBA_STATE_WALKING);
 
 	SetBoundingBox();
@@ -16,7 +18,12 @@ CGoomba::CGoomba()
 
 void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
+	DebugOut(L"[GOOMBA X]: %f\n", x);
+	DebugOut(L"[GOOMBA Y]: %f\n", y);
+	DebugOut(L"[GOOMBA active]: %d\n", isActive);
+	DebugOut(L"[GOOMBA canActive]: %d\n", canActive);
 	CEnemy::Update(dt, coObjects);
+	if (!isActive) return;
 
 	// Simple fall down
 	vy += ENEMY_GRAVITY * dt;
@@ -102,6 +109,14 @@ void CGoomba::Render()
 
 void CGoomba::SetState(int state)
 {
+	if (state == ENEMY_STATE_RESPAWN)
+	{
+		CGameObject::SetState(GOOMBA_STATE_WALKING);
+
+		vx = -((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetPlayer()->nx * GOOMBA_WALKING_SPEED;
+		return;
+	}
+
 	CGameObject::SetState(state);
 
 	switch (state)
@@ -123,6 +138,10 @@ void CGoomba::SetState(int state)
 	case GOOMBA_STATE_WALKING:
 		vx = -GOOMBA_WALKING_SPEED;
 		break;
+	/*case ENEMY_STATE_RESPAWN:
+		state = GOOMBA_STATE_WALKING;
+		vx = -((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetPlayer()->nx * GOOMBA_WALKING_SPEED;
+		break;*/
 	}
 }
 

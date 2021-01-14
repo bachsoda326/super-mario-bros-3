@@ -49,12 +49,16 @@ public:
 
 	vector<int> listCellIndex;
 
+	// Respawn obj
+	float xSpawn;
+	float ySpawn;
 	float x; 
 	float y;
 
 	float dx;	// dx = vx*dt
 	float dy;	// dy = vy*dt
 
+	float vxSpawn;
 	float vx;
 	float vy;
 
@@ -64,6 +68,8 @@ public:
 	int colX, colY;
 
 	int state;
+	bool isActive = true;
+	bool canActive = true;
 	bool isDie = false;
 	bool isDead = false;
 	bool xReverse = false;
@@ -77,6 +83,7 @@ public:
 
 public: 
 	void SetId(int id) { this->id = id; }
+	void SetRespawnPosition(float x, float y) { this->xSpawn = x, this->ySpawn = y; }
 	void SetPosition(float x, float y) { this->x = x, this->y = y; }
 	void SetSpeed(float vx, float vy) { this->vx = vx, this->vy = vy; }
 	void GetPosition(float &x, float &y) { x = this->x; y = this->y; }

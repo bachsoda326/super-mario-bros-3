@@ -9,6 +9,7 @@
 CParaGoomba::CParaGoomba()
 {
 	level = PARA_GOOMBA_LEVEL_WING;
+	vxSpawn = PARA_GOOMBA_WALKING_SPEED;
 	SetState(PARA_GOOMBA_STATE_WALKING);
 	vx = -PARA_GOOMBA_WALKING_SPEED;
 
@@ -18,6 +19,7 @@ CParaGoomba::CParaGoomba()
 void CParaGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	CEnemy::Update(dt, coObjects);
+	if (!isActive) return;
 
 	// Simple fall down
 	if (state != PARA_GOOMBA_STATE_DIE_REVERSE)
@@ -156,10 +158,28 @@ void CParaGoomba::Render()
 
 void CParaGoomba::SetState(int state)
 {
+	if (state == ENEMY_STATE_RESPAWN)
+	{
+		CGameObject::SetState(PARA_GOOMBA_STATE_WALKING);
+
+		vy = 0;
+		vx = -((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetPlayer()->nx * PARA_GOOMBA_WALKING_SPEED;
+		if (level == PARA_GOOMBA_LEVEL_WING)
+			wing_walk_start = GetTickCount();
+		return;
+	}
+
 	CGameObject::SetState(state);
 
 	switch (state)
 	{
+	/*case ENEMY_STATE_RESPAWN:
+		state = PARA_GOOMBA_STATE_WALKING;
+		vy = 0;
+		vx = ((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetPlayer()->nx * PARA_GOOMBA_WALKING_SPEED;
+		if (level == PARA_GOOMBA_LEVEL_WING)
+			wing_walk_start = GetTickCount();
+		break;*/
 	case PARA_GOOMBA_STATE_WALKING:
 		vy = 0;
 		if (level == PARA_GOOMBA_LEVEL_WING)

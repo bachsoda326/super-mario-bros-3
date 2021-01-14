@@ -7,14 +7,19 @@
 CKoopas::CKoopas(int type)
 {
 	this->type = type;
+	if (this->type == KOOPAS_GREEN_WING)
+		vxSpawn = KOOPAS_WALKING_WING_SPEED;
+	else
+		vxSpawn = KOOPAS_WALKING_SPEED;
 	SetState(KOOPAS_STATE_WALKING);
 
 	SetBoundingBox();
 }
 
 void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
-{
+{	
 	CEnemy::Update(dt, coObjects);
+	if (!isActive) return;
 	UpdateDirection();
 
 	// Simple fall down
@@ -309,6 +314,18 @@ void CKoopas::Render()
 
 void CKoopas::SetState(int state)
 {
+	if (state == ENEMY_STATE_RESPAWN)
+	{
+		CGameObject::SetState(KOOPAS_STATE_WALKING);
+
+		yReverse = false;
+		if (type == KOOPAS_GREEN_WING)
+			vx = -((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetPlayer()->nx * KOOPAS_WALKING_WING_SPEED;
+		else
+			vx = -((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetPlayer()->nx * KOOPAS_WALKING_SPEED;
+		return;
+	}
+
 	CGameObject::SetState(state);
 
 	switch (state)
@@ -336,9 +353,13 @@ void CKoopas::SetState(int state)
 		else
 			vx = -KOOPAS_WALKING_SPEED;
 		break;
-		/*case KOOPAS_STATE_HOLD:
-			vx = -KOOPAS_WALKING_SPEED;
-			break;*/
+	/*case ENEMY_STATE_RESPAWN:
+		state = KOOPAS_STATE_WALKING;
+		if (type == KOOPAS_GREEN_WING)
+			vx = ((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetPlayer()->nx * KOOPAS_WALKING_WING_SPEED;
+		else
+			vx = ((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetPlayer()->nx * KOOPAS_WALKING_SPEED;
+		break;*/
 	case KOOPAS_STATE_SHAKE:
 		shake_start = GetTickCount();
 		break;
