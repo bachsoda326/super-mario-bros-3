@@ -19,7 +19,7 @@ CParaGoomba::CParaGoomba()
 void CParaGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	CEnemy::Update(dt, coObjects);
-	if (!isActive) return;
+	if (!isActive || isDead) return;
 
 	// Simple fall down
 	if (state != PARA_GOOMBA_STATE_DIE_REVERSE)
@@ -28,7 +28,11 @@ void CParaGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		vy += ENEMY_GRAVITY * dt;
 
 	if (state == PARA_GOOMBA_STATE_DIE && GetTickCount() - die_start > GOOMBA_DIE_TIME)
+	{
 		isDead = true;
+		DeleteObjs(coObjects);
+		return;
+	}
 	
 	// Movement
 	if (level == PARA_GOOMBA_LEVEL_WING)

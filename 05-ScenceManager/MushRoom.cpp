@@ -4,6 +4,7 @@
 #include "Brick.h"
 #include "Box.h"
 #include "CloudTooth.h"
+#include "PlayScence.h"
 
 CMushRoom::CMushRoom()
 {
@@ -28,6 +29,7 @@ CMushRoom::CMushRoom(float x, float y, int nx, int type)
 
 void CMushRoom::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
+	if (isDead) return;
 	CGameObject::Update(dt, coObjects);
 
 	x += dx;
@@ -48,6 +50,34 @@ void CMushRoom::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 	if (isInitialized)
 	{
+		float leftCamera = CCamera::GetInstance()->GetBound().left;
+		float topCamera = CCamera::GetInstance()->GetBound().top;
+		float rightCamera = CCamera::GetInstance()->GetBound().right;
+		float bottomCamera = CCamera::GetInstance()->GetBound().bottom;
+		float width = CGame::GetInstance()->GetScreenWidth();
+		float height = CGame::GetInstance()->GetScreenHeight();
+
+		if (x + right - left + width / 4 <= leftCamera || x - width / 4 >= rightCamera || y + top - bottom + height / 8 <= topCamera || y - height / 8 >= bottomCamera - 24)
+		{
+			Dead();
+			DeleteBehindObjs(coObjects);
+			return;
+		}
+
+		switch (((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetMap()->GetId())
+		{
+		case MAP_1_1:
+			if (y > HEIGHT_MAP_1_1)
+			{
+				Dead();
+				DeleteBehindObjs(coObjects);
+				return;
+			}
+			break;
+		default:
+			break;
+		}
+
 		// Simple fall down
 		vy += MUSHROOM_GRAVITY * dt;
 

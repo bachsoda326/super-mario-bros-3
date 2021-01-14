@@ -23,14 +23,14 @@ CWarpPipe::CWarpPipe(float x, float y, int r, int b, int type, float tele_x, flo
 
 void CWarpPipe::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjs)
 {
-	if (piranha != NULL)
-		piranha->Update(dt, coObjs);
+	/*if (piranha != NULL)
+		piranha->Update(dt, coObjs);*/
 }
 
 void CWarpPipe::Render()
 {
-	if (piranha != NULL)
-		piranha->Render();
+	/*if (piranha != NULL)
+		piranha->Render();*/
 
 	int ani = 0;
 	animation_set->at(ani)->Render(x, y);

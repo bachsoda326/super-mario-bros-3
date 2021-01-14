@@ -19,13 +19,17 @@ CGoomba::CGoomba()
 void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {	
 	CEnemy::Update(dt, coObjects);
-	if (!isActive) return;
+	if (!isActive || isDead) return;
 
 	// Simple fall down
 	vy += ENEMY_GRAVITY * dt;
 
 	if (state == GOOMBA_STATE_DIE && GetTickCount() - die_start > GOOMBA_DIE_TIME)
+	{
 		isDead = true;
+		DeleteObjs(coObjects);
+		return;
+	}
 
 	if (state != GOOMBA_STATE_DIE_REVERSE)
 	{

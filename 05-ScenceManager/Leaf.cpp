@@ -1,4 +1,5 @@
 #include "Leaf.h"
+#include "PlayScence.h"
 
 CLeaf::CLeaf()
 {
@@ -22,6 +23,7 @@ CLeaf::CLeaf(float x, float y)
 
 void CLeaf::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
+	if (isDead) return;
 	CGameObject::Update(dt, coObjects);
 
 	x += dx;
@@ -40,7 +42,35 @@ void CLeaf::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		}		
 	}
 	else 
-	{		
+	{	
+		float leftCamera = CCamera::GetInstance()->GetBound().left;
+		float topCamera = CCamera::GetInstance()->GetBound().top;
+		float rightCamera = CCamera::GetInstance()->GetBound().right;
+		float bottomCamera = CCamera::GetInstance()->GetBound().bottom;
+		float width = CGame::GetInstance()->GetScreenWidth();
+		float height = CGame::GetInstance()->GetScreenHeight();
+
+		if (x + right - left + width / 4 <= leftCamera || x - width / 4 >= rightCamera || y + top - bottom + height / 8 <= topCamera || y - height / 8 >= bottomCamera - 24)
+		{
+			Dead();
+			DeleteFrontObjs(coObjects);
+			return;
+		}
+
+		switch (((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetMap()->GetId())
+		{
+		case MAP_1_1:
+			if (y > HEIGHT_MAP_1_1)
+			{
+				Dead();
+				DeleteFrontObjs(coObjects);
+				return;
+			}
+			break;
+		default:
+			break;
+		}
+
 		if (!isStop)
 		{
 			if (nx < 0 && x > start_x + LEAF_BBOX_WIDTH / 2 - 30 && x <= start_x + LEAF_BBOX_WIDTH / 2 - 20 || nx > 0 && x >= start_x - LEAF_BBOX_WIDTH / 2 + 20 && x < start_x - LEAF_BBOX_WIDTH / 2 + 30)

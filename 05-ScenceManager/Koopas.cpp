@@ -19,7 +19,7 @@ CKoopas::CKoopas(int type)
 void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {	
 	CEnemy::Update(dt, coObjects);
-	if (!isActive) return;
+	if (!isActive || isDead) return;
 	UpdateDirection();
 
 	// Simple fall down
@@ -169,7 +169,7 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				{
 					PreventMoveX(nx, goomba);
 					vx = -vx;
-					goomba->vx = - goomba->vx;
+					goomba->vx = -goomba->vx;
 				}
 			}
 			// Koopas		
@@ -229,7 +229,7 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 							}
 							// Breakable brick
 							else if (dynamic_cast<CBreakableBrick*>(e->obj))
-							{								
+							{
 								CBreakableBrick* bBrick = dynamic_cast<CBreakableBrick*>(e->obj);
 								if (bBrick->GetState() == QUESTION_BRICK_STATE_NORMAL)
 								{
@@ -318,11 +318,19 @@ void CKoopas::SetState(int state)
 	{
 		CGameObject::SetState(KOOPAS_STATE_WALKING);
 
-		yReverse = false;
+		yReverse = false;		
 		if (type == KOOPAS_GREEN_WING)
 			vx = -((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetPlayer()->nx * KOOPAS_WALKING_WING_SPEED;
 		else
-			vx = -((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetPlayer()->nx * KOOPAS_WALKING_SPEED;
+		{
+			if (vxSpawn == KOOPAS_WALKING_WING_SPEED)
+			{
+				type = KOOPAS_GREEN_WING;
+				vx = -((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetPlayer()->nx * KOOPAS_WALKING_WING_SPEED;
+			}
+			else
+				vx = -((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetPlayer()->nx * KOOPAS_WALKING_SPEED;
+		}
 		return;
 	}
 
@@ -353,13 +361,13 @@ void CKoopas::SetState(int state)
 		else
 			vx = -KOOPAS_WALKING_SPEED;
 		break;
-	/*case ENEMY_STATE_RESPAWN:
-		state = KOOPAS_STATE_WALKING;
-		if (type == KOOPAS_GREEN_WING)
-			vx = ((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetPlayer()->nx * KOOPAS_WALKING_WING_SPEED;
-		else
-			vx = ((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetPlayer()->nx * KOOPAS_WALKING_SPEED;
-		break;*/
+		/*case ENEMY_STATE_RESPAWN:
+			state = KOOPAS_STATE_WALKING;
+			if (type == KOOPAS_GREEN_WING)
+				vx = ((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetPlayer()->nx * KOOPAS_WALKING_WING_SPEED;
+			else
+				vx = ((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetPlayer()->nx * KOOPAS_WALKING_SPEED;
+			break;*/
 	case KOOPAS_STATE_SHAKE:
 		shake_start = GetTickCount();
 		break;

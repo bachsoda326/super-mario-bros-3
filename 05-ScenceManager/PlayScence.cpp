@@ -342,9 +342,16 @@ void CPlayScene::_ParseSection_GRID(string line)
 			{
 				if (objects[t]->id == objIndex)
 				{
-					// thêm obj vào cell của grid
+					// Add obj into cell of grid
 					grid->AddObjToCell(cellIndex, objects[t]);
 					objects[t]->listCellIndex.push_back(cellIndex);
+					// Case WarpPipe has Piranha
+					if (dynamic_cast<CWarpPipe*>(objects[t]))
+					{
+						CWarpPipe* warpPipe = dynamic_cast<CWarpPipe*>(objects[t]);
+						if (warpPipe->GetPiranha() != NULL)
+							grid->AddObjToCell(cellIndex, warpPipe->GetPiranha());
+					}
 					break;
 				}
 			}
@@ -515,12 +522,12 @@ void CPlayScene::Render()
 	// Render all objs: otherObjs -> objs -> Mario -> afterObjs
 	for (int i = 0; i < behindObjs.size(); i++)
 	{
-		if (!behindObjs[i]->isDead)
+		if (behindObjs[i]->isActive && !behindObjs[i]->isDead)
 			behindObjs[i]->Render();
 	}
 	for (int i = 0; i < viewObjs.size(); i++)
 	{
-		if (!viewObjs[i]->isDead)
+		if (viewObjs[i]->isActive && !viewObjs[i]->isDead)
 		{
 			if (dynamic_cast<CMario*>(viewObjs[i]))
 				continue;
@@ -531,12 +538,12 @@ void CPlayScene::Render()
 		player->Render();
 	for (int i = 0; i < viewAfterObjs.size(); i++)
 	{
-		if (!viewAfterObjs[i]->isDead)
+		if (viewAfterObjs[i]->isActive && !viewAfterObjs[i]->isDead)
 			viewAfterObjs[i]->Render();
 	}
 	for (int i = 0; i < frontObjs.size(); i++)
 	{
-		if (!frontObjs[i]->isDead)
+		if (frontObjs[i]->isActive && !frontObjs[i]->isDead)
 			frontObjs[i]->Render();
 	}
 
