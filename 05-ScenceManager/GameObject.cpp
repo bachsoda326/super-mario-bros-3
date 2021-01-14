@@ -15,14 +15,14 @@ CGameObject::CGameObject()
 {
 	x = y = 0;
 	vx = vy = 0;
-	nx = 1;	
+	nx = 1;
 }
 
-void CGameObject::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
+void CGameObject::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	this->dt = dt;
-	dx = vx*dt;
-	dy = vy*dt;
+	dx = vx * dt;
+	dy = vy * dt;
 }
 
 /*
@@ -40,8 +40,8 @@ LPCOLLISIONEVENT CGameObject::SweptAABBEx(LPGAMEOBJECT coO)
 	float svx, svy;
 	coO->GetSpeed(svx, svy);
 
-	float sdx = svx*dt;
-	float sdy = svy*dt;
+	float sdx = svx * dt;
+	float sdy = svy * dt;
 
 	// (rdx, rdy) is RELATIVE movement distance/velocity 
 	float rdx = this->dx - sdx;
@@ -56,7 +56,7 @@ LPCOLLISIONEVENT CGameObject::SweptAABBEx(LPGAMEOBJECT coO)
 		t, nx, ny
 	);
 
-	CCollisionEvent * e = new CCollisionEvent(t, nx, ny, rdx, rdy, coO);
+	CCollisionEvent* e = new CCollisionEvent(t, nx, ny, rdx, rdy, coO);
 	return e;
 }
 
@@ -103,14 +103,14 @@ void CGameObject::ExceptionalCase(CGameObject* obj2, LPCOLLISIONEVENT& coEvent)
 }
 
 /*
-	Calculate potential collisions with the list of colliable objects 
-	
+	Calculate potential collisions with the list of colliable objects
+
 	coObjects: the list of colliable objects
 	coEvents: list of potential collisions
 */
 void CGameObject::CalcPotentialCollisions(
-	vector<LPGAMEOBJECT> *coObjects, 
-	vector<LPCOLLISIONEVENT> &coEvents)
+	vector<LPGAMEOBJECT>* coObjects,
+	vector<LPCOLLISIONEVENT>& coEvents)
 {
 	for (UINT i = 0; i < coObjects->size(); i++)
 	{
@@ -127,10 +127,10 @@ void CGameObject::CalcPotentialCollisions(
 }
 
 void CGameObject::FilterCollision(
-	vector<LPCOLLISIONEVENT> &coEvents,
-	vector<LPCOLLISIONEVENT> &coEventsResult,
-	float &min_tx, float &min_ty, 
-	float &nx, float &ny, float &rdx, float &rdy)
+	vector<LPCOLLISIONEVENT>& coEvents,
+	vector<LPCOLLISIONEVENT>& coEventsResult,
+	float& min_tx, float& min_ty,
+	float& nx, float& ny, float& rdx, float& rdy)
 {
 	min_tx = 1.0f;
 	min_ty = 1.0f;
@@ -150,13 +150,13 @@ void CGameObject::FilterCollision(
 			min_tx = c->t; nx = c->nx; min_ix = i; rdx = c->dx;
 		}
 
-		if (c->t < min_ty  && c->ny != 0) {
+		if (c->t < min_ty && c->ny != 0) {
 			min_ty = c->t; ny = c->ny; min_iy = i; rdy = c->dy;
 		}
 	}
 
-	if (min_ix>=0) coEventsResult.push_back(coEvents[min_ix]);
-	if (min_iy>=0) coEventsResult.push_back(coEvents[min_iy]);
+	if (min_ix >= 0) coEventsResult.push_back(coEvents[min_ix]);
+	if (min_iy >= 0) coEventsResult.push_back(coEvents[min_iy]);
 }
 
 void CGameObject::PreventMoveX(float nx, LPGAMEOBJECT obj2)
@@ -177,18 +177,43 @@ void CGameObject::DeleteObjs(vector<LPGAMEOBJECT>* coObjects)
 {
 	isDead = true;
 	vector<LPGAMEOBJECT>* objs;
+	CGrid* grid;
 	objs = CGame::GetInstance()->GetCurrentScene()->GetObjs();
+	grid = ((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetGrid();
+
+	for (int i = 0; i < this->listCellIndex.size(); i++)
+	{
+		int cellIndex = this->listCellIndex[i];
+		for (int k = 0; k < grid->listCells[cellIndex].listObj.size(); k++)
+		{
+			if (grid->listCells[cellIndex].listObj[k] == this)
+			{
+				grid->listCells[cellIndex].listObj.erase(grid->listCells[cellIndex].listObj.begin() + k);
+				break;
+			}
+		}
+	}
 	objs->erase(std::remove(objs->begin(), objs->end(), this), objs->end());
 	coObjects->erase(std::remove(coObjects->begin(), coObjects->end(), this), coObjects->end());
 	delete this;
 }
 
-void CGameObject::DeleteOtherObjs(vector<LPGAMEOBJECT>* coObjects)
+void CGameObject::DeleteFrontObjs(vector<LPGAMEOBJECT>* coObjects)
 {
 	isDead = true;
-	vector<LPGAMEOBJECT>* otherObjs;
-	otherObjs = CGame::GetInstance()->GetCurrentScene()->GetOtherObjs();
-	otherObjs->erase(std::remove(otherObjs->begin(), otherObjs->end(), this), otherObjs->end());
+	vector<LPGAMEOBJECT>* frontObjs;
+	frontObjs = CGame::GetInstance()->GetCurrentScene()->GetFrontObjs();
+	frontObjs->erase(std::remove(frontObjs->begin(), frontObjs->end(), this), frontObjs->end());
+	coObjects->erase(std::remove(coObjects->begin(), coObjects->end(), this), coObjects->end());
+	delete this;
+}
+
+void CGameObject::DeleteBehindObjs(vector<LPGAMEOBJECT>* coObjects)
+{
+	isDead = true;
+	vector<LPGAMEOBJECT>* behindObjs;
+	behindObjs = CGame::GetInstance()->GetCurrentScene()->GetBehindObjs();
+	behindObjs->erase(std::remove(behindObjs->begin(), behindObjs->end(), this), behindObjs->end());
 	coObjects->erase(std::remove(coObjects->begin(), coObjects->end(), this), coObjects->end());
 	delete this;
 }
@@ -235,10 +260,10 @@ void CGameObject::AddPoint(int types)
 			score = 8000;
 			type = POINT_8000;
 			break;
-		/*case POINT_1_UP:
-			score = 1000;
-			type = POINT_1_UP;
-			break;*/
+			/*case POINT_1_UP:
+				score = 1000;
+				type = POINT_1_UP;
+				break;*/
 		default:
 			break;
 		}
@@ -280,7 +305,7 @@ void CGameObject::AddPoint(int types)
 	}
 
 	CPoint* point = new CPoint(x, y - bottom + top, type);
-	CGame::GetInstance()->GetCurrentScene()->GetOtherObjs()->push_back(point);
+	CGame::GetInstance()->GetCurrentScene()->GetFrontObjs()->push_back(point);
 	CPlayerInfo::GetInstance()->AdjustScore(score);
 	((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetPlayer()->AddPointFactor();
 }
@@ -307,7 +332,7 @@ void CGameObject::RenderBoundingBox()
 
 	LPDIRECT3DTEXTURE9 bbox = CTextures::GetInstance()->Get(ID_TEX_BBOX);
 
-	float l,t,r,b; 
+	float l, t, r, b;
 
 	GetBoundingBox(l, t, r, b);
 	rect.left = 0;

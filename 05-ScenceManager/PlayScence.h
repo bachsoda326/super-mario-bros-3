@@ -32,6 +32,7 @@ protected:
 
 	vector<LPGAMEOBJECT> viewOtherObjs;
 	vector<LPGAMEOBJECT> viewObjs;
+	vector<LPGAMEOBJECT> viewAfterObjs;
 
 	void _ParseSection_TEXTURES(string line);
 	void _ParseSection_SPRITES(string line);
@@ -58,6 +59,7 @@ public:
 
 	CMario * GetPlayer() { return player; }
 	CTileMap* GetMap() { return map; }
+	CGrid* GetGrid() { return grid; }
 
 	//friend class CPlayScenceKeyHandler;
 };

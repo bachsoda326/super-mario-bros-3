@@ -21,7 +21,7 @@ void CPoint::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	{
 		isDie = true;
 		isDead = true;
-		DeleteOtherObjs(coObjects);
+		DeleteFrontObjs(coObjects);
 		return;
 	}
 }

@@ -39,7 +39,7 @@ void CCoin::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		if (y >= start_y)
 		{
 			AddPoint();
-			DeleteOtherObjs(coObjects);
+			DeleteBehindObjs(coObjects);
 		}
 	}
 }

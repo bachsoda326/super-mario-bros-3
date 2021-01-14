@@ -39,6 +39,6 @@ public:
 	Cell& GetCell(D3DXVECTOR3& posObj);
 
 	// Tính toán các obj có thể bị va chạm (Tính toán các cell cần đc update với vị trí của camera)
-	void CalcColliableObjs(CCamera* camera, vector<LPGAMEOBJECT>& coObjs);
+	void CalcColliableObjs(CCamera* camera, vector<LPGAMEOBJECT>& objs, vector<LPGAMEOBJECT>& afterObjs);
 };
 

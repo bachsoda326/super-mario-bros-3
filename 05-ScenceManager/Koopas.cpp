@@ -164,6 +164,7 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				{
 					PreventMoveX(nx, goomba);
 					vx = -vx;
+					goomba->vx = - goomba->vx;
 				}
 			}
 			// Koopas		

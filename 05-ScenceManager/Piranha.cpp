@@ -101,7 +101,7 @@ void CPiranha::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjs)
 		{
 			CBullet* bullet = new CBullet();
 			bullet->isEnemy = true;
-			CGame::GetInstance()->GetCurrentScene()->GetObjs()->push_back(bullet);
+			CGame::GetInstance()->GetCurrentScene()->GetFrontObjs()->push_back(bullet);
 
 			wait_fire_start = 0;
 			if (nx < 0)

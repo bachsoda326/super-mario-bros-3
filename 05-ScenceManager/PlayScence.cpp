@@ -279,7 +279,8 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		if (ani_set_id != -1)
 			obj->SetAnimationSet(ani_set);
 
-		objects.push_back(obj);
+		if (!dynamic_cast<CMario*>(obj))
+			objects.push_back(obj);
 	}
 }
 
@@ -342,6 +343,7 @@ void CPlayScene::_ParseSection_GRID(string line)
 				{
 					// thêm obj vào cell của grid
 					grid->AddObjToCell(cellIndex, objects[t]);
+					objects[t]->listCellIndex.push_back(cellIndex);
 					break;
 				}
 			}
@@ -419,14 +421,21 @@ void CPlayScene::Update(DWORD dt)
 	// calculate obj in view
 	viewOtherObjs.clear();
 	viewObjs.clear();
-	CGame::GetInstance()->CalcViewObjs(&viewOtherObjs, otherObjs);
-	CGame::GetInstance()->CalcViewObjs(&viewObjs, objects);
+	viewAfterObjs.clear();
+	/*CGame::GetInstance()->CalcViewObjs(&viewOtherObjs, otherObjs);
+	CGame::GetInstance()->CalcViewObjs(&viewObjs, objects);*/	
+	grid->CalcColliableObjs(CCamera::GetInstance(), viewObjs, viewAfterObjs);
+	DebugOut(L"[Obj]: %d\n", viewObjs.size());
+	DebugOut(L"[AfterObj]: %d\n", viewAfterObjs.size());
+	DebugOut(L"[BehindObj]: %d\n", behindObjs.size());
+	DebugOut(L"[FrontObj]: %d\n", frontObjs.size());
 
+	// Cal colliable objs
 	vector<LPGAMEOBJECT> coObjects;
-	for (size_t i = 0; i < viewOtherObjs.size(); i++)
+	for (size_t i = 0; i < behindObjs.size(); i++)
 	{
-		if (!viewOtherObjs[i]->isDie && !viewOtherObjs[i]->isDead)
-			coObjects.push_back(viewOtherObjs[i]);
+		if (!behindObjs[i]->isDie && !behindObjs[i]->isDead)
+			coObjects.push_back(behindObjs[i]);
 	}
 	for (size_t i = 0; i < viewObjs.size(); i++)
 	{
@@ -436,17 +445,39 @@ void CPlayScene::Update(DWORD dt)
 		if (!viewObjs[i]->isDie && !viewObjs[i]->isDead)
 			coObjects.push_back(viewObjs[i]);
 	}
-
-	// update all objs
-	for (size_t i = 0; i < viewOtherObjs.size(); i++)
+	for (size_t i = 0; i < viewAfterObjs.size(); i++)
 	{
-		if (!viewOtherObjs[i]->isDead)
-			viewOtherObjs[i]->Update(dt, &coObjects);
+		if (!viewAfterObjs[i]->isDie && !viewAfterObjs[i]->isDead)
+			coObjects.push_back(viewAfterObjs[i]);
+	}
+	for (size_t i = 0; i < frontObjs.size(); i++)
+	{
+		if (!frontObjs[i]->isDie && !frontObjs[i]->isDead)
+			coObjects.push_back(frontObjs[i]);
+	}
+
+	// Update all objs: otherObjs -> objs -> Mario -> afterObjs
+	for (size_t i = 0; i < behindObjs.size(); i++)
+	{
+		if (!behindObjs[i]->isDead)
+			behindObjs[i]->Update(dt, &coObjects);
 	}
 	for (size_t i = 0; i < viewObjs.size(); i++)
 	{
 		if (!viewObjs[i]->isDead)
 			viewObjs[i]->Update(dt, &coObjects);
+	}
+	if (player != NULL)
+		player->Update(dt, &coObjects);
+	for (size_t i = 0; i < viewAfterObjs.size(); i++)
+	{
+		if (!viewAfterObjs[i]->isDead)
+			viewAfterObjs[i]->Update(dt, &coObjects);
+	}
+	for (size_t i = 0; i < frontObjs.size(); i++)
+	{
+		if (!frontObjs[i]->isDead)
+			frontObjs[i]->Update(dt, &coObjects);
 	}
 	// skip the rest if scene was already unloaded (Mario::Update might trigger PlayScene::Unload)
 	if (player == NULL) return;
@@ -475,13 +506,16 @@ void CPlayScene::Render()
 
 	viewOtherObjs.clear();
 	viewObjs.clear();
-	CGame::GetInstance()->CalcViewObjs(&viewOtherObjs, otherObjs);
-	CGame::GetInstance()->CalcViewObjs(&viewObjs, objects);
+	viewAfterObjs.clear();
+	/*CGame::GetInstance()->CalcViewObjs(&viewOtherObjs, otherObjs);
+	CGame::GetInstance()->CalcViewObjs(&viewObjs, objects);*/
+	grid->CalcColliableObjs(CCamera::GetInstance(), viewObjs, viewAfterObjs);
 
-	for (int i = 0; i < viewOtherObjs.size(); i++)
+	// Render all objs: otherObjs -> objs -> Mario -> afterObjs
+	for (int i = 0; i < behindObjs.size(); i++)
 	{
-		if (!viewOtherObjs[i]->isDead)
-			viewOtherObjs[i]->Render();
+		if (!behindObjs[i]->isDead)
+			behindObjs[i]->Render();
 	}
 	for (int i = 0; i < viewObjs.size(); i++)
 	{
@@ -492,11 +526,21 @@ void CPlayScene::Render()
 			viewObjs[i]->Render();
 		}
 	}
+	if (player != NULL)
+		player->Render();
+	for (int i = 0; i < viewAfterObjs.size(); i++)
+	{
+		if (!viewAfterObjs[i]->isDead)
+			viewAfterObjs[i]->Render();
+	}
+	for (int i = 0; i < frontObjs.size(); i++)
+	{
+		if (!frontObjs[i]->isDead)
+			frontObjs[i]->Render();
+	}
 
 	// skip the rest if scene was already unloaded (Mario::Update might trigger PlayScene::Unload)
-	if (player == NULL) return;
-
-	player->Render();
+	if (player == NULL) return;	
 
 	hud->Render();
 }
@@ -514,21 +558,30 @@ void CPlayScene::Unload()
 	/*for (int i = 0; i < viewObjs.size(); i++)
 		delete viewObjs[i];*/
 	viewObjs.clear();
+	viewAfterObjs.clear();
 
-	// other objs
-	for (int i = 0; i < otherObjs.size(); i++)
-		delete otherObjs[i];
-	otherObjs.clear();
+	// behind objs
+	for (int i = 0; i < behindObjs.size(); i++)
+		delete behindObjs[i];
+	behindObjs.clear();
+
+	// front objs
+	for (int i = 0; i < frontObjs.size(); i++)
+		delete frontObjs[i];
+	frontObjs.clear();
 
 	// objs
 	for (int i = 0; i < objects.size(); i++)
 		delete objects[i];
 	objects.clear();	
 
+	delete player;
 	player = NULL;
 
+	delete grid;
 	delete map;
 	delete hud;
+	grid = NULL;
 	map = NULL;
 	hud = NULL;
 

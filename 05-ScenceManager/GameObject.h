@@ -47,6 +47,8 @@ class CGameObject
 public:
 	int id;
 
+	vector<int> listCellIndex;
+
 	float x; 
 	float y;
 
@@ -104,7 +106,8 @@ public:
 	void PreventMoveY(LPGAMEOBJECT obj2);
 
 	void DeleteObjs(vector<LPGAMEOBJECT>* coObjects);
-	void DeleteOtherObjs(vector<LPGAMEOBJECT>* coObjects);
+	void DeleteFrontObjs(vector<LPGAMEOBJECT>* coObjects);
+	void DeleteBehindObjs(vector<LPGAMEOBJECT>* coObjects);
 	void AddPoint(int type = -1);
 
 	void UpdateDirection();

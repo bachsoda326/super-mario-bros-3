@@ -29,7 +29,7 @@ void CBreakableBrick::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 	if (break_start != 0 && (GetTickCount() - break_start) > 5000)
 	{
-		DeleteObjs(coObjects);
+		DeleteFrontObjs(coObjects);
 	}
 }
 
@@ -91,22 +91,22 @@ void CBreakableBrick::SetState(int state)
 			default:
 				break;
 			}
-			CGame::GetInstance()->GetCurrentScene()->GetObjs()->push_back(piece);
+			CGame::GetInstance()->GetCurrentScene()->GetFrontObjs()->push_back(piece);
 		}
 		CPlayerInfo::GetInstance()->AdjustScore(10);
 
 		break;
 	case BREAKABLE_BRICK_STATE_1UP_MUSHROOM_LEFT:
 		obj = new CMushRoom(x, y, -1, MUSHROOM_TYPE_1_UP);
-		CGame::GetInstance()->GetCurrentScene()->GetOtherObjs()->push_back(obj);
+		CGame::GetInstance()->GetCurrentScene()->GetBehindObjs()->push_back(obj);
 		break;
 	case BREAKABLE_BRICK_STATE_1UP_MUSHROOM_RIGHT:
 		obj = new CMushRoom(x, y, 1, MUSHROOM_TYPE_1_UP);
-		CGame::GetInstance()->GetCurrentScene()->GetOtherObjs()->push_back(obj);
+		CGame::GetInstance()->GetCurrentScene()->GetBehindObjs()->push_back(obj);
 		break;
 	case BREAKABLE_BRICK_STATE_P_SWITCH:
 		obj = new CPSwitch(x, y);
-		CGame::GetInstance()->GetCurrentScene()->GetOtherObjs()->push_back(obj);
+		CGame::GetInstance()->GetCurrentScene()->GetBehindObjs()->push_back(obj);
 		break;
 	default:
 		break;

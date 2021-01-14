@@ -3,6 +3,7 @@
 #include "WarpPipe.h"
 #include "Brick.h"
 #include "Box.h"
+#include "CloudTooth.h"
 
 CMushRoom::CMushRoom()
 {
@@ -79,7 +80,7 @@ void CMushRoom::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			{
 				LPCOLLISIONEVENT e = coEventsResult[i];
 
-				if (ny < 0 && e->obj != NULL && (dynamic_cast<CGround*>(e->obj) || dynamic_cast<CWarpPipe*>(e->obj) || dynamic_cast<CBrick*>(e->obj) || dynamic_cast<CBox*>(e->obj)))
+				if (ny < 0 && e->obj != NULL && (dynamic_cast<CGround*>(e->obj) || dynamic_cast<CWarpPipe*>(e->obj) || dynamic_cast<CBrick*>(e->obj) || dynamic_cast<CBox*>(e->obj) || dynamic_cast<CCloudTooth*>(e->obj)))
 				{
 					PreventMoveY(e->obj);
 				}

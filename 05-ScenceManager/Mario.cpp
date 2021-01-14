@@ -31,7 +31,7 @@ CMario::CMario(float x, float y) : CGameObject()
 		CBullet* bullet = new CBullet();
 		//bullet->SetAnimationSet(ani_set);
 		bullets->push_back(bullet);
-		CGame::GetInstance()->GetCurrentScene()->GetObjs()->push_back(bullet);
+		CGame::GetInstance()->GetCurrentScene()->GetFrontObjs()->push_back(bullet);
 	}
 
 	SetBoundingBox();
@@ -228,6 +228,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		{
 		case MAP_1_1:
 			CCamera::GetInstance()->SetMapSize(LEFT_UNDER_MAP_1_1, TOP_UNDER_MAP_1_1, RIGHT_UNDER_MAP_1_1, BOTTOM_UNDER_MAP_1_1, WIDTH_UNDER_MAP_1_1, HEIGHT_UNDER_MAP_1_1);
+			CCamera::GetInstance()->SetIsStatic(true);
 		default:
 			break;
 		}
@@ -670,7 +671,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					x += dx;
 					y += dy;
 
-					/*bBrick->DeleteObjs(coObjects);*/
+					/*bBrick->DeleteFrontObjs(coObjects);*/
 				}
 				else if (bBrick->GetState() == QUESTION_BRICK_STATE_NORMAL)
 				{
@@ -1477,14 +1478,14 @@ void CMario::OnIntersect(CGameObject* obj, vector<LPGAMEOBJECT>* coObjs)
 					SetState(MARIO_STATE_EAT_ITEM);
 					AddPoint(POINT_1000);
 					//DebugOut(L"[NAM]: %f\n", y);					
-					mushroom->DeleteOtherObjs(coObjs);
+					mushroom->DeleteBehindObjs(coObjs);
 					y -= MARIO_BIG_BBOX_HEIGHT - MARIO_SMALL_BBOX_HEIGHT;
 					level = MARIO_LEVEL_BIG;
 					//DebugOut(L"[NAM1]: %f\n", y);
 				}
 				break;
 			case MUSHROOM_TYPE_1_UP:
-				mushroom->DeleteOtherObjs(coObjs);
+				mushroom->DeleteBehindObjs(coObjs);
 				AddPoint(POINT_1_UP);
 				break;
 			default:
@@ -1498,7 +1499,7 @@ void CMario::OnIntersect(CGameObject* obj, vector<LPGAMEOBJECT>* coObjs)
 			eat_item_start = GetTickCount();
 			SetState(MARIO_STATE_EAT_ITEM);
 			AddPoint(POINT_1000);
-			leaf->DeleteObjs(coObjs);
+			leaf->DeleteFrontObjs(coObjs);
 			y -= MARIO_BIG_BBOX_HEIGHT - MARIO_SMALL_BBOX_HEIGHT;
 			level = MARIO_LEVEL_RACCOON;
 		}

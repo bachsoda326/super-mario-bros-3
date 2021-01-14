@@ -1,5 +1,6 @@
 ﻿#include "Grid.h"
 #include "Constants.h"
+#include "WarpPipe.h"
 
 CGrid::CGrid(int width, int height, int cellSize) : width(width), height(height), cellSize(cellSize)
 {
@@ -46,7 +47,7 @@ Cell& CGrid::GetCell(D3DXVECTOR3& posObj)
 	return GetCell(cellX, cellY);
 }
 
-void CGrid::CalcColliableObjs(CCamera* camera, vector<LPGAMEOBJECT>& coObjs)
+void CGrid::CalcColliableObjs(CCamera* camera, vector<LPGAMEOBJECT>& objs, vector<LPGAMEOBJECT>& afterObjs)
 {
 	// tính vị trí topleft và botright của camera
 	int xTopLeftCamera = camera->GetPosition().x - CGame::GetInstance()->GetScreenWidth() / 2;
@@ -71,18 +72,40 @@ void CGrid::CalcColliableObjs(CCamera* camera, vector<LPGAMEOBJECT>& coObjs)
 
 			for (int i = 0; i < colliableCell.listObj.size(); i++)
 			{
-				if (coObjs.size() == 0)
-					coObjs.push_back(colliableCell.listObj[i]);
-				else
+				// If WarpPipe then add to afterObjs (for render front Mario)
+				if (dynamic_cast<CWarpPipe*>(colliableCell.listObj[i]))
 				{
-					for (int j = 0; j < coObjs.size(); j++)
+					if (afterObjs.size() == 0)
+						afterObjs.push_back(colliableCell.listObj[i]);
+					else
 					{
-						if (colliableCell.listObj[i] == coObjs[j])
-							break;
-						else if (j == coObjs.size() - 1)
-							coObjs.push_back(colliableCell.listObj[i]);
+						// Check if already have that obj in list
+						for (int j = 0; j < afterObjs.size(); j++)
+						{
+							if (colliableCell.listObj[i] == afterObjs[j])
+								break;
+							else if (j == afterObjs.size() - 1)
+								afterObjs.push_back(colliableCell.listObj[i]);
+						}
 					}
 				}
+				// Else then add to objs
+				else
+				{
+					if (objs.size() == 0)
+						objs.push_back(colliableCell.listObj[i]);
+					else
+					{
+						// Check if already have that obj in list
+						for (int j = 0; j < objs.size(); j++)
+						{
+							if (colliableCell.listObj[i] == objs[j])
+								break;
+							else if (j == objs.size() - 1)
+								objs.push_back(colliableCell.listObj[i]);
+						}
+					}
+				}				
 			}
 		}
 	}

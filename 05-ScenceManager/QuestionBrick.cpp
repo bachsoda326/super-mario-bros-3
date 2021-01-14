@@ -61,11 +61,11 @@ void CQuestionBrick::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				{
 				case QUESTION_BRICK_STATE_HIT_MUSHROOM_LEFT:
 					obj = new CMushRoom(start_x, start_y, -1, MUSHROOM_TYPE_RED);
-					CGame::GetInstance()->GetCurrentScene()->GetOtherObjs()->push_back(obj);
+					CGame::GetInstance()->GetCurrentScene()->GetBehindObjs()->push_back(obj);
 					break;
 				case QUESTION_BRICK_STATE_HIT_MUSHROOM_RIGHT:
 					obj = new CMushRoom(start_x, start_y, 1, MUSHROOM_TYPE_RED);
-					CGame::GetInstance()->GetCurrentScene()->GetOtherObjs()->push_back(obj);
+					CGame::GetInstance()->GetCurrentScene()->GetBehindObjs()->push_back(obj);
 					break;
 				default:
 					break;
@@ -85,7 +85,7 @@ void CQuestionBrick::SetState(int state)
 	{
 	case QUESTION_BRICK_STATE_HIT_COIN:
 		obj = new CCoin(start_x, start_y - COIN_BBOX_HEIGHT, true);
-		CGame::GetInstance()->GetCurrentScene()->GetOtherObjs()->push_back(obj);
+		CGame::GetInstance()->GetCurrentScene()->GetBehindObjs()->push_back(obj);
 		CPlayerInfo::GetInstance()->AdjustMoney(1);
 		//obj->vy = -0.5f;
 		break;
@@ -99,7 +99,7 @@ void CQuestionBrick::SetState(int state)
 			break;*/
 	case QUESTION_BRICK_STATE_HIT_LEAF:
 		obj = new CLeaf(x, y);
-		CGame::GetInstance()->GetCurrentScene()->GetObjs()->push_back(obj);
+		CGame::GetInstance()->GetCurrentScene()->GetFrontObjs()->push_back(obj);
 		break;
 	default:
 		break;

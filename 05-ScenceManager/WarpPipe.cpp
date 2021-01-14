@@ -10,7 +10,7 @@ CWarpPipe::CWarpPipe(float x, float y, int r, int b, int type, float tele_x, flo
 	if (this->type == PIRANHA_NOR || this->type == PIRANHA_FIRE || this->type == PIRANHA_FIRE_RED)
 	{
 		piranha = new CPiranha(type, x + PIRANHA_BBOX_WIDTH / 2, y);
-		CGame::GetInstance()->GetCurrentScene()->GetOtherObjs()->push_back(piranha);
+		CGame::GetInstance()->GetCurrentScene()->GetBehindObjs()->push_back(piranha);
 	}
 	else
 	{

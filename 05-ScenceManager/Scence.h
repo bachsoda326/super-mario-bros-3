@@ -7,8 +7,12 @@
 class CScene
 {
 protected:
+	// All objs for later grid
 	vector<LPGAMEOBJECT> objects;
-	vector<LPGAMEOBJECT> otherObjs;
+	// Behind and Front objs for later init (not in grid)
+	vector<LPGAMEOBJECT> behindObjs;
+	vector<LPGAMEOBJECT> frontObjs;
+
 	CKeyEventHandler * key_handler;
 	int id;
 	LPCWSTR sceneFilePath;
@@ -17,7 +21,8 @@ public:
 	CScene(int id, LPCWSTR filePath);
 
 	vector<LPGAMEOBJECT>* GetObjs() { return &objects; }
-	vector<LPGAMEOBJECT>* GetOtherObjs() { return &otherObjs; }
+	vector<LPGAMEOBJECT>* GetFrontObjs() { return &frontObjs; }
+	vector<LPGAMEOBJECT>* GetBehindObjs() { return &behindObjs; }
 	CKeyEventHandler * GetKeyEventHandler() { return key_handler; }
 	virtual void Load() = 0;
 	virtual void Unload() = 0;

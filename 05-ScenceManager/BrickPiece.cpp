@@ -21,7 +21,7 @@ void CBrickPiece::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	if (y + BRICK_PIECE_SIZE > 432)
 	{
 		isDead = true;
-		DeleteObjs(coObjects);
+		DeleteFrontObjs(coObjects);
 	}
 }
 
