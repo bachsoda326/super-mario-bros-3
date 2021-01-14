@@ -426,10 +426,10 @@ void CPlayScene::Update(DWORD dt)
 	/*CGame::GetInstance()->CalcViewObjs(&viewOtherObjs, otherObjs);
 	CGame::GetInstance()->CalcViewObjs(&viewObjs, objects);*/	
 	grid->CalcColliableObjs(CCamera::GetInstance(), viewObjs, viewAfterObjs);
-	/*DebugOut(L"[Obj]: %d\n", viewObjs.size());
+	DebugOut(L"[Obj]: %d\n", viewObjs.size());
 	DebugOut(L"[AfterObj]: %d\n", viewAfterObjs.size());
 	DebugOut(L"[BehindObj]: %d\n", behindObjs.size());
-	DebugOut(L"[FrontObj]: %d\n", frontObjs.size());*/
+	DebugOut(L"[FrontObj]: %d\n", frontObjs.size());
 
 	// Cal colliable objs
 	vector<LPGAMEOBJECT> coObjects;
@@ -800,6 +800,10 @@ void CPlayScenceKeyHandler::OnKeyUp(int KeyCode)
 
 	switch (KeyCode)
 	{
+	case DIK_DOWN:
+		if (!mario->canAttack)
+			mario->canAttack = true;
+		break;
 	case DIK_X:
 		break;
 	case DIK_S:

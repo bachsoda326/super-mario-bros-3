@@ -10,7 +10,7 @@ CWarpPipe::CWarpPipe(float x, float y, int r, int b, int type, float tele_x, flo
 	if (this->type == PIRANHA_NOR || this->type == PIRANHA_FIRE || this->type == PIRANHA_FIRE_RED)
 	{
 		piranha = new CPiranha(type, x + PIRANHA_BBOX_WIDTH / 2, y);
-		CGame::GetInstance()->GetCurrentScene()->GetBehindObjs()->push_back(piranha);
+		//CGame::GetInstance()->GetCurrentScene()->GetBehindObjs()->push_back(piranha);
 	}
 	else
 	{
@@ -21,8 +21,17 @@ CWarpPipe::CWarpPipe(float x, float y, int r, int b, int type, float tele_x, flo
 	SetBoundingBox();
 }
 
+void CWarpPipe::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjs)
+{
+	if (piranha != NULL)
+		piranha->Update(dt, coObjs);
+}
+
 void CWarpPipe::Render()
 {
+	if (piranha != NULL)
+		piranha->Render();
+
 	int ani = 0;
 	animation_set->at(ani)->Render(x, y);
 

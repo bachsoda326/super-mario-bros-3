@@ -1,5 +1,6 @@
 #include "Enemy.h"
 #include "Camera.h"
+#include "PlayScence.h"
 
 CEnemy::CEnemy()
 {
@@ -41,5 +42,13 @@ void CEnemy::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	x += dx;
 	y += dy;
 
-	if (y > HEIGHT_MAP_1_1) Dead();
+	switch (((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetMap()->GetId())
+	{
+	case MAP_1_1:
+		if (y > HEIGHT_MAP_1_1) Dead();
+		break;
+	default:
+		break;
+	}
+	
 }

@@ -27,8 +27,19 @@ void CBullet::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	float distanceX = abs((x + BULLET_BBOX_WIDTH / 2) - (mario->x + MARIO_BIG_BBOX_WIDTH / 2));
 	float distanceY = ((y + BULLET_BBOX_HEIGHT / 2) - (mario->y + MARIO_BIG_BBOX_HEIGHT / 2));
 
-	if (x < 0 || x > RIGHT_MAP_1_1 || y < 0 || y > HEIGHT_MAP_1_1 + HEIGHT_UNDER_MAP_1_1 || distanceX > SCREEN_WIDTH || distanceY > SCREEN_HEIGHT)
-		Dead();
+	switch (((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetMap()->GetId())
+	{
+	case MAP_1_1:
+		if (x < 0 || x > RIGHT_MAP_1_1 || y < 0 || (!mario->isUnderground && y > HEIGHT_MAP_1_1)/* + HEIGHT_UNDER_MAP_1_1*/ || distanceX > SCREEN_WIDTH || distanceY > SCREEN_HEIGHT)
+		{
+			Dead();
+			if (isEnemy)
+				DeleteFrontObjs(coObjects);
+		}
+		break;
+	default:
+		break;
+	}	
 
 	/*if (isEnemy)
 	{

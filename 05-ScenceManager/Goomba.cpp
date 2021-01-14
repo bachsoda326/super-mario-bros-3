@@ -17,11 +17,7 @@ CGoomba::CGoomba()
 }
 
 void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
-{
-	DebugOut(L"[GOOMBA X]: %f\n", x);
-	DebugOut(L"[GOOMBA Y]: %f\n", y);
-	DebugOut(L"[GOOMBA active]: %d\n", isActive);
-	DebugOut(L"[GOOMBA canActive]: %d\n", canActive);
+{	
 	CEnemy::Update(dt, coObjects);
 	if (!isActive) return;
 

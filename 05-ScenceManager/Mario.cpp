@@ -72,12 +72,20 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		return;
 	}
 
-	// Edge map
-	if (x <= 5) x = 5;
-	// Edge map
-	if (state != MARIO_STATE_END_SCENE && x + MARIO_BIG_BBOX_WIDTH >= RIGHT_MAP_1_1) x = RIGHT_MAP_1_1 - MARIO_BIG_BBOX_WIDTH;
-	// Edge map
-	/*if (y > HEIGHT_MAP_1_1) SetState(MARIO_STATE_DIE);*/
+	switch (((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetMap()->GetId())
+	{
+	case MAP_1_1:
+		// Edge map
+		if (x <= 5) x = 5;
+		if (state != MARIO_STATE_END_SCENE && x + MARIO_BIG_BBOX_WIDTH >= RIGHT_MAP_1_1) x = RIGHT_MAP_1_1 - MARIO_BIG_BBOX_WIDTH;
+		if (!isUnderground)
+		{
+			if (y > HEIGHT_MAP_1_1) SetState(MARIO_STATE_DIE);
+		}
+		break;
+	default:
+		break;
+	}	
 
 	if (koopas != NULL && koopas->state == KOOPAS_STATE_DIE)
 	{
@@ -221,6 +229,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	if (pipe_down_start != 0 && (GetTickCount() - pipe_down_start) >= 1000)
 	{
 		pipe_down_start = 0;
+		isUnderground = true;
 		SetState(MARIO_STATE_JUMP_HIGH);
 		SetPosition(pipe_tele_x, pipe_tele_y);
 
@@ -258,6 +267,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		else if ((GetTickCount() - pipe_up_start) >= 2500)
 		{
 			pipe_up_start = 0;
+			isUnderground = false;
 			SetState(MARIO_STATE_IDLE);
 		}
 	}
