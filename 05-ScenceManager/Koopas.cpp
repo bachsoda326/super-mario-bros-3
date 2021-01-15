@@ -18,6 +18,10 @@ CKoopas::CKoopas(int type)
 
 void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {	
+	/*DebugOut(L"[isActive]: %d\n", isActive);
+	DebugOut(L"[canActive]: %d\n", canActive);
+	DebugOut(L"[inGrid]: %d\n", isInGrid);*/
+	
 	CEnemy::Update(dt, coObjects);
 	if (!isActive || isDead) return;
 	UpdateDirection();
@@ -361,13 +365,10 @@ void CKoopas::SetState(int state)
 		else
 			vx = -KOOPAS_WALKING_SPEED;
 		break;
-		/*case ENEMY_STATE_RESPAWN:
-			state = KOOPAS_STATE_WALKING;
-			if (type == KOOPAS_GREEN_WING)
-				vx = ((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetPlayer()->nx * KOOPAS_WALKING_WING_SPEED;
-			else
-				vx = ((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetPlayer()->nx * KOOPAS_WALKING_SPEED;
-			break;*/
+	case KOOPAS_STATE_HOLD:
+		isInGrid = false;
+		CGame::GetInstance()->GetCurrentScene()->GetBehindObjs()->push_back(this);
+		break;
 	case KOOPAS_STATE_SHAKE:
 		shake_start = GetTickCount();
 		break;

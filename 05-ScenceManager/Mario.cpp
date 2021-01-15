@@ -38,9 +38,7 @@ CMario::CMario(float x, float y) : CGameObject()
 }
 
 void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
-{
-	/*DebugOut(L"[GROUND]: %d\n", isOnGround);
-	DebugOut(L"[VY]: %f\n", vy);*/
+{	
 	/*DebugOut(L"[State] state: %d\n", state);*/
 	// Calculate dx, dy 
 	CGameObject::Update(dt);

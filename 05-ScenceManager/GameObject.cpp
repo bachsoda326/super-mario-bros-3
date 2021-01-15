@@ -208,14 +208,18 @@ void CGameObject::DeleteFrontObjs(vector<LPGAMEOBJECT>* coObjects)
 	delete this;
 }
 
-void CGameObject::DeleteBehindObjs(vector<LPGAMEOBJECT>* coObjects)
+void CGameObject::DeleteBehindObjs(vector<LPGAMEOBJECT>* coObjects, bool isDeleteThis)
 {
-	isDead = true;
+	//isDead = true;
 	vector<LPGAMEOBJECT>* behindObjs;
 	behindObjs = CGame::GetInstance()->GetCurrentScene()->GetBehindObjs();
 	behindObjs->erase(std::remove(behindObjs->begin(), behindObjs->end(), this), behindObjs->end());
 	coObjects->erase(std::remove(coObjects->begin(), coObjects->end(), this), coObjects->end());
-	delete this;
+	if (isDeleteThis) 
+	{
+		isDead = true;
+		delete this; 
+	}
 }
 
 void CGameObject::AddPoint(int types)

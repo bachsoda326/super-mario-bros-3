@@ -34,11 +34,16 @@ void CEnemy::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		{
 			float width = CGame::GetInstance()->GetScreenWidth();
 			float height = CGame::GetInstance()->GetScreenHeight();
-			if (x + right - left + width / 4 <= leftCamera || x - width / 4 >= rightCamera || y + top - bottom + height / 8 <= topCamera || y - height / 8 >= bottomCamera - 24)
+			if (x + right - left + width / 4 <= leftCamera || x - width / 4 >= rightCamera || y + top - bottom + height / 4 <= topCamera || y - height / 8 >= bottomCamera - 24)
 			{
 				isActive = false;
 				canActive = false;
 				SetPosition(xSpawn, ySpawn);
+				if (!isInGrid)
+				{
+					DeleteBehindObjs(coObjects, false);
+					isInGrid = true;
+				}
 			}
 		}
 	}

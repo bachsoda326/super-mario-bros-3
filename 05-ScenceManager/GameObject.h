@@ -46,7 +46,7 @@ class CGameObject
 {
 public:
 	int id;
-
+	// List cells contain this obj
 	vector<int> listCellIndex;
 
 	// Respawn obj
@@ -68,6 +68,7 @@ public:
 	int colX, colY;
 
 	int state;
+	bool isInGrid = true;
 	bool isActive = true;
 	bool canActive = true;
 	bool isDie = false;
@@ -114,7 +115,7 @@ public:
 
 	void DeleteObjs(vector<LPGAMEOBJECT>* coObjects);
 	void DeleteFrontObjs(vector<LPGAMEOBJECT>* coObjects);
-	void DeleteBehindObjs(vector<LPGAMEOBJECT>* coObjects);
+	void DeleteBehindObjs(vector<LPGAMEOBJECT>* coObjects, bool isDeleteThis = true);
 	void AddPoint(int type = -1);
 
 	void UpdateDirection();

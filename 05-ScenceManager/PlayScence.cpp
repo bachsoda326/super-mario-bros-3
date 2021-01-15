@@ -430,8 +430,7 @@ void CPlayScene::Update(DWORD dt)
 	viewOtherObjs.clear();
 	viewObjs.clear();
 	viewAfterObjs.clear();
-	/*CGame::GetInstance()->CalcViewObjs(&viewOtherObjs, otherObjs);
-	CGame::GetInstance()->CalcViewObjs(&viewObjs, objects);*/	
+	
 	grid->CalcColliableObjs(CCamera::GetInstance(), viewObjs, viewAfterObjs);
 	DebugOut(L"[Obj]: %d\n", viewObjs.size());
 	DebugOut(L"[AfterObj]: %d\n", viewAfterObjs.size());
@@ -450,7 +449,7 @@ void CPlayScene::Update(DWORD dt)
 		/*if (i == 2) continue;*/
 		if (dynamic_cast<CMario*>(viewObjs.at(i)))
 			continue;
-		if (viewObjs[i]->isActive && !viewObjs[i]->isDie && !viewObjs[i]->isDead)
+		if (viewObjs[i]->isActive && viewObjs[i]->isInGrid && !viewObjs[i]->isDie && !viewObjs[i]->isDead)
 			coObjects.push_back(viewObjs[i]);
 	}
 	for (size_t i = 0; i < viewAfterObjs.size(); i++)
@@ -472,7 +471,7 @@ void CPlayScene::Update(DWORD dt)
 	}
 	for (size_t i = 0; i < viewObjs.size(); i++)
 	{
-		if (!viewObjs[i]->isDead)
+		if (!viewObjs[i]->isDead && viewObjs[i]->isInGrid)
 			viewObjs[i]->Update(dt, &coObjects);
 	}
 	if (player != NULL)
@@ -492,16 +491,6 @@ void CPlayScene::Update(DWORD dt)
 
 	hud->Update(dt);	
 
-	// Update camera to follow mario */// FORGET: NHỚ BỎ CHỖ NÀY SAU VÌ ĐÃ CÓ CAMERA MỚI
-	/*float cx, cy;
-	player->GetPosition(cx, cy);
-
-	CGame* game = CGame::GetInstance();
-	cx -= game->GetScreenWidth() / 2;
-	cy -= game->GetScreenHeight() / 2;
-
-	CGame::GetInstance()->SetCamPos(cx, cy);*/
-
 	CCamera::GetInstance()->Update(player);
 }
 
@@ -515,8 +504,7 @@ void CPlayScene::Render()
 	viewOtherObjs.clear();
 	viewObjs.clear();
 	viewAfterObjs.clear();
-	/*CGame::GetInstance()->CalcViewObjs(&viewOtherObjs, otherObjs);
-	CGame::GetInstance()->CalcViewObjs(&viewObjs, objects);*/
+	
 	grid->CalcColliableObjs(CCamera::GetInstance(), viewObjs, viewAfterObjs);
 
 	// Render all objs: otherObjs -> objs -> Mario -> afterObjs
@@ -527,7 +515,7 @@ void CPlayScene::Render()
 	}
 	for (int i = 0; i < viewObjs.size(); i++)
 	{
-		if (viewObjs[i]->isActive && !viewObjs[i]->isDead)
+		if (viewObjs[i]->isActive && viewObjs[i]->isInGrid && !viewObjs[i]->isDead)
 		{
 			if (dynamic_cast<CMario*>(viewObjs[i]))
 				continue;

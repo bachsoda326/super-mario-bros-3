@@ -92,17 +92,20 @@ void CGrid::CalcColliableObjs(CCamera* camera, vector<LPGAMEOBJECT>& objs, vecto
 				// Else then add to objs
 				else
 				{
-					if (objs.size() == 0)
-						objs.push_back(colliableCell.listObj[i]);
-					else
+					if (colliableCell.listObj[i]->isInGrid)
 					{
-						// Check if already have that obj in list
-						for (int j = 0; j < objs.size(); j++)
+						if (objs.size() == 0)
+							objs.push_back(colliableCell.listObj[i]);
+						else
 						{
-							if (colliableCell.listObj[i] == objs[j])
-								break;
-							else if (j == objs.size() - 1)
-								objs.push_back(colliableCell.listObj[i]);
+							// Check if already have that obj in list
+							for (int j = 0; j < objs.size(); j++)
+							{
+								if (colliableCell.listObj[i] == objs[j])
+									break;
+								else if (j == objs.size() - 1)
+									objs.push_back(colliableCell.listObj[i]);
+							}
 						}
 					}
 				}				
