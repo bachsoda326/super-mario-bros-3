@@ -296,8 +296,17 @@ void CKoopas::Render()
 			xReverse = true;
 		else
 			xReverse = false;
-		ani = KOOPAS_ANI_WING;
 	}
+	else if (type == KOOPAS_GREEN)
+		xReverse = false;
+	if (type == KOOPAS_GREEN_WING)
+	{
+		/*if (vx > 0)
+			xReverse = true;
+		else
+			xReverse = false;*/
+		ani = KOOPAS_ANI_WING;
+	}	
 	else if (state == KOOPAS_STATE_HIDE || state == KOOPAS_STATE_HOLD || state == KOOPAS_STATE_DIE) {
 		if (isShaking)
 			ani = KOOPAS_ANI_SHAKE;
