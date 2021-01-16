@@ -17,9 +17,9 @@
 #include "Coin.h"
 #include "CloudTooth.h"
 #include "ParaGoomba.h"
+#include "FlyBar.h"
 #include "Hud.h"
 #include "Grid.h"
-
 
 class CPlayScene: public CScene
 {

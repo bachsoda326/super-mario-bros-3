@@ -444,7 +444,7 @@ void CGame::_ParseSection_SCENES(string line)
 	case TITLE_SCREEN:
 		scene = new CTitleScene(id, path);
 		break;
-	case MAP_1_1:
+	case MAP_1_1: case MAP_1_4:
 		scene = new CPlayScene(id, path);
 		break;
 	case WORLD_MAP_1:

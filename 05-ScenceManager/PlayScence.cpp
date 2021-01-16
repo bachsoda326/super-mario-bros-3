@@ -45,6 +45,7 @@ CPlayScene::CPlayScene(int id, LPCWSTR filePath) :
 #define OBJECT_TYPE_COIN				12
 #define OBJECT_TYPE_CLOUD_TOOTH			13
 #define OBJECT_TYPE_PARA_GOOMBA			14
+#define OBJECT_TYPE_FLY_BAR				15
 
 #define OBJECT_TYPE_PORTAL				50
 #define OBJECT_TYPE_HUD					51
@@ -215,6 +216,12 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		}
 		else*/
 		obj = new CKoopas(type);
+		if (type == KOOPAS_RED_WING)
+		{
+			float yMin = atof(tokens[6].c_str());
+			float yMax = atof(tokens[7].c_str());
+			((CKoopas*)obj)->SetFlyRegion(yMin, yMax);
+		}
 	}
 	break;
 	case OBJECT_TYPE_BOX:
@@ -263,6 +270,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		hud = new CHud();
 		break;
 	}
+	case OBJECT_TYPE_FLY_BAR: obj = new CFlyBar(); break;		
 	default:
 		DebugOut(L"[ERR] Invalid object type: %d\n", object_type);
 		return;
@@ -283,6 +291,12 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		if (!dynamic_cast<CMario*>(obj))
 			objects.push_back(obj);
 	}
+	if (player != NULL)
+	{
+		float cx, cy;
+		player->GetPosition(cx, cy);
+		CCamera::GetInstance()->SetPosition(cx, cy);
+	}
 }
 
 void CPlayScene::_ParseSection_MAP(string line)
@@ -300,6 +314,10 @@ void CPlayScene::_ParseSection_MAP(string line)
 	{
 	case MAP_1_1:
 		CCamera::GetInstance()->SetMapSize(LEFT_MAP_1_1, TOP_MAP_1_1, RIGHT_MAP_1_1, BOTTOM_MAP_1_1, WIDTH_MAP_1_1, HEIGHT_MAP_1_1);
+		break;
+	case MAP_1_4:
+		CCamera::GetInstance()->SetMapSize(LEFT_MAP_1_4, TOP_MAP_1_4, RIGHT_MAP_1_4, BOTTOM_MAP_1_4, WIDTH_MAP_1_4, HEIGHT_MAP_1_4);
+		break;
 	default:
 		break;
 	}
@@ -315,6 +333,10 @@ void CPlayScene::_ParseSection_GRID(string line)
 	{
 	case MAP_1_1:
 		grid = new CGrid(WIDTH_MAP_1_1, HEIGHT_ALL_MAP_1_1, CELL_SIZE);
+		break;
+	case MAP_1_4:
+		grid = new CGrid(WIDTH_MAP_1_4, HEIGHT_ALL_MAP_1_4, CELL_SIZE);
+		break;
 	default:
 		break;
 	}
@@ -432,10 +454,10 @@ void CPlayScene::Update(DWORD dt)
 	viewAfterObjs.clear();
 	
 	grid->CalcColliableObjs(CCamera::GetInstance(), viewObjs, viewAfterObjs);
-	DebugOut(L"[Obj]: %d\n", viewObjs.size());
+	/*DebugOut(L"[Obj]: %d\n", viewObjs.size());
 	DebugOut(L"[AfterObj]: %d\n", viewAfterObjs.size());
 	DebugOut(L"[BehindObj]: %d\n", behindObjs.size());
-	DebugOut(L"[FrontObj]: %d\n", frontObjs.size());
+	DebugOut(L"[FrontObj]: %d\n", frontObjs.size());*/
 
 	// Cal colliable objs
 	vector<LPGAMEOBJECT> coObjects;
@@ -475,7 +497,10 @@ void CPlayScene::Update(DWORD dt)
 			viewObjs[i]->Update(dt, &coObjects);
 	}
 	if (player != NULL)
+	{
 		player->Update(dt, &coObjects);
+		CCamera::GetInstance()->Update(player);
+	}
 	for (size_t i = 0; i < viewAfterObjs.size(); i++)
 	{
 		if (!viewAfterObjs[i]->isDead)
@@ -489,9 +514,7 @@ void CPlayScene::Update(DWORD dt)
 	// skip the rest if scene was already unloaded (Mario::Update might trigger PlayScene::Unload)
 	if (player == NULL) return;
 
-	hud->Update(dt);	
-
-	CCamera::GetInstance()->Update(player);
+	hud->Update(dt);
 }
 
 void CPlayScene::Render()
@@ -636,12 +659,25 @@ void CPlayScene::EndScene()
 void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 {
 	/*DebugOut(L"[KEYDOWN] KeyDown: %d\n", KeyCode);*/
-
+	CTileMap* map = ((CPlayScene*)scence)->GetMap();
 	CMario* mario = ((CPlayScene*)scence)->GetPlayer();
 	if (mario->state == MARIO_STATE_DIE || mario->state == MARIO_STATE_END_SCENE) return;
 	
 	switch (KeyCode)
 	{
+	case DIK_B:
+		switch (map->GetId())
+		{
+		case MAP_1_1:
+			CGame::GetInstance()->SwitchScene(MAP_1_4);
+			break;
+		case MAP_1_4:
+			CGame::GetInstance()->SwitchScene(MAP_1_1);
+			break;
+		default:
+			break;
+		}
+		break;
 	case DIK_C:
 		CGame::GetInstance()->SwitchScene(WORLD_MAP_1);
 		break;
@@ -649,40 +685,127 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 		CGame::GetInstance()->SwitchScene(TITLE_SCREEN);
 		break;
 	case DIK_NUMPAD9:
-		mario->SetPosition(1400, 130);
-		CCamera::GetInstance()->SetIsStatic(false);
+		switch (map->GetId())
+		{
+		case MAP_1_1:
+			mario->SetPosition(1400, 130);
+			CCamera::GetInstance()->SetIsStatic(false);
+			break;
+		case MAP_1_4:
+			break;
+		default:
+			break;
+		}		
 		break;
 	case DIK_NUMPAD1:
-		mario->SetPosition(250, 350);
-		CCamera::GetInstance()->SetIsStatic(true);
+		switch (map->GetId())
+		{
+		case MAP_1_1:
+			mario->SetPosition(250, 350);
+			CCamera::GetInstance()->SetIsStatic(true);
+			break;
+		case MAP_1_4:
+			mario->SetPosition(400, 50);
+			break;
+		default:
+			break;
+		}		
 		break;
 	case DIK_NUMPAD2:
-		mario->SetPosition(500, 350);
-		CCamera::GetInstance()->SetIsStatic(true);
+		switch (map->GetId())
+		{
+		case MAP_1_1:
+			mario->SetPosition(500, 350);
+			CCamera::GetInstance()->SetIsStatic(true);
+			break;
+		case MAP_1_4:
+			mario->SetPosition(650, 100);
+			break;
+		default:
+			break;
+		}
 		break;
 	case DIK_NUMPAD3:
-		mario->SetPosition(680, 350);
-		CCamera::GetInstance()->SetIsStatic(true);
+		switch (map->GetId())
+		{
+		case MAP_1_1:
+			mario->SetPosition(680, 350);
+			CCamera::GetInstance()->SetIsStatic(true);
+			break;
+		case MAP_1_4:
+			mario->SetPosition(962, 138);
+			break;
+		default:
+			break;
+		}		
 		break;
 	case DIK_NUMPAD4:
-		mario->SetPosition(1300, 350);
-		CCamera::GetInstance()->SetIsStatic(true);
+		switch (map->GetId())
+		{
+		case MAP_1_1:
+			mario->SetPosition(1300, 350);
+			CCamera::GetInstance()->SetIsStatic(true);
+			break;
+		case MAP_1_4:
+			mario->SetPosition(1400, 40);
+			break;
+		default:
+			break;
+		}
 		break;
 	case DIK_NUMPAD5:
-		mario->SetPosition(1950, 350);
-		CCamera::GetInstance()->SetIsStatic(true);
+		switch (map->GetId())
+		{
+		case MAP_1_1:
+			mario->SetPosition(1950, 350);
+			CCamera::GetInstance()->SetIsStatic(true);
+			break;
+		case MAP_1_4:
+			mario->SetPosition(1730, 26);
+			break;
+		default:
+			break;
+		}		
 		break;
 	case DIK_NUMPAD6:
-		mario->SetPosition(2260, 50);
-		CCamera::GetInstance()->SetIsStatic(false);
+		switch (map->GetId())
+		{
+		case MAP_1_1:
+			mario->SetPosition(2260, 50);
+			CCamera::GetInstance()->SetIsStatic(false);
+			break;
+		case MAP_1_4:
+			mario->SetPosition(1784, 68);
+			break;
+		default:
+			break;
+		}		
 		break;
 	case DIK_NUMPAD7:
-		mario->SetPosition(2600, 350);
-		CCamera::GetInstance()->SetIsStatic(false);
+		switch (map->GetId())
+		{
+		case MAP_1_1:
+			mario->SetPosition(2600, 350);
+			CCamera::GetInstance()->SetIsStatic(false);
+			break;
+		case MAP_1_4:
+			break;
+		default:
+			break;
+		}		
 		break;
 	case DIK_NUMPAD0:
-		mario->SetPosition(2120, 500);
-		CCamera::GetInstance()->SetIsStatic(false);
+		switch (map->GetId())
+		{
+		case MAP_1_1:
+			mario->SetPosition(2120, 500);
+			CCamera::GetInstance()->SetIsStatic(false);
+			break;
+		case MAP_1_4:
+			break;
+		default:
+			break;
+		}		
 		break;
 	case DIK_S:
 		if (mario->canJump)
@@ -855,7 +978,7 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 			mario->SetState(MARIO_STATE_SKID);
 			mario->DecreasePower();
 		}
-		else if (mario->vx >= 0 && mario->vy == 0 && state != MARIO_STATE_PREPARE_RUN && state != MARIO_STATE_RUN && state != MARIO_STATE_TAIL)
+		else if (mario->vx >= 0 /*&& mario->vy == 0*/ && mario->isOnGround && state != MARIO_STATE_PREPARE_RUN && state != MARIO_STATE_RUN && state != MARIO_STATE_TAIL)
 			mario->SetState(MARIO_STATE_WALKING);
 		if (game->IsKeyDown(DIK_A))
 		{
@@ -906,7 +1029,7 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 			mario->SetState(MARIO_STATE_SKID);
 			mario->DecreasePower();
 		}
-		else if (mario->vx <= 0 && mario->vy == 0 && state != MARIO_STATE_PREPARE_RUN && state != MARIO_STATE_RUN && state != MARIO_STATE_TAIL)
+		else if (mario->vx <= 0 /*&& mario->vy == 0*/ && mario->isOnGround && state != MARIO_STATE_PREPARE_RUN && state != MARIO_STATE_RUN && state != MARIO_STATE_TAIL)
 			mario->SetState(MARIO_STATE_WALKING);
 
 		if (game->IsKeyDown(DIK_A))

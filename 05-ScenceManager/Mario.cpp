@@ -39,7 +39,7 @@ CMario::CMario(float x, float y) : CGameObject()
 
 void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {	
-	/*DebugOut(L"[State] state: %d\n", state);*/
+	//DebugOut(L"VY: %f\n", vy);
 	// Calculate dx, dy 
 	CGameObject::Update(dt);
 
@@ -76,14 +76,23 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		// Edge map
 		if (x <= 5) x = 5;
 		if (state != MARIO_STATE_END_SCENE && x + MARIO_BIG_BBOX_WIDTH >= RIGHT_MAP_1_1) x = RIGHT_MAP_1_1 - MARIO_BIG_BBOX_WIDTH;
-		if (!isUnderground)
+		if (!isOnOtherMap)
 		{
 			if (y > HEIGHT_MAP_1_1) SetState(MARIO_STATE_DIE);
 		}
 		break;
+	case MAP_1_4:
+		// Edge map
+		if (x <= 5) x = 5;
+		if (state != MARIO_STATE_END_SCENE && x + MARIO_BIG_BBOX_WIDTH >= RIGHT_MAP_1_4) x = RIGHT_MAP_1_4 - MARIO_BIG_BBOX_WIDTH;
+		if (!isOnOtherMap)
+		{
+			if (y > HEIGHT_MAP_1_4) SetState(MARIO_STATE_DIE);
+		}
+		break;
 	default:
 		break;
-	}	
+	}
 
 	if (koopas != NULL && koopas->state == KOOPAS_STATE_DIE)
 	{
@@ -227,7 +236,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	if (pipe_down_start != 0 && (GetTickCount() - pipe_down_start) >= 1000)
 	{
 		pipe_down_start = 0;
-		isUnderground = true;
+		isOnOtherMap = true;
 		SetState(MARIO_STATE_JUMP_HIGH);
 		SetPosition(pipe_tele_x, pipe_tele_y);
 
@@ -265,7 +274,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		else if ((GetTickCount() - pipe_up_start) >= 2500)
 		{
 			pipe_up_start = 0;
-			isUnderground = false;
+			isOnOtherMap = false;
 			SetState(MARIO_STATE_IDLE);
 		}
 	}
@@ -365,7 +374,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				{
 					if (!(dynamic_cast<CBreakableBrick*>(e->obj) && e->obj->GetState() == BREAKABLE_BRICK_STATE_COIN || dynamic_cast<CPSwitch*>(e->obj) && e->obj->GetState() == PSWITCH_STATE_HIT))
 					{
-						if (state != MARIO_STATE_DIE)
+						if (state != MARIO_STATE_DIE && !dynamic_cast<CFlyBar*>(e->obj))
 							vy = 0;
 						if (state != MARIO_STATE_EAT_ITEM)
 						{
@@ -393,7 +402,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					canJumpHigher = false;
 				}
 			}
-			else if (ny > 0 && !dynamic_cast<CCoin*>(e->obj) && !dynamic_cast<CLeaf*>(e->obj) && !dynamic_cast<CBullet*>(e->obj) && !dynamic_cast<CMushRoom*>(e->obj) && !dynamic_cast<CCloudTooth*>(e->obj) && !dynamic_cast<CKoopas*>(e->obj) && !dynamic_cast<CGoomba*>(e->obj))
+			else if (ny > 0 && !dynamic_cast<CFlyBar*>(e->obj) && !dynamic_cast<CCoin*>(e->obj) && !dynamic_cast<CLeaf*>(e->obj) && !dynamic_cast<CBullet*>(e->obj) && !dynamic_cast<CMushRoom*>(e->obj) && !dynamic_cast<CCloudTooth*>(e->obj) && !dynamic_cast<CKoopas*>(e->obj) && !dynamic_cast<CGoomba*>(e->obj))
 			{
 				if (!((dynamic_cast<CBreakableBrick*>(e->obj) && e->obj->GetState() == BREAKABLE_BRICK_STATE_COIN) || ((dynamic_cast<CWarpPipe*>(e->obj)/* && state == MARIO_STATE_PIPE*/))))
 				{
@@ -408,6 +417,26 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				x += dx;
 				y += dy;
 			}*/
+			// Fly Bar
+			if (dynamic_cast<CFlyBar*>(e->obj))
+			{
+				CFlyBar* bar = dynamic_cast<CFlyBar*>(e->obj);
+				/*if (e->nx != 0)
+					PreventMoveX(-1, e->obj);*/
+				if (e->ny > 0)
+					y += dy;
+				else if (e->ny < 0)
+				{
+					if (bar->GetState() != FLY_BAR_STATE_FALL)
+						bar->SetState(FLY_BAR_STATE_FALL);
+					else
+					{
+						if (vx > 0 && left + (right - left) / 4 >= bar->right || vx < 0 && right - (right - left) / 4 <= bar->left)
+							vy = 0;
+					}
+					/*vy = bar->vy;*/
+				}
+			}
 			// Cloud tooth
 			if (dynamic_cast<CCloudTooth*>(e->obj))
 			{
@@ -693,11 +722,32 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 							else
 								bBrick->SetState(BREAKABLE_BRICK_STATE_1UP_MUSHROOM_RIGHT);
 							break;
+						case BREAKABLE_BRICK_TYPE_ITEM:
+							switch (level)
+							{
+							case MARIO_LEVEL_SMALL:
+								if (x <= bBrick->x)
+									bBrick->SetState(BREAKABLE_BRICK_STATE_HIT_MUSHROOM_LEFT);
+								else
+									bBrick->SetState(BREAKABLE_BRICK_STATE_HIT_MUSHROOM_RIGHT);
+								break;
+							case MARIO_LEVEL_BIG: case MARIO_LEVEL_RACCOON: case MARIO_LEVEL_FIRE:
+								bBrick->SetState(BREAKABLE_BRICK_STATE_HIT_LEAF);
+								break;
+							default:
+								break;
+							}
+							break;
+						case BREAKABLE_BRICK_TYPE_MULTI_COIN:
+							bBrick->SetState(BREAKABLE_BRICK_STATE_HIT_MULTI_COIN);
+							bBrick->vy = -0.1f;
+							break;
 						case BREAKABLE_BRICK_TYPE_P_SWITCH:
 							bBrick->SetState(BREAKABLE_BRICK_STATE_P_SWITCH);
 							break;
 						case BREAKABLE_BRICK_TYPE_COIN:
 							bBrick->SetState(BREAKABLE_BRICK_STATE_BREAK);
+							break;
 						default:
 							break;
 						}						
@@ -1392,6 +1442,18 @@ void CMario::DecreasePower()
 
 void CMario::OnIntersect(CGameObject* obj, vector<LPGAMEOBJECT>* coObjs)
 {
+	// Fly Bar
+	if (dynamic_cast<CFlyBar*>(obj))
+	{
+		if (obj->top != bottom && obj->bottom != top)
+		{
+			if (right >= obj->left && left < obj->left)
+				PreventMoveX(-1, obj);
+			else if (left <= obj->right && right > obj->right)
+				PreventMoveX(1, obj);
+		}
+		
+	}
 	if (!obj->isDie && canHit)
 	{
 		// Para Goomba
@@ -1570,6 +1632,26 @@ void CMario::OnIntersect(CGameObject* obj, vector<LPGAMEOBJECT>* coObjs)
 							bBrick->SetState(BREAKABLE_BRICK_STATE_1UP_MUSHROOM_LEFT);
 						else
 							bBrick->SetState(BREAKABLE_BRICK_STATE_1UP_MUSHROOM_RIGHT);
+						break;
+					case BREAKABLE_BRICK_TYPE_ITEM:
+						switch (level)
+						{
+						case MARIO_LEVEL_SMALL:
+							if (x <= bBrick->x)
+								bBrick->SetState(BREAKABLE_BRICK_STATE_HIT_MUSHROOM_LEFT);
+							else
+								bBrick->SetState(BREAKABLE_BRICK_STATE_HIT_MUSHROOM_RIGHT);
+							break;
+						case MARIO_LEVEL_BIG: case MARIO_LEVEL_RACCOON: case MARIO_LEVEL_FIRE:
+							bBrick->SetState(BREAKABLE_BRICK_STATE_HIT_LEAF);
+							break;
+						default:
+							break;
+						}
+						break;
+					case BREAKABLE_BRICK_TYPE_MULTI_COIN:
+						bBrick->SetState(BREAKABLE_BRICK_STATE_HIT_MULTI_COIN);
+						bBrick->vy = -0.1f;
 						break;
 					case BREAKABLE_BRICK_TYPE_P_SWITCH:
 						bBrick->SetState(BREAKABLE_BRICK_STATE_P_SWITCH);

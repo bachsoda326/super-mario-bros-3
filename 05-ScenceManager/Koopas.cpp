@@ -17,20 +17,19 @@ CKoopas::CKoopas(int type)
 }
 
 void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
-{	
-	/*DebugOut(L"[isActive]: %d\n", isActive);
-	DebugOut(L"[canActive]: %d\n", canActive);
-	DebugOut(L"[inGrid]: %d\n", isInGrid);*/
-	
+{
 	CEnemy::Update(dt, coObjects);
 	if (!isActive || isDead) return;
 	UpdateDirection();
 
 	// Simple fall down
-	if (type == KOOPAS_GREEN_WING)
-		vy += KOOPAS_WING_GRAVITY * dt;
-	else
-		vy += ENEMY_GRAVITY * dt;
+	if (type != KOOPAS_RED_WING)
+	{
+		if (type == KOOPAS_GREEN_WING)
+			vy += KOOPAS_WING_GRAVITY * dt;
+		else
+			vy += ENEMY_GRAVITY * dt;
+	}
 
 	// Intersect with objs
 	for (int i = 0; i < coObjects->size(); i++)
@@ -119,6 +118,14 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				}
 			}
 		}
+	}
+
+	if (type == KOOPAS_RED_WING)
+	{
+		if (y <= yMin)
+			vy = 0.05f;
+		else if (y >= yMax)
+			vy = -0.05f;
 	}
 
 	if (state != KOOPAS_STATE_DIE)
@@ -290,7 +297,7 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 void CKoopas::Render()
 {
 	int ani = KOOPAS_ANI_WALKING_LEFT;
-	if (type == KOOPAS_GREEN_WING)
+	if (type == KOOPAS_GREEN_WING || type == KOOPAS_RED_WING)
 	{
 		if (vx > 0)
 			xReverse = true;
@@ -299,7 +306,7 @@ void CKoopas::Render()
 	}
 	else if (type == KOOPAS_GREEN)
 		xReverse = false;
-	if (type == KOOPAS_GREEN_WING)
+	if (type == KOOPAS_GREEN_WING || type == KOOPAS_RED_WING)
 	{
 		/*if (vx > 0)
 			xReverse = true;
@@ -334,6 +341,8 @@ void CKoopas::SetState(int state)
 		yReverse = false;		
 		if (type == KOOPAS_GREEN_WING)
 			vx = -((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetPlayer()->nx * KOOPAS_WALKING_WING_SPEED;
+		else if (type == KOOPAS_RED_WING)
+			vy = 0.05f;
 		else
 		{
 			if (vxSpawn == KOOPAS_WALKING_WING_SPEED)
@@ -355,6 +364,8 @@ void CKoopas::SetState(int state)
 		AddPoint();
 		if (type == KOOPAS_GREEN_WING)
 			type = KOOPAS_GREEN;
+		else if (type == KOOPAS_RED_WING)
+			type = KOOPAS_RED;
 		vy = -KOOPAS_DIE_Y_SPEED;
 		yReverse = true;
 		isDie = true;
@@ -362,6 +373,8 @@ void CKoopas::SetState(int state)
 	case KOOPAS_STATE_HIDE:
 		if (type == KOOPAS_GREEN_WING)
 			type = KOOPAS_GREEN;
+		else if (type == KOOPAS_RED_WING)
+			type = KOOPAS_RED;
 		hide_start = GetTickCount();
 		break;
 	case KOOPAS_STATE_SPIN:
@@ -371,12 +384,17 @@ void CKoopas::SetState(int state)
 		yReverse = false;
 		if (type == KOOPAS_GREEN_WING)
 			vx = -KOOPAS_WALKING_WING_SPEED;
+		else if (type == KOOPAS_RED_WING)
+			vx = 0;
 		else
 			vx = -KOOPAS_WALKING_SPEED;
 		break;
 	case KOOPAS_STATE_HOLD:
-		isInGrid = false;
-		CGame::GetInstance()->GetCurrentScene()->GetBehindObjs()->push_back(this);
+		if (isInGrid)
+		{
+			isInGrid = false;
+			CGame::GetInstance()->GetCurrentScene()->GetBehindObjs()->push_back(this);
+		}
 		break;
 	case KOOPAS_STATE_SHAKE:
 		shake_start = GetTickCount();
@@ -396,6 +414,12 @@ void CKoopas::GetBoundingBox(float& left, float& top, float& right, float& botto
 		bottom = y + KOOPAS_BBOX_HEIGHT_HIDE;
 
 	CGameObject::GetBoundingBox(left, top, right, bottom);
+}
+
+void CKoopas::SetFlyRegion(float min, float max)
+{
+	yMin = min;
+	yMax = max;
 }
 
 void CKoopas::UpdateDirection()

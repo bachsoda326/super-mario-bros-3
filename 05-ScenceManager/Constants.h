@@ -22,6 +22,15 @@
 #define WIDTH_UNDER_MAP_1_1		512
 #define HEIGHT_UNDER_MAP_1_1	192
 
+#define MAP_1_4					2
+#define HEIGHT_ALL_MAP_1_4		192
+#define LEFT_MAP_1_4			0
+#define TOP_MAP_1_4				0
+#define RIGHT_MAP_1_4			2048
+#define BOTTOM_MAP_1_4			238
+#define WIDTH_MAP_1_4			2576
+#define HEIGHT_MAP_1_4			192
+
 #define WORLD_MAP_1				100
 #define LEFT_WORLD_MAP_1		0
 #define TOP_WORLD_MAP_1			0

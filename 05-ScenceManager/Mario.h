@@ -288,7 +288,7 @@ public:
 	bool canHit = true;
 	bool canMultiScoreLand = false;
 	bool canMultiScoreJump = false;
-	bool isUnderground = false;
+	bool isOnOtherMap = false;
 	//bool canDuck = false;
 
 	vector<CBullet*> *bullets;

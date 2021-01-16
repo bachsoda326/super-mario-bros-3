@@ -4,4 +4,5 @@ start	1
 [SCENES]
 0	titlescene.txt
 1	scene1.txt
+2	scene1-4.txt
 100	world1.txt

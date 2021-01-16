@@ -37,6 +37,7 @@
 #define KOOPAS_GREEN					1
 #define KOOPAS_RED						2
 #define KOOPAS_GREEN_WING				3
+#define KOOPAS_RED_WING					4
 // Time
 #define KOOPAS_SHAKE_TIME				1000
 #define KOOPAS_HIDE_TIME				5000
@@ -53,6 +54,8 @@ class CKoopas : public CEnemy
 
 	bool isShaking = false;
 
+	float yMin = -1, yMax = -1;
+
 	void SetBoundingBox();
 public:
 	int type;
@@ -63,6 +66,8 @@ public:
 	void Render();
 	void SetState(int state);
 	void GetBoundingBox(float& left, float& top, float& right, float& bottom);
+
+	void SetFlyRegion(float min, float max);
 
 	void UpdateDirection();
 
