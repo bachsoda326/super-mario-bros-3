@@ -5,6 +5,27 @@ CBrick::CBrick()
 	SetBoundingBox();
 }
 
+void CBrick::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
+{
+	isColLeft = false;
+	isColRight = false;
+	// Intersect with objs
+	for (int i = 0; i < coObjects->size(); i++)
+	{
+		if (!coObjects->at(i)->isDie && dynamic_cast<CBrick*>(coObjects->at(i)))
+		{
+			if (this == coObjects->at(i))
+				continue;
+			if (AABBCheck(this, coObjects->at(i)))
+			{
+				if (top == coObjects->at(i)->bottom || bottom == coObjects->at(i)->top)
+					continue;
+				OnIntersect(coObjects->at(i), coObjects);
+			}
+		}
+	}
+}
+
 void CBrick::Render()
 {
 	animation_set->at(0)->Render(x, y);
@@ -19,6 +40,14 @@ void CBrick::GetBoundingBox(float &l, float &t, float &r, float &b)
 	b = y + BRICK_BBOX_HEIGHT;
 
 	CGameObject::GetBoundingBox(l, t, r, b);
+}
+
+void CBrick::OnIntersect(CGameObject* obj, vector<LPGAMEOBJECT>* coObjs)
+{
+	if (right == obj->left)
+		isColRight = true;
+	if (left == obj->right)
+		isColLeft = true;
 }
 
 void CBrick::SetBoundingBox()

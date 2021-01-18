@@ -499,7 +499,6 @@ void CPlayScene::Update(DWORD dt)
 	if (player != NULL)
 	{
 		player->Update(dt, &coObjects);
-		CCamera::GetInstance()->Update(player);
 	}
 	for (size_t i = 0; i < viewAfterObjs.size(); i++)
 	{
@@ -515,6 +514,8 @@ void CPlayScene::Update(DWORD dt)
 	if (player == NULL) return;
 
 	hud->Update(dt);
+
+	CCamera::GetInstance()->Update(player);
 }
 
 void CPlayScene::Render()

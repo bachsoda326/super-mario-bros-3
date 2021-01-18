@@ -40,6 +40,8 @@ void CQuestionBrick::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			obj = NULL;
 	}*/
 
+	CBrick::Update(dt, coObjects);
+
 	if (state != QUESTION_BRICK_STATE_NORMAL)
 	{
 		CGameObject::Update(dt, coObjects);
@@ -49,6 +51,11 @@ void CQuestionBrick::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 		if (y != start_y)
 			vy += QUESTION_BRICK_GRAVITY * dt;
+
+		if (vy < 0)
+			isUp = true;
+		else
+			isUp = false;
 
 		if (y >= start_y)
 		{

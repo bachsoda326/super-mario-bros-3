@@ -22,9 +22,6 @@
 class CQuestionBrick : public CBrick
 {
 public:
-	float start_x;			// initial position of question brick
-	float start_y;
-
 	int type;
 	bool isCreateItem = false;
 	CGameObject *obj = NULL;

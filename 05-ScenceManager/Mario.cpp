@@ -717,10 +717,13 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						switch (bBrick->type)
 						{
 						case BREAKABLE_BRICK_TYPE_1UP_MUSHROOM:
-							if (x <= bBrick->x)
-								bBrick->SetState(BREAKABLE_BRICK_STATE_1UP_MUSHROOM_LEFT);
-							else
-								bBrick->SetState(BREAKABLE_BRICK_STATE_1UP_MUSHROOM_RIGHT);
+							if (level > MARIO_LEVEL_SMALL)
+							{
+								if (x <= bBrick->x)
+									bBrick->SetState(BREAKABLE_BRICK_STATE_1UP_MUSHROOM_LEFT);
+								else
+									bBrick->SetState(BREAKABLE_BRICK_STATE_1UP_MUSHROOM_RIGHT);
+							}
 							break;
 						case BREAKABLE_BRICK_TYPE_ITEM:
 							switch (level)
@@ -739,14 +742,23 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 							}
 							break;
 						case BREAKABLE_BRICK_TYPE_MULTI_COIN:
-							bBrick->SetState(BREAKABLE_BRICK_STATE_HIT_MULTI_COIN);
-							bBrick->vy = -0.1f;
+							if (level > MARIO_LEVEL_SMALL)
+							{
+								bBrick->SetState(BREAKABLE_BRICK_STATE_HIT_MULTI_COIN);
+								bBrick->vy = -0.1f;
+							}
 							break;
 						case BREAKABLE_BRICK_TYPE_P_SWITCH:
-							bBrick->SetState(BREAKABLE_BRICK_STATE_P_SWITCH);
+							if (level > MARIO_LEVEL_SMALL)
+							{
+								bBrick->SetState(BREAKABLE_BRICK_STATE_P_SWITCH);
+							}
 							break;
 						case BREAKABLE_BRICK_TYPE_COIN:
-							bBrick->SetState(BREAKABLE_BRICK_STATE_BREAK);
+							if (level > MARIO_LEVEL_SMALL)
+							{
+								bBrick->SetState(BREAKABLE_BRICK_STATE_BREAK);
+							}
 							break;
 						default:
 							break;

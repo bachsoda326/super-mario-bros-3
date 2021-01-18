@@ -34,9 +34,6 @@ class CBreakableBrick : public CBrick
 
 	void SetBoundingBox();
 public:
-	float start_x = -1;			// initial position of question brick
-	float start_y = -1;
-
 	int type;
 
 	CGameObject* obj = NULL;

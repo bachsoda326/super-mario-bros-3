@@ -14,6 +14,8 @@ CBreakableBrick::CBreakableBrick(int type)
 
 void CBreakableBrick::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
+	CBrick::Update(dt, coObjects);
+
 	if (coin_start == 0 && type == BREAKABLE_BRICK_TYPE_COIN && ((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->isBrickToCoin)
 	{
 		SetState(BREAKABLE_BRICK_STATE_COIN);
@@ -41,6 +43,11 @@ void CBreakableBrick::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 		if (y != start_y)
 			vy += BREAKABLE_BRICK_GRAVITY * dt;
+
+		if (vy < 0)
+			isUp = true;
+		else
+			isUp = false;
 
 		if (y >= start_y)
 		{

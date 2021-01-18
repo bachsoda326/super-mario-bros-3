@@ -33,6 +33,7 @@
 #define KOOPAS_WING_JUMP				0.175f
 #define KOOPAS_DIE_X_SPEED				0.07f
 #define KOOPAS_DIE_Y_SPEED				0.2f
+#define KOOPAS_HIT_Y_SPEED				0.1f
 // Type
 #define KOOPAS_GREEN					1
 #define KOOPAS_RED						2

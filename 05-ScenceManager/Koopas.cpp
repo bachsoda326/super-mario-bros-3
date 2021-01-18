@@ -206,35 +206,32 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 							// Question brick
 							if (dynamic_cast<CQuestionBrick*>(e->obj))
 							{
-								if (e->nx != 0)
+								CQuestionBrick* qBrick = dynamic_cast<CQuestionBrick*>(e->obj);
+								if (qBrick->GetState() == QUESTION_BRICK_STATE_NORMAL)
 								{
-									CQuestionBrick* qBrick = dynamic_cast<CQuestionBrick*>(e->obj);
-									if (qBrick->GetState() == QUESTION_BRICK_STATE_NORMAL)
+									switch (qBrick->type)
 									{
-										switch (qBrick->type)
+									case BRICK_NORMAL:
+										qBrick->SetState(QUESTION_BRICK_STATE_HIT_COIN);
+										break;
+									case BRICK_ITEM:
+										switch (mario->GetLevel())
 										{
-										case BRICK_NORMAL:
-											qBrick->SetState(QUESTION_BRICK_STATE_HIT_COIN);
+										case MARIO_LEVEL_SMALL:
+											if (x <= qBrick->x)
+												qBrick->SetState(QUESTION_BRICK_STATE_HIT_MUSHROOM_LEFT);
+											else
+												qBrick->SetState(QUESTION_BRICK_STATE_HIT_MUSHROOM_RIGHT);
 											break;
-										case BRICK_ITEM:
-											switch (mario->GetLevel())
-											{
-											case MARIO_LEVEL_SMALL:
-												if (x <= qBrick->x)
-													qBrick->SetState(QUESTION_BRICK_STATE_HIT_MUSHROOM_LEFT);
-												else
-													qBrick->SetState(QUESTION_BRICK_STATE_HIT_MUSHROOM_RIGHT);
-												break;
-											case MARIO_LEVEL_BIG: case MARIO_LEVEL_RACCOON: case MARIO_LEVEL_FIRE:
-												qBrick->SetState(QUESTION_BRICK_STATE_HIT_LEAF);
-												break;
-											default:
-												break;
-											}
+										case MARIO_LEVEL_BIG: case MARIO_LEVEL_RACCOON: case MARIO_LEVEL_FIRE:
+											qBrick->SetState(QUESTION_BRICK_STATE_HIT_LEAF);
 											break;
 										default:
 											break;
 										}
+										break;
+									default:
+										break;
 									}
 								}
 							}
@@ -272,18 +269,60 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						}
 					}
 				}
-				// Red Koopas do not leave the platform
-				if (e->ny < 0 && type == KOOPAS_RED && state == KOOPAS_STATE_WALKING)
+				if (e->ny < 0 && state == KOOPAS_STATE_WALKING)
 				{
-					if (left < e->obj->left - KOOPAS_BBOX_WIDTH / 2)
+					// Case Mario hit Brick to hit Koopas
+					if (dynamic_cast<CBrick*>(e->obj))
 					{
-						x = e->obj->left - KOOPAS_BBOX_WIDTH / 2;
-						vx = -vx;
+						CBrick* brick = dynamic_cast<CBrick*>(e->obj);
+						if (brick->isUp)
+						{
+							yReverse = true;
+							vx = mario->nx * KOOPAS_DIE_X_SPEED;
+							vy = -KOOPAS_HIT_Y_SPEED;
+							SetState(KOOPAS_STATE_HIDE);
+						}
 					}
-					if (right > e->obj->right + KOOPAS_BBOX_WIDTH / 2)
+
+					// Red Koopas do not leave the platform
+					if (type == KOOPAS_RED)
 					{
-						x = e->obj->right - KOOPAS_BBOX_WIDTH / 2;
-						vx = -vx;
+						// Case Brick
+						if (dynamic_cast<CBrick*>(e->obj))
+						{
+							CBrick* brick = dynamic_cast<CBrick*>(e->obj);
+
+							if (!brick->GetIsColLeft())
+							{
+								if (left < e->obj->left - KOOPAS_BBOX_WIDTH / 2)
+								{
+									x = e->obj->left - KOOPAS_BBOX_WIDTH / 2;
+									vx = -vx;
+								}
+							}
+							if (!brick->GetIsColRight())
+							{
+								if (right > e->obj->right + KOOPAS_BBOX_WIDTH / 2)
+								{
+									x = e->obj->right - KOOPAS_BBOX_WIDTH / 2;
+									vx = -vx;
+								}
+							}
+						}
+						// Case others
+						else
+						{
+							if (left < e->obj->left - KOOPAS_BBOX_WIDTH / 2)
+							{
+								x = e->obj->left - KOOPAS_BBOX_WIDTH / 2;
+								vx = -vx;
+							}
+							if (right > e->obj->right + KOOPAS_BBOX_WIDTH / 2)
+							{
+								x = e->obj->right - KOOPAS_BBOX_WIDTH / 2;
+								vx = -vx;
+							}
+						}
 					}
 				}
 			}
@@ -313,7 +352,7 @@ void CKoopas::Render()
 		else
 			xReverse = false;*/
 		ani = KOOPAS_ANI_WING;
-	}	
+	}
 	else if (state == KOOPAS_STATE_HIDE || state == KOOPAS_STATE_HOLD || state == KOOPAS_STATE_DIE) {
 		if (isShaking)
 			ani = KOOPAS_ANI_SHAKE;
@@ -338,7 +377,7 @@ void CKoopas::SetState(int state)
 	{
 		CGameObject::SetState(KOOPAS_STATE_WALKING);
 
-		yReverse = false;		
+		yReverse = false;
 		if (type == KOOPAS_GREEN_WING)
 			vx = -((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetPlayer()->nx * KOOPAS_WALKING_WING_SPEED;
 		else if (type == KOOPAS_RED_WING)
