@@ -332,10 +332,10 @@ void CPlayScene::_ParseSection_GRID(string line)
 	switch (map->GetId())
 	{
 	case MAP_1_1:
-		grid = new CGrid(WIDTH_MAP_1_1, HEIGHT_ALL_MAP_1_1, CELL_SIZE);
+		grid = new CGrid(WIDTH_ALL_MAP_1_1, HEIGHT_ALL_MAP_1_1, CELL_SIZE);
 		break;
 	case MAP_1_4:
-		grid = new CGrid(WIDTH_MAP_1_4, HEIGHT_ALL_MAP_1_4, CELL_SIZE);
+		grid = new CGrid(WIDTH_ALL_MAP_1_4, HEIGHT_ALL_MAP_1_4, CELL_SIZE);
 		break;
 	default:
 		break;
@@ -613,6 +613,31 @@ void CPlayScene::EndScene()
 	hud->EndScene();
 }
 
+void CPlayScene::ChangeMarioLocation(bool isOnOtherMap, bool isCameraStatic, float x, float y)
+{
+	player->isOnOtherMap = isOnOtherMap;
+	player->SetPosition(x, y);
+
+	CCamera::GetInstance()->SetIsStatic(isCameraStatic);
+	switch (map->GetId())
+	{
+	case MAP_1_1:
+		if (!isOnOtherMap)
+			CCamera::GetInstance()->SetMapSize(LEFT_MAP_1_1, TOP_MAP_1_1, RIGHT_MAP_1_1, BOTTOM_MAP_1_1, WIDTH_MAP_1_1, HEIGHT_MAP_1_1);
+		else		
+			CCamera::GetInstance()->SetMapSize(LEFT_OTHER_MAP_1_1, TOP_OTHER_MAP_1_1, RIGHT_OTHER_MAP_1_1, BOTTOM_OTHER_MAP_1_1, WIDTH_OTHER_MAP_1_1, HEIGHT_OTHER_MAP_1_1);
+		break;
+	case MAP_1_4:
+		if (!isOnOtherMap)
+			CCamera::GetInstance()->SetMapSize(LEFT_MAP_1_4, TOP_MAP_1_4, RIGHT_MAP_1_4, BOTTOM_MAP_1_4, WIDTH_MAP_1_4, HEIGHT_MAP_1_4);
+		else
+			CCamera::GetInstance()->SetMapSize(LEFT_OTHER_MAP_1_4, TOP_OTHER_MAP_1_4, RIGHT_OTHER_MAP_1_4, BOTTOM_OTHER_MAP_1_4, WIDTH_OTHER_MAP_1_4, HEIGHT_OTHER_MAP_1_4);
+		break;
+	default:
+		break;
+	}
+}
+
 //void CPlayScene::UpdateCamera(int mapWidth, int mapHeight)
 //{
 //	//tính fps của game
@@ -688,9 +713,8 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 	case DIK_NUMPAD9:
 		switch (map->GetId())
 		{
-		case MAP_1_1:
-			mario->SetPosition(1400, 130);
-			CCamera::GetInstance()->SetIsStatic(false);
+		case MAP_1_1:			
+			((CPlayScene*)scence)->ChangeMarioLocation(false, false, 1400, 130);
 			break;
 		case MAP_1_4:
 			break;
@@ -701,12 +725,11 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 	case DIK_NUMPAD1:
 		switch (map->GetId())
 		{
-		case MAP_1_1:
-			mario->SetPosition(250, 350);
-			CCamera::GetInstance()->SetIsStatic(true);
+		case MAP_1_1:			
+			((CPlayScene*)scence)->ChangeMarioLocation(false, true, 250, 350);
 			break;
 		case MAP_1_4:
-			mario->SetPosition(400, 50);
+			((CPlayScene*)scence)->ChangeMarioLocation(false, true, 400, 50);
 			break;
 		default:
 			break;
@@ -716,11 +739,10 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 		switch (map->GetId())
 		{
 		case MAP_1_1:
-			mario->SetPosition(500, 350);
-			CCamera::GetInstance()->SetIsStatic(true);
+			((CPlayScene*)scence)->ChangeMarioLocation(false, true, 500, 350);
 			break;
 		case MAP_1_4:
-			mario->SetPosition(650, 100);
+			((CPlayScene*)scence)->ChangeMarioLocation(false, true, 650, 100);
 			break;
 		default:
 			break;
@@ -730,11 +752,10 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 		switch (map->GetId())
 		{
 		case MAP_1_1:
-			mario->SetPosition(680, 350);
-			CCamera::GetInstance()->SetIsStatic(true);
+			((CPlayScene*)scence)->ChangeMarioLocation(false, true, 680, 350);
 			break;
 		case MAP_1_4:
-			mario->SetPosition(962, 138);
+			((CPlayScene*)scence)->ChangeMarioLocation(false, true, 962, 130);
 			break;
 		default:
 			break;
@@ -744,11 +765,10 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 		switch (map->GetId())
 		{
 		case MAP_1_1:
-			mario->SetPosition(1300, 350);
-			CCamera::GetInstance()->SetIsStatic(true);
+			((CPlayScene*)scence)->ChangeMarioLocation(false, true, 1300, 350);
 			break;
 		case MAP_1_4:
-			mario->SetPosition(1400, 40);
+			((CPlayScene*)scence)->ChangeMarioLocation(false, true, 1400, 40);
 			break;
 		default:
 			break;
@@ -758,11 +778,10 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 		switch (map->GetId())
 		{
 		case MAP_1_1:
-			mario->SetPosition(1950, 350);
-			CCamera::GetInstance()->SetIsStatic(true);
+			((CPlayScene*)scence)->ChangeMarioLocation(false, true, 1950, 350);
 			break;
 		case MAP_1_4:
-			mario->SetPosition(1730, 26);
+			((CPlayScene*)scence)->ChangeMarioLocation(false, true, 1730, 20);
 			break;
 		default:
 			break;
@@ -772,11 +791,10 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 		switch (map->GetId())
 		{
 		case MAP_1_1:
-			mario->SetPosition(2260, 50);
-			CCamera::GetInstance()->SetIsStatic(false);
+			((CPlayScene*)scence)->ChangeMarioLocation(false, false, 2260, 50);
 			break;
 		case MAP_1_4:
-			mario->SetPosition(1784, 68);
+			((CPlayScene*)scence)->ChangeMarioLocation(false, true, 1784, 68);
 			break;
 		default:
 			break;
@@ -786,10 +804,10 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 		switch (map->GetId())
 		{
 		case MAP_1_1:
-			mario->SetPosition(2600, 350);
-			CCamera::GetInstance()->SetIsStatic(false);
+			((CPlayScene*)scence)->ChangeMarioLocation(false, true, 2600, 350);
 			break;
 		case MAP_1_4:
+			((CPlayScene*)scence)->ChangeMarioLocation(false, true, 1944, 64);
 			break;
 		default:
 			break;
@@ -799,10 +817,10 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 		switch (map->GetId())
 		{
 		case MAP_1_1:
-			mario->SetPosition(2120, 500);
-			CCamera::GetInstance()->SetIsStatic(false);
+			((CPlayScene*)scence)->ChangeMarioLocation(true, true, 2120, 500); 
 			break;
 		case MAP_1_4:
+			((CPlayScene*)scence)->ChangeMarioLocation(true, true, 2200, 112);
 			break;
 		default:
 			break;
@@ -1094,7 +1112,10 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 	if (game->IsKeyDown(DIK_S) && mario->canJump)
 	{
 		if (mario->canJumpHigher)
+		{
 			mario->vy -= MARIO_JUMP_HIGH_SPEED_Y;
+			DebugOut(L"JUMP VY: %f\n", mario->vy);
+		}
 		if (abs(mario->vx) == MARIO_RUN_SPEED)
 			mario->SetState(MARIO_STATE_RUNJUMP);
 		else

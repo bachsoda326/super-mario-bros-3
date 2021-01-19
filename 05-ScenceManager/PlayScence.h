@@ -53,6 +53,7 @@ public:
 	virtual void Unload();
 
 	void EndScene();
+	void ChangeMarioLocation(bool isOnOtherMap, bool isCameraStatic, float x, float y);
 
 	// Cập nhật vị trí camera khi đụng biên map và khi Mario di chuyển // Chưa dùng đến
 	//void UpdateCamera(int mapWidth, int mapHeight);

@@ -39,6 +39,15 @@ CMario::CMario(float x, float y) : CGameObject()
 
 void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {	
+	// Get others instance
+	CCamera* camera = CCamera::GetInstance();
+	int leftMap = camera->GetLeftMap();
+	int topMap = camera->GetTopMap();
+	int rightMap = camera->GetRightMap();
+	int bottomMap = camera->GetBottomMap();
+	int heightMap = camera->GetHeightMap();
+	CPlayScene* scene = (CPlayScene*)CGame::GetInstance()->GetCurrentScene();
+
 	//DebugOut(L"VY: %f\n", vy);
 	// Calculate dx, dy 
 	CGameObject::Update(dt);
@@ -54,6 +63,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		canJumpHigher = false;
 	}
 
+	// Die
 	if (state == MARIO_STATE_DIE)
 	{
 		x += dx;
@@ -70,29 +80,14 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		return;
 	}
 
-	switch (((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetMap()->GetId())
+	// Mario when col edge map
+	if (x <= leftMap) x = leftMap;
+	if (y <= topMap) y = topMap;
+	if (state != MARIO_STATE_END_SCENE && x + MARIO_BIG_BBOX_WIDTH >= rightMap) x = rightMap - MARIO_BIG_BBOX_WIDTH;
+	if (!isOnOtherMap)
 	{
-	case MAP_1_1:
-		// Edge map
-		if (x <= 5) x = 5;
-		if (state != MARIO_STATE_END_SCENE && x + MARIO_BIG_BBOX_WIDTH >= RIGHT_MAP_1_1) x = RIGHT_MAP_1_1 - MARIO_BIG_BBOX_WIDTH;
-		if (!isOnOtherMap)
-		{
-			if (y > HEIGHT_MAP_1_1) SetState(MARIO_STATE_DIE);
-		}
-		break;
-	case MAP_1_4:
-		// Edge map
-		if (x <= 5) x = 5;
-		if (state != MARIO_STATE_END_SCENE && x + MARIO_BIG_BBOX_WIDTH >= RIGHT_MAP_1_4) x = RIGHT_MAP_1_4 - MARIO_BIG_BBOX_WIDTH;
-		if (!isOnOtherMap)
-		{
-			if (y > HEIGHT_MAP_1_4) SetState(MARIO_STATE_DIE);
-		}
-		break;
-	default:
-		break;
-	}
+		if (y > topMap + heightMap) SetState(MARIO_STATE_DIE);
+	}	
 
 	if (koopas != NULL && koopas->state == KOOPAS_STATE_DIE)
 	{
@@ -125,6 +120,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		untouchable = 0;
 	}
 
+	// End scene
 	if (state == MARIO_STATE_END_SCENE)
 	{
 		if (isOnGround)
@@ -229,6 +225,8 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		//canJump = false;
 		SetState(MARIO_STATE_JUMP_HIGH);
 	}
+
+	// Pipe down
 	if ((GetTickCount() - pipe_down_start) < 1000)
 	{
 		SetState(MARIO_STATE_PIPE);
@@ -236,45 +234,54 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	if (pipe_down_start != 0 && (GetTickCount() - pipe_down_start) >= 1000)
 	{
 		pipe_down_start = 0;
-		isOnOtherMap = true;
-		SetState(MARIO_STATE_JUMP_HIGH);
-		SetPosition(pipe_tele_x, pipe_tele_y);
 
-		switch (((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetMap()->GetId())
+		if (isToPipeDown)
 		{
-		case MAP_1_1:
-			CCamera::GetInstance()->SetMapSize(LEFT_UNDER_MAP_1_1, TOP_UNDER_MAP_1_1, RIGHT_UNDER_MAP_1_1, BOTTOM_UNDER_MAP_1_1, WIDTH_UNDER_MAP_1_1, HEIGHT_UNDER_MAP_1_1);
-			CCamera::GetInstance()->SetIsStatic(true);
-		default:
-			break;
+			SetState(MARIO_STATE_JUMP_HIGH);
+			scene->ChangeMarioLocation(true, true, pipe_tele_x, pipe_tele_y);			
+		}
+		else
+		{
+			pipe_up_start = GetTickCount();
+			if (level == MARIO_LEVEL_SMALL)
+				scene->ChangeMarioLocation(true, true, pipe_tele_x, pipe_tele_y + MARIO_BIG_BBOX_HEIGHT - MARIO_SMALL_BBOX_HEIGHT);
+			else
+				scene->ChangeMarioLocation(true, true, pipe_tele_x, pipe_tele_y);
 		}
 	}
-	if ((GetTickCount() - pipe_up_start) < 1500)
+	// Pipe up
+	if (isToPipeDown)
 	{
-		SetState(MARIO_STATE_PIPE);
-	}
-	if (pipe_up_start != 0)
-	{
-		if ((GetTickCount() - pipe_up_start) == 1500)
+		if ((GetTickCount() - pipe_up_start) < 1500)
 		{
-			//SetState(MARIO_STATE_IDLE);
-			if (level == MARIO_LEVEL_SMALL)
-				SetPosition(pipe_tele_x, pipe_tele_y + MARIO_BIG_BBOX_HEIGHT - MARIO_SMALL_BBOX_HEIGHT);
-			else
-				SetPosition(pipe_tele_x, pipe_tele_y);
-
-			switch (((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetMap()->GetId())
+			SetState(MARIO_STATE_PIPE);
+		}
+		if (pipe_up_start != 0)
+		{
+			if ((GetTickCount() - pipe_up_start) == 1500)
 			{
-			case MAP_1_1:
-				CCamera::GetInstance()->SetMapSize(LEFT_MAP_1_1, TOP_MAP_1_1, RIGHT_MAP_1_1, BOTTOM_MAP_1_1, WIDTH_MAP_1_1, HEIGHT_MAP_1_1);
-			default:
-				break;
+				//SetState(MARIO_STATE_IDLE);
+				if (level == MARIO_LEVEL_SMALL)
+					scene->ChangeMarioLocation(false, true, pipe_tele_x, pipe_tele_y + MARIO_BIG_BBOX_HEIGHT - MARIO_SMALL_BBOX_HEIGHT);
+				else
+					scene->ChangeMarioLocation(false, true, pipe_tele_x, pipe_tele_y);
+			}
+			else if ((GetTickCount() - pipe_up_start) >= 2500)
+			{
+				pipe_up_start = 0;
+				SetState(MARIO_STATE_IDLE);
 			}
 		}
-		else if ((GetTickCount() - pipe_up_start) >= 2500)
+	}
+	else
+	{
+		if ((GetTickCount() - pipe_up_start) < 1000)
+		{
+			SetState(MARIO_STATE_PIPE);
+		}
+		if (pipe_up_start != 0 && (GetTickCount() - pipe_up_start) >= 1000)
 		{
 			pipe_up_start = 0;
-			isOnOtherMap = false;
 			SetState(MARIO_STATE_IDLE);
 		}
 	}
@@ -417,6 +424,12 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				x += dx;
 				y += dy;
 			}*/
+			if (dynamic_cast<CEnemy*>(e->obj))
+			{
+				//canRepeatJump = true;
+				canJump = true;
+				canJumpHigher = true;
+			}
 			// Fly Bar
 			if (dynamic_cast<CFlyBar*>(e->obj))
 			{
@@ -493,6 +506,18 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					case WARPPIPE_TYPE_DOWN:
 						if (CGame::GetInstance()->IsKeyDown(DIK_DOWN))
 						{
+							isToPipeDown = true;
+							pipe_tele_x = pipe->tele_x;
+							pipe_tele_y = pipe->tele_y;
+							SetState(MARIO_STATE_PIPE);
+							pipe_down_start = GetTickCount();
+							y += MARIO_PIPE_DOWN_HEIGHT;
+						}
+						break;
+					case WARPPIPE_TYPE_PLANE:
+						if (CGame::GetInstance()->IsKeyDown(DIK_DOWN))
+						{
+							isToPipeDown = false;
 							pipe_tele_x = pipe->tele_x;
 							pipe_tele_y = pipe->tele_y;
 							SetState(MARIO_STATE_PIPE);
@@ -592,6 +617,11 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					if (koopas->type == KOOPAS_GREEN_WING)
 					{
 						koopas->type = KOOPAS_GREEN;
+						vy = -MARIO_JUMP_DEFLECT_SPEED;
+					}
+					else if (koopas->type == KOOPAS_RED_WING)
+					{
+						koopas->type = KOOPAS_RED;
 						vy = -MARIO_JUMP_DEFLECT_SPEED;
 					}
 					else if (koopas->GetState() == KOOPAS_STATE_HIDE)

@@ -13,7 +13,7 @@
 //0.1f
 #define MARIO_JUMP_HIGH_SPEED_Y		0.02f
 #define MARIO_JUMP_SHORT_SPEED_Y	0.27f
-#define MARIO_JUMP_DEFLECT_SPEED 0.4f
+#define MARIO_JUMP_DEFLECT_SPEED 0.15f
 #define MARIO_GRAVITY			0.001f
 #define MARIO_DIE_DEFLECT_SPEED	 0.5f
 
@@ -276,6 +276,7 @@ public:
 	DWORD pipe_up_start;
 	DWORD pipe_down_start;
 	DWORD die_start;
+	DWORD canJump_start;
 
 	/*bool isPreventMoveX = false;*/
 	bool isOnGround = false;
@@ -288,6 +289,7 @@ public:
 	bool canHit = true;
 	bool canMultiScoreLand = false;
 	bool canMultiScoreJump = false;
+	bool isToPipeDown = false;
 	bool isOnOtherMap = false;
 	//bool canDuck = false;
 

@@ -27,6 +27,11 @@ public:
 	D3DXVECTOR3 GetPosition();
 	int GetWidth();
 	int GetHeight();
+	int GetLeftMap() { return leftMap; }
+	int GetTopMap() { return topMap; }
+	int GetRightMap() { return rightMap; }
+	int GetBottomMap() { return bottomMap; }
+	int GetHeightMap() { return heightMap; }
 	// Trả về biên của camera thông qua RECT
 	RECT GetBound();
 	void SetIsStatic(bool isStatic) { this->isStatic = isStatic; };

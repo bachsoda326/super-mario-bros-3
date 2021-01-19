@@ -255,6 +255,29 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 									case BREAKABLE_BRICK_TYPE_P_SWITCH:
 										bBrick->SetState(BREAKABLE_BRICK_STATE_P_SWITCH);
 										break;
+									case BREAKABLE_BRICK_TYPE_ITEM:
+										switch (mario->GetLevel())
+										{
+										case MARIO_LEVEL_SMALL:
+											if (x <= bBrick->x)
+												bBrick->SetState(BREAKABLE_BRICK_STATE_HIT_MUSHROOM_LEFT);
+											else
+												bBrick->SetState(BREAKABLE_BRICK_STATE_HIT_MUSHROOM_RIGHT);
+											break;
+										case MARIO_LEVEL_BIG: case MARIO_LEVEL_RACCOON: case MARIO_LEVEL_FIRE:
+											bBrick->SetState(BREAKABLE_BRICK_STATE_HIT_LEAF);
+											break;
+										default:
+											break;
+										}
+										break;
+									case BREAKABLE_BRICK_TYPE_MULTI_COIN:
+										if (mario->GetLevel() > MARIO_LEVEL_SMALL)
+										{
+											bBrick->SetState(BREAKABLE_BRICK_STATE_HIT_MULTI_COIN);
+											bBrick->vy = -0.1f;
+										}
+										break;
 									default:
 										break;
 									}

@@ -2,8 +2,9 @@
 #include "GameObject.h"
 #include "Piranha.h"
 
-#define WARPPIPE_TYPE_DOWN	3
-#define WARPPIPE_TYPE_UP	4
+#define WARPPIPE_TYPE_DOWN		3
+#define WARPPIPE_TYPE_UP		4
+#define WARPPIPE_TYPE_PLANE		5
 
 class CWarpPipe : public CGameObject
 {

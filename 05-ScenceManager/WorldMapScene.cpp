@@ -414,7 +414,7 @@ void CWorldMapSceneKeyHandler::OnKeyDown(int KeyCode)
 	case DIK_S:
 	{
 		int sceneId = mario->GetCurrentStation()->GetSceneId();
-		if (sceneId == MAP_1_1 || sceneId == WORLD_MAP_1)
+		if (sceneId == MAP_1_1 || sceneId == MAP_1_4 || sceneId == WORLD_MAP_1)
 			CGame::GetInstance()->SwitchScene(sceneId);
 	}
 	break;

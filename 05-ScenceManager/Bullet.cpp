@@ -30,7 +30,7 @@ void CBullet::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	switch (((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetMap()->GetId())
 	{
 	case MAP_1_1:
-		if (x < 0 || x > RIGHT_MAP_1_1 || y < 0 || (!mario->isOnOtherMap && y > HEIGHT_MAP_1_1)/* + HEIGHT_UNDER_MAP_1_1*/ || distanceX > SCREEN_WIDTH || distanceY > SCREEN_HEIGHT)
+		if (x < 0 || x > RIGHT_MAP_1_1 || y < 0 || (!mario->isOnOtherMap && y > HEIGHT_MAP_1_1)/* + HEIGHT_OTHER_MAP_1_1*/ || distanceX > SCREEN_WIDTH || distanceY > SCREEN_HEIGHT)
 		{
 			Dead();
 			if (isEnemy)
