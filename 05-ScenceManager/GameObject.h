@@ -100,6 +100,7 @@ public:
 	bool AABBCheck(CGameObject* obj1, CGameObject* obj2);
 	//bool AABBCheck(float left1, float top1, float right1, float bottom1, float left2, float top2, float right2, float bottom2);
 	void ExceptionalCase(CGameObject* obj2, LPCOLLISIONEVENT& coEvent);
+	void ExceptionalPotentialCase(CGameObject* obj2, LPCOLLISIONEVENT& coEvent);
 	void CalcPotentialCollisions(vector<LPGAMEOBJECT> *coObjects, vector<LPCOLLISIONEVENT> &coEvents);
 	void FilterCollision(
 		vector<LPCOLLISIONEVENT> &coEvents, 

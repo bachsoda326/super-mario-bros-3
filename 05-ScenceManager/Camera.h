@@ -12,6 +12,7 @@ class CCamera
 	int widthMap = -1, heightMap = -1;
 	int leftMap = -1, topMap = -1, rightMap = -1, bottomMap = -1;
 	bool isStatic = true;
+	bool isMoving = true;
 
 	D3DXVECTOR3 position;
 public:
@@ -22,7 +23,7 @@ public:
 	void SetPosition(float x, float y);
 	void SetMapSize(int left, int top, int right, int bottom, int width, int height);
 
-	void Update(CMario *player);
+	void Update(DWORD dt);
 
 	D3DXVECTOR3 GetPosition();
 	int GetWidth();
@@ -35,6 +36,7 @@ public:
 	// Trả về biên của camera thông qua RECT
 	RECT GetBound();
 	void SetIsStatic(bool isStatic) { this->isStatic = isStatic; };
+	void SetIsMoving(bool isMoving);
 
 	~CCamera();
 };

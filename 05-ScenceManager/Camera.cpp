@@ -1,4 +1,5 @@
 #include "Camera.h"
+#include "PlayScence.h"
 
 CCamera* CCamera::__instance = NULL;
 
@@ -36,16 +37,40 @@ void CCamera::SetMapSize(int left, int top, int right, int bottom, int width, in
 	heightMap = height;
 }
 
-void CCamera::Update(CMario* player)
+void CCamera::Update(DWORD dt)
 {
-	// Update camera to follow mario
-	float cx, cy;
-	player->GetPosition(cx, cy);
-	SetPosition(cx, cy);
-
-	if (player->state == MARIO_STATE_FLY || player->GetLevel() == MARIO_LEVEL_RACCOON && player->state == MARIO_STATE_RUNJUMP)
+	switch (((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetMap()->GetId())
 	{
-		isStatic = false;
+	case MAP_1_1:
+	{
+		// Update camera to follow mario
+		float cx, cy;
+		CMario* mario = ((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetPlayer();
+		mario->GetPosition(cx, cy);
+		SetPosition(cx, cy);
+
+		if (mario->state == MARIO_STATE_FLY || mario->GetLevel() == MARIO_LEVEL_RACCOON && mario->state == MARIO_STATE_RUNJUMP)
+		{
+			isStatic = false;
+		}
+	}
+	break;
+	case MAP_1_4:
+	{
+		if (isMoving)
+			position.x += 0.03f * dt;
+		else
+		{
+			// Update camera to follow mario
+			float cx, cy;
+			CMario* mario = ((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetPlayer();
+			mario->GetPosition(cx, cy);
+			SetPosition(cx, cy);
+		}
+	}
+		break;
+	default:
+		break;
 	}
 
 	if (GetBound().left < leftMap)
@@ -59,6 +84,7 @@ void CCamera::Update(CMario* player)
 	{
 		//luc nay cham goc ben phai cua the gioi thuc
 		SetPosition(rightMap - GetWidth() / 2, GetPosition().y);
+		//isMoving = false;
 	}
 
 	if (GetBound().top < topMap)
@@ -83,12 +109,12 @@ void CCamera::Update(CMario* player)
 	}
 	else if (GetBound().bottom > bottomMap - GetHeight())
 	{
-	
+
 		isStatic = true;
 		//luc nay cham day cua the gioi thuc
 		SetPosition(GetPosition().x, bottomMap - GetHeight() / 2);
 	}
-	
+
 }
 
 D3DXVECTOR3 CCamera::GetPosition()
@@ -116,6 +142,15 @@ RECT CCamera::GetBound()
 	bound.bottom = bound.top + height;
 
 	return bound;
+}
+
+void CCamera::SetIsMoving(bool isMoving)
+{
+	this->isMoving = isMoving;
+	float cx, cy;
+	CMario* mario = ((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetPlayer();
+	mario->GetPosition(cx, cy);
+	SetPosition(cx, cy);
 }
 
 CCamera::~CCamera()

@@ -82,13 +82,21 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 	// Mario when col edge map
 	if (x <= leftMap) x = leftMap;
-	if (y <= topMap) y = topMap;
+	if (state == MARIO_STATE_FLY && y <= topMap) y = topMap;
 	if (state != MARIO_STATE_END_SCENE && x + MARIO_BIG_BBOX_WIDTH >= rightMap) x = rightMap - MARIO_BIG_BBOX_WIDTH;
 	if (!isOnOtherMap)
 	{
 		if (y > topMap + heightMap) SetState(MARIO_STATE_DIE);
-	}	
+	}
 
+	// Camera push Mario in 1-4
+	if (scene->GetMap()->GetId() == MAP_1_4)
+	{
+		if (x < camera->GetPosition().x - CGame::GetInstance()->GetScreenWidth() / 2)
+			x = camera->GetPosition().x - CGame::GetInstance()->GetScreenWidth() / 2;
+	}
+
+	// Remove koopas when kick or throw
 	if (koopas != NULL && koopas->state == KOOPAS_STATE_DIE)
 	{
 		koopas = NULL;
@@ -1588,12 +1596,10 @@ void CMario::OnIntersect(CGameObject* obj, vector<LPGAMEOBJECT>* coObjs)
 				{
 					eat_item_start = GetTickCount();
 					SetState(MARIO_STATE_EAT_ITEM);
-					AddPoint(POINT_1000);
-					//DebugOut(L"[NAM]: %f\n", y);					
+					AddPoint(POINT_1000);					
 					mushroom->DeleteBehindObjs(coObjs);
 					y -= MARIO_BIG_BBOX_HEIGHT - MARIO_SMALL_BBOX_HEIGHT;
-					level = MARIO_LEVEL_BIG;
-					//DebugOut(L"[NAM1]: %f\n", y);
+					level = MARIO_LEVEL_BIG;					
 				}
 				break;
 			case MUSHROOM_TYPE_1_UP:

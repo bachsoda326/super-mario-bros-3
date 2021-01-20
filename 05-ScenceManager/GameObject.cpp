@@ -85,7 +85,7 @@ bool CGameObject::AABBCheck(CGameObject* obj1, CGameObject* obj2)
 //}
 
 void CGameObject::ExceptionalCase(CGameObject* obj2, LPCOLLISIONEVENT& coEvent)
-{
+{	
 	if (right > obj2->left && left < obj2->right)
 	{
 		//Should check again with condition >= top && <= top + i
@@ -98,8 +98,22 @@ void CGameObject::ExceptionalCase(CGameObject* obj2, LPCOLLISIONEVENT& coEvent)
 		}
 	}
 	//TH đứng trên 2 brick
-	if (coEvent->nx != 0 && (right < obj2->left || left > obj2->right) && bottom == obj2->top)
+	/*if (coEvent->nx != 0 && (right < obj2->left || left > obj2->right) && bottom == obj2->top)
 		coEvent->nx = 0.0f;
+	if (coEvent->ny != 0 && (right >= obj2->left || left <= obj2->right))
+		coEvent->ny = 0.0f;*/
+}
+
+void CGameObject::ExceptionalPotentialCase(CGameObject* obj2, LPCOLLISIONEVENT& coEvent)
+{
+	// Case col with multi Bricks
+	if (dynamic_cast<CBrick*>(obj2))
+	{
+		if (coEvent->nx != 0 && (right < obj2->left || left > obj2->right) && bottom == obj2->top)
+			coEvent->nx = 0.0f;
+		if (coEvent->ny != 0 && (right <= obj2->left || left >= obj2->right))
+			coEvent->ny = 0.0f;
+	}
 }
 
 /*
@@ -118,7 +132,10 @@ void CGameObject::CalcPotentialCollisions(
 		ExceptionalCase(coObjects->at(i), e);
 
 		if (e->t >= 0 && e->t <= 1.0f)
+		{
+			ExceptionalPotentialCase(coObjects->at(i), e);
 			coEvents.push_back(e);
+		}
 		else
 			delete e;
 	}
@@ -269,6 +286,8 @@ void CGameObject::AddPoint(int types)
 				type = POINT_1_UP;
 				break;*/
 		default:
+			score = 8000;
+			type = POINT_8000;
 			break;
 		}
 	}
@@ -304,6 +323,7 @@ void CGameObject::AddPoint(int types)
 			CPlayerInfo::GetInstance()->AdjustLife(1);
 			break;
 		default:
+			score = 8000;
 			break;
 		}
 	}

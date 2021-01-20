@@ -51,19 +51,12 @@ void CEnemy::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	CGameObject::Update(dt, coObjects);
 
 	x += dx;
-	y += dy;
+	y += dy;	
 
-	switch (((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetMap()->GetId())
+	// Fall then dead
+	if (y > CCamera::GetInstance()->GetTopMap() + CCamera::GetInstance()->GetHeightMap())
 	{
-	case MAP_1_1:
-		if (y > HEIGHT_MAP_1_1) 
-		{
-			Dead();
-			DeleteObjs(coObjects);
-		}
-		break;
-	default:
-		break;
-	}
-	
+		Dead();
+		DeleteObjs(coObjects);
+	}	
 }

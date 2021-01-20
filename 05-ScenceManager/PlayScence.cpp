@@ -515,7 +515,7 @@ void CPlayScene::Update(DWORD dt)
 
 	hud->Update(dt);
 
-	CCamera::GetInstance()->Update(player);
+	CCamera::GetInstance()->Update(dt);
 }
 
 void CPlayScene::Render()
@@ -686,6 +686,7 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 {
 	/*DebugOut(L"[KEYDOWN] KeyDown: %d\n", KeyCode);*/
 	CTileMap* map = ((CPlayScene*)scence)->GetMap();
+	CCamera* camera = CCamera::GetInstance();
 	CMario* mario = ((CPlayScene*)scence)->GetPlayer();
 	if (mario->state == MARIO_STATE_DIE || mario->state == MARIO_STATE_END_SCENE) return;
 	
@@ -696,6 +697,7 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 		{
 		case MAP_1_1:
 			CGame::GetInstance()->SwitchScene(MAP_1_4);
+			camera->SetIsMoving(true);
 			break;
 		case MAP_1_4:
 			CGame::GetInstance()->SwitchScene(MAP_1_1);
@@ -730,6 +732,7 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 			break;
 		case MAP_1_4:
 			((CPlayScene*)scence)->ChangeMarioLocation(false, true, 400, 50);
+			camera->SetIsMoving(true);
 			break;
 		default:
 			break;
@@ -743,6 +746,7 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 			break;
 		case MAP_1_4:
 			((CPlayScene*)scence)->ChangeMarioLocation(false, true, 650, 100);
+			camera->SetIsMoving(true);
 			break;
 		default:
 			break;
@@ -756,6 +760,7 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 			break;
 		case MAP_1_4:
 			((CPlayScene*)scence)->ChangeMarioLocation(false, true, 962, 130);
+			camera->SetIsMoving(true);
 			break;
 		default:
 			break;
@@ -769,6 +774,7 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 			break;
 		case MAP_1_4:
 			((CPlayScene*)scence)->ChangeMarioLocation(false, true, 1400, 40);
+			camera->SetIsMoving(true);
 			break;
 		default:
 			break;
@@ -782,6 +788,7 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 			break;
 		case MAP_1_4:
 			((CPlayScene*)scence)->ChangeMarioLocation(false, true, 1730, 20);
+			camera->SetIsMoving(true);
 			break;
 		default:
 			break;
@@ -795,6 +802,7 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 			break;
 		case MAP_1_4:
 			((CPlayScene*)scence)->ChangeMarioLocation(false, true, 1784, 68);
+			camera->SetIsMoving(true);
 			break;
 		default:
 			break;
@@ -808,6 +816,7 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 			break;
 		case MAP_1_4:
 			((CPlayScene*)scence)->ChangeMarioLocation(false, true, 1944, 64);
+			camera->SetIsMoving(true);
 			break;
 		default:
 			break;
@@ -821,6 +830,7 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 			break;
 		case MAP_1_4:
 			((CPlayScene*)scence)->ChangeMarioLocation(true, true, 2200, 112);
+			camera->SetIsMoving(false);
 			break;
 		default:
 			break;
@@ -1113,8 +1123,7 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 	{
 		if (mario->canJumpHigher)
 		{
-			mario->vy -= MARIO_JUMP_HIGH_SPEED_Y;
-			DebugOut(L"JUMP VY: %f\n", mario->vy);
+			mario->vy -= MARIO_JUMP_HIGH_SPEED_Y;			
 		}
 		if (abs(mario->vx) == MARIO_RUN_SPEED)
 			mario->SetState(MARIO_STATE_RUNJUMP);

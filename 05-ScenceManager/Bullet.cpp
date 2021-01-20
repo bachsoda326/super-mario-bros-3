@@ -27,20 +27,22 @@ void CBullet::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	float distanceX = abs((x + BULLET_BBOX_WIDTH / 2) - (mario->x + MARIO_BIG_BBOX_WIDTH / 2));
 	float distanceY = ((y + BULLET_BBOX_HEIGHT / 2) - (mario->y + MARIO_BIG_BBOX_HEIGHT / 2));
 
-	switch (((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetMap()->GetId())
-	{
-	case MAP_1_1:
-		if (x < 0 || x > RIGHT_MAP_1_1 || y < 0 || (!mario->isOnOtherMap && y > HEIGHT_MAP_1_1)/* + HEIGHT_OTHER_MAP_1_1*/ || distanceX > SCREEN_WIDTH || distanceY > SCREEN_HEIGHT)
-		{
-			Dead();
-			if (isEnemy)
-				DeleteFrontObjs(coObjects);
-		}
-		break;
-	default:
-		break;
-	}	
+	// Get others instance
+	CCamera* camera = CCamera::GetInstance();
+	int leftMap = camera->GetLeftMap();
+	int topMap = camera->GetTopMap();
+	int rightMap = camera->GetRightMap();
+	int bottomMap = camera->GetBottomMap();
+	int heightMap = camera->GetHeightMap();
 
+	// Bullet dead when col edge map or far from Mario
+	if (distanceX > SCREEN_WIDTH || distanceY > SCREEN_HEIGHT || x < leftMap || x + BULLET_BBOX_WIDTH > rightMap || y < topMap || y > topMap + heightMap)
+	{
+		Dead();
+		if (isEnemy)
+			DeleteFrontObjs(coObjects);
+	}
+	
 	/*if (isEnemy)
 	{
 		x += dx;
@@ -97,7 +99,7 @@ void CBullet::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			{
 				LPCOLLISIONEVENT e = coEventsResult[i];
 
-				if (ny < 0 && e->obj != NULL && !isEnemy && (dynamic_cast<CGround*>(e->obj) || dynamic_cast<CBox*>(e->obj) || dynamic_cast<CWarpPipe*>(e->obj) || dynamic_cast<CBrick*>(e->obj) || dynamic_cast<CCloudTooth*>(e->obj)))
+				if (ny < 0 && e->obj != NULL && !isEnemy && (dynamic_cast<CGround*>(e->obj) || dynamic_cast<CBox*>(e->obj) || dynamic_cast<CWarpPipe*>(e->obj) || dynamic_cast<CBrick*>(e->obj) || dynamic_cast<CCloudTooth*>(e->obj) || dynamic_cast<CFlyBar*>(e->obj)))
 				{
 					if (!(dynamic_cast<CBreakableBrick*>(e->obj) && e->obj->GetState() == BREAKABLE_BRICK_STATE_COIN))
 					{
