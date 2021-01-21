@@ -38,7 +38,7 @@ CMario::CMario(float x, float y) : CGameObject()
 }
 
 void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
-{	
+{
 	// Get others instance
 	CCamera* camera = CCamera::GetInstance();
 	int leftMap = camera->GetLeftMap();
@@ -102,7 +102,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		koopas = NULL;
 		isHold = false;
 	}
-	
+
 	// Giao nhau vs obj
 	for (int i = 0; i < coObjects->size(); i++)
 	{
@@ -190,7 +190,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			else
 				SetState(MARIO_STATE_WALKING);
 		}
-	}	
+	}
 
 	if (fire_start != 0)
 	{
@@ -246,7 +246,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		if (isToPipeDown)
 		{
 			SetState(MARIO_STATE_JUMP_HIGH);
-			scene->ChangeMarioLocation(true, true, pipe_tele_x, pipe_tele_y);			
+			scene->ChangeMarioLocation(true, true, pipe_tele_x, pipe_tele_y);
 		}
 		else
 		{
@@ -708,7 +708,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					CQuestionBrick* qBrick = dynamic_cast<CQuestionBrick*>(e->obj);
 					if (qBrick->GetState() == QUESTION_BRICK_STATE_NORMAL)
 					{
-						qBrick->vy = -0.1f;
+						qBrick->vy = -BRICK_Y_SPEED;
 						switch (qBrick->type)
 						{
 						case BRICK_NORMAL:
@@ -800,15 +800,23 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 							break;
 						default:
 							break;
-						}						
+						}
 					}
 				}
 			}
 			// Coin
 			else if (dynamic_cast<CCoin*>(e->obj))
 			{
-				x += dx;
-				y += dy;
+				/*x += dx;
+				y += dy;*/				
+				CCoin* coin = dynamic_cast<CCoin*>(e->obj);
+				if (!coin->isDie)
+				{
+					CPlayerInfo::GetInstance()->AdjustScore(POINT_50);
+					CPlayerInfo::GetInstance()->AdjustMoney(MONEY_1);
+					coin->Dead();
+					coin->DeleteObjs(coObjects);
+				}
 			}
 			// P Switch
 			else if (dynamic_cast<CPSwitch*>(e->obj))
@@ -1502,7 +1510,7 @@ void CMario::OnIntersect(CGameObject* obj, vector<LPGAMEOBJECT>* coObjs)
 			else if (left <= obj->right && right > obj->right)
 				PreventMoveX(1, obj);
 		}
-		
+
 	}
 	if (!obj->isDie && canHit)
 	{
@@ -1596,10 +1604,10 @@ void CMario::OnIntersect(CGameObject* obj, vector<LPGAMEOBJECT>* coObjs)
 				{
 					eat_item_start = GetTickCount();
 					SetState(MARIO_STATE_EAT_ITEM);
-					AddPoint(POINT_TYPE_1000);					
+					AddPoint(POINT_TYPE_1000);
 					mushroom->DeleteBehindObjs(coObjs);
 					y -= MARIO_BIG_BBOX_HEIGHT - MARIO_SMALL_BBOX_HEIGHT;
-					level = MARIO_LEVEL_BIG;					
+					level = MARIO_LEVEL_BIG;
 				}
 				break;
 			case MUSHROOM_TYPE_1_UP:
@@ -1629,7 +1637,7 @@ void CMario::OnIntersect(CGameObject* obj, vector<LPGAMEOBJECT>* coObjs)
 			{
 				if (qBrick->GetState() == QUESTION_BRICK_STATE_NORMAL)
 				{
-					qBrick->vy = -0.1f;
+					qBrick->vy = -BRICK_Y_SPEED;
 					switch (qBrick->type)
 					{
 					case BRICK_NORMAL:
@@ -1716,11 +1724,15 @@ void CMario::OnIntersect(CGameObject* obj, vector<LPGAMEOBJECT>* coObjs)
 		}
 		// Coin
 		else if (dynamic_cast<CCoin*>(obj))
-		{
+		{			
 			CCoin* coin = dynamic_cast<CCoin*>(obj);
-			CPlayerInfo::GetInstance()->AdjustScore(POINT_50);
-			CPlayerInfo::GetInstance()->AdjustMoney(MONEY_1);
-			coin->DeleteObjs(coObjs);
+			if (!coin->isDie)
+			{
+				CPlayerInfo::GetInstance()->AdjustScore(POINT_50);
+				CPlayerInfo::GetInstance()->AdjustMoney(MONEY_1);
+				coin->Dead();
+				coin->DeleteObjs(coObjs);
+			}
 		}
 	}
 }

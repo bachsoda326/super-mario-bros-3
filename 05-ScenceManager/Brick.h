@@ -6,6 +6,8 @@
 // Type
 #define BRICK_NORMAL		0
 #define BRICK_ITEM			1
+// Speed
+#define BRICK_Y_SPEED		0.1f
 
 class CBrick : public CGameObject
 {

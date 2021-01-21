@@ -89,7 +89,7 @@ void CGameObject::ExceptionalCase(CGameObject* obj2, LPCOLLISIONEVENT& coEvent)
 	if (right > obj2->left && left < obj2->right)
 	{
 		//Should check again with condition >= top && <= top + i
-		if ((int)bottom >= (int)obj2->top && (int)bottom <= (int)obj2->top + 4 && vy > 0)
+		if ((int)bottom >= (int)obj2->top && (int)bottom <= (int)obj2->top + DEFLECT_Y && vy > 0)
 		{
 			coEvent->t = 0.0f;
 			coEvent->ny = -1.0f;

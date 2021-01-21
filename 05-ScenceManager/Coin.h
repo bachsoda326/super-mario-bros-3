@@ -1,17 +1,18 @@
 #pragma once
 #include "GameObject.h"
-
-#define COIN_BBOX_WIDTH 15
-#define COIN_BBOX_HEIGHT 16
-#define COIN_ANI_SET 25
-
-#define COIN_GRAVITY 0.002f
+// BBox
+#define COIN_BBOX_WIDTH			15
+#define COIN_BBOX_HEIGHT		16
+#define COIN_ANI_SET			25
+// Speed
+#define COIN_GRAVITY			0.002f
+#define COIN_Y_SPEED			0.4f
 
 class CCoin : public CGameObject
 {
 	void SetBoundingBox();
 public:
-	float start_x = -1;			// initial position of coin
+	float start_x = -1;			// Init position of coin
 	float start_y = -1;
 	bool isInBrick = false;
 

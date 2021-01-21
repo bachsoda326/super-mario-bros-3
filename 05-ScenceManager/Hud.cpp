@@ -20,7 +20,7 @@ CHud::CHud()
 	worldSpr = font->ToSprite(world + '0');
 	filledPowerArrowAni = CAnimations::GetInstance()->Get(ANIMATION_FILLED_POWER_ARROW_ID);
 
-	if (CGame::GetInstance()->GetCurrentScene()->GetSceneId() == MAP_1_1)
+	if (CGame::GetInstance()->GetCurrentScene()->GetSceneId() == MAP_1_1 || CGame::GetInstance()->GetCurrentScene()->GetSceneId() == MAP_1_4)
 		mario = ((CPlayScene*)(CGame::GetInstance()->GetCurrentScene()))->GetPlayer();
 
 	for (int i = 0; i < MAX_POWER_STACK; i++)
@@ -39,7 +39,7 @@ CHud::CHud()
 			filledPowerSpr.push_back(CSprites::GetInstance()->Get(SPRITE_FILLED_POWER_ARROW_ID));
 	}
 
-	if (info->GetCards().size() == 3)
+	if (info->GetCards().size() == MAX_CARDS)
 	{
 		info->ClearCard();
 	}
@@ -53,7 +53,7 @@ CHud::CHud()
 void CHud::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	//SetPosition(CCamera::GetInstance()->GetPosition().x, CCamera::GetInstance()->GetPosition().y);
-	SetPosition(35, 200);
+	SetPosition(HUD_X, HUD_Y);
 
 	if (dynamic_cast<CPlayScene*>(CGame::GetInstance()->GetCurrentScene()))
 	{
@@ -92,54 +92,54 @@ void CHud::Render()
 {
 	background->DrawSprite(0, y);
 	hud->DrawSprite(x, y);
-	cardsHud->DrawSprite(x + 160, y);
-	worldSpr->DrawSprite(x + 36, y + 7);
-	iconSpr->DrawSprite(x + 4, y + 15);
+	cardsHud->DrawSprite(x + CARDHUD_DISTANCE_X, y);
+	worldSpr->DrawSprite(x + WORLD_DISTANCE_X, y + HUD_DISTANCE_Y);
+	iconSpr->DrawSprite(x + ICON_DISTANCE_X, y + HUD_DISTANCE_Y_1);
 
 	for (int i = lifeSpr.size() - 1; i >= 0; i--)
 	{
-		lifeSpr[i]->DrawSprite(x + 44 - (lifeSpr.size() - i) * 8, y + 15);
+		lifeSpr[i]->DrawSprite(x + LIFE_DISTANCE_X - (lifeSpr.size() - i) * ITEM_DISTANCE, y + HUD_DISTANCE_Y_1);
 	}
 
 	for (int i = 0; i < timeSpr.size(); i++)
 	{
-		timeSpr[i]->DrawSprite(x + 124 + i * 8, y + 15);
+		timeSpr[i]->DrawSprite(x + TIME_DISTANCE_X + i * ITEM_DISTANCE, y + HUD_DISTANCE_Y_1);
 	}
 
 	for (int i = moneySpr.size() - 1; i >= 0; i--)
 	{
-		moneySpr[i]->DrawSprite(x + 148 - (moneySpr.size() - i) * 8, y + 7);
+		moneySpr[i]->DrawSprite(x + MONEY_DISTANCE_X - (moneySpr.size() - i) * ITEM_DISTANCE, y + HUD_DISTANCE_Y);
 	}
 
 	for (int i = 0; i < scoresSpr.size(); i++)
 	{
-		scoresSpr[i]->DrawSprite(x + 52 + i * 8, y + 15);
+		scoresSpr[i]->DrawSprite(x + HUD_DISTANCE_X + i * ITEM_DISTANCE, y + HUD_DISTANCE_Y_1);
 	}
 
 	for (int i = 0; i < powerSpr.size(); i++)
 	{
 		if (i < powerSpr.size() - 1)
-			powerSpr[i]->DrawSprite(x + 52 + i * 8, y + 7);
+			powerSpr[i]->DrawSprite(x + HUD_DISTANCE_X + i * ITEM_DISTANCE, y + HUD_DISTANCE_Y);
 		else
-			powerSpr[i]->DrawSprite(x + 53 + i * 8, y + 7);
+			powerSpr[i]->DrawSprite(x + HUD_DISTANCE_X_1 + i * ITEM_DISTANCE, y + HUD_DISTANCE_Y);
 	}
 
 	for (int i = 0; i < power; i++)
 	{
 		if (i < filledPowerSpr.size() - 1)
-			filledPowerSpr[i]->DrawSprite(x + 52 + i * 8, y + 7);
+			filledPowerSpr[i]->DrawSprite(x + HUD_DISTANCE_X + i * ITEM_DISTANCE, y + HUD_DISTANCE_Y);
 		else
-			/*filledPowerSpr[i]->DrawSprite(x + 53 + i * 8, y + 7);*/
-			filledPowerArrowAni->Render(x + 53 + i * 8, y + 7, xReverse, yReverse, true);
+			/*filledPowerSpr[i]->DrawSprite(x + HUD_DISTANCE_X_1 + i * ITEM_DISTANCE, y + HUD_DISTANCE_Y);*/
+			filledPowerArrowAni->Render(x + HUD_DISTANCE_X_1 + i * ITEM_DISTANCE, y + HUD_DISTANCE_Y, xReverse, yReverse, true);
 	}
 
 	for (int i = 0; i < cardsSpr.size(); i++)
 	{
-		cardsSpr[i]->DrawSprite(x + 161 + i * 24, y + 2);
+		cardsSpr[i]->DrawSprite(x + CARD_DISTANCE_X + i * CARD_DISTANCE, y + HUD_DISTANCE_Y_2);
 	}
 
 	if (cardsAni != NULL)
-		cardsAni->Render(x + 161 + (CPlayerInfo::GetInstance()->GetCards().size() - 1) * 24, y + 2, xReverse, yReverse, true);
+		cardsAni->Render(x + CARD_DISTANCE_X + (CPlayerInfo::GetInstance()->GetCards().size() - 1) * CARD_DISTANCE, y + HUD_DISTANCE_Y_2, xReverse, yReverse, true);
 }
 
 void CHud::EndScene()

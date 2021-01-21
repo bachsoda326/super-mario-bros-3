@@ -31,6 +31,7 @@
 #define KOOPAS_WALKING_WING_SPEED		0.02f
 #define KOOPAS_SPIN_SPEED				0.215f
 #define KOOPAS_WING_JUMP				0.175f
+#define KOOPAS_WING_Y_SPEED				0.05f
 #define KOOPAS_DIE_X_SPEED				0.07f
 #define KOOPAS_DIE_Y_SPEED				0.2f
 #define KOOPAS_HIT_Y_SPEED				0.1f

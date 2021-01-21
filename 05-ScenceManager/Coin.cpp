@@ -19,7 +19,7 @@ CCoin::CCoin(float x, float y, bool isInBrick)
 		SetAnimationSet(ani_set);
 		isDie = true;
 	}
-	vy = -0.4f;
+	vy = -COIN_Y_SPEED;
 
 	SetBoundingBox();
 }
@@ -35,7 +35,7 @@ void CCoin::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 		vy += COIN_GRAVITY * dt;
 
-		// delete coin
+		// Delete coin
 		if (y >= start_y)
 		{
 			AddPoint();

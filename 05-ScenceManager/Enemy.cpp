@@ -18,6 +18,7 @@ void CEnemy::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	{
 		if (!isActive)
 		{
+			// Respawn in region
 			if (xSpawn + right - left >= leftCamera && xSpawn <= rightCamera && ySpawn + top - bottom >= topCamera && ySpawn <= bottomCamera - 24)
 			{
 				if (canActive)
@@ -26,6 +27,7 @@ void CEnemy::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					SetState(ENEMY_STATE_RESPAWN);
 				}
 			}
+			// CanActive when move out region
 			else
 				canActive = true;
 			return;
@@ -39,6 +41,7 @@ void CEnemy::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				isActive = false;
 				canActive = false;
 				SetPosition(xSpawn, ySpawn);
+				// Back to grid if Koopas is holded and release far
 				if (!isInGrid)
 				{
 					DeleteBehindObjs(coObjects, false);

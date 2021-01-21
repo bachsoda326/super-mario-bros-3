@@ -1,6 +1,9 @@
 #pragma once
 #include "GameObject.h"
 
+#define CASTLE_DISAPPEAR_TIME		300
+#define CASTLE_HELP_TIME			1000
+
 class CCastleHelp : public CGameObject
 {
 	DWORD help_start;

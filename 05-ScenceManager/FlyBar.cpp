@@ -11,6 +11,7 @@ CFlyBar::CFlyBar()
 
 void CFlyBar::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {	
+	// Spawn
 	float rightCamera = CCamera::GetInstance()->GetBound().right;
 	if (!isActive && x <= rightCamera)
 	{
@@ -33,7 +34,7 @@ void CFlyBar::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		mario->vy = vy;*/
 	}		
 
-	if (y > HEIGHT_MAP_1_4)
+	if (y > CCamera::GetInstance()->GetTopMap() + CCamera::GetInstance()->GetHeightMap())
 	{
 		Dead();
 		DeleteObjs(coObjects);

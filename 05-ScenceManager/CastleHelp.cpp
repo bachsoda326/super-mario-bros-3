@@ -7,12 +7,12 @@ CCastleHelp::CCastleHelp()
 
 void CCastleHelp::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
-	if (isHelp && GetTickCount() - help_start > 1000)
+	if (isHelp && GetTickCount() - help_start > CASTLE_HELP_TIME)
 	{
 		help_start = GetTickCount();
 		isHelp = false;
 	}
-	if (!isHelp && GetTickCount() - help_start > 300)
+	if (!isHelp && GetTickCount() - help_start > CASTLE_DISAPPEAR_TIME)
 	{
 		help_start = GetTickCount();
 		isHelp = true;

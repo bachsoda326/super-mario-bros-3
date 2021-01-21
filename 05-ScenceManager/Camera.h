@@ -4,6 +4,8 @@
 #include "Mario.h"
 #include "Constants.h"
 
+#define CAMERA_X_SPEED		0.03f
+
 class CCamera
 {
 	static CCamera* __instance;
@@ -25,9 +27,9 @@ public:
 
 	void Update(DWORD dt);
 
-	D3DXVECTOR3 GetPosition();
-	int GetWidth();
-	int GetHeight();
+	D3DXVECTOR3 GetPosition() { return position; }
+	int GetWidth() { return width; }
+	int GetHeight() { return height; }
 	int GetLeftMap() { return leftMap; }
 	int GetTopMap() { return topMap; }
 	int GetRightMap() { return rightMap; }

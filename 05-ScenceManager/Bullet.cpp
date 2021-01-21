@@ -43,48 +43,39 @@ void CBullet::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			DeleteFrontObjs(coObjects);
 	}
 	
-	/*if (isEnemy)
-	{
-		x += dx;
-		y += dy;
-	}
-	else*/ if (!isEnemy)
+	// If not bullet of Piranha
+	if (!isEnemy)
 	{
 		if (state == BULLET_STATE_EXPLODE)
 		{
-			if (GetTickCount() - explode_start > 300)
+			if (GetTickCount() - explode_start > BULLET_EXPLODE_TIME)
 				isDead = true;
 			return;
 		}
 		
 		// Simple fall down
-		vy += BULLET_GRAVITY * dt;
-
-		// Giao nhau vs obj
-		for (int i = 0; i < coObjects->size(); i++)
+		vy += BULLET_GRAVITY * dt;				
+		
+		if (state != BULLET_STATE_EXPLODE)
 		{
-			if (dynamic_cast<CBullet*>(coObjects->at(i)))
-				continue;
-			if (AABBCheck(this, coObjects->at(i)))
+			// Intersert with objs
+			for (int i = 0; i < coObjects->size(); i++)
 			{
-				OnIntersect(coObjects->at(i), coObjects);
+				if (dynamic_cast<CBullet*>(coObjects->at(i)))
+					continue;
+				if (AABBCheck(this, coObjects->at(i)))
+				{
+					OnIntersect(coObjects->at(i), coObjects);
+				}
 			}
-		}
 
-		vector<LPCOLLISIONEVENT> coEvents;
-		vector<LPCOLLISIONEVENT> coEventsResult;
+			vector<LPCOLLISIONEVENT> coEvents;
+			vector<LPCOLLISIONEVENT> coEventsResult;
 
-		coEvents.clear();
+			coEvents.clear();
 
-		CalcPotentialCollisions(coObjects, coEvents);
+			CalcPotentialCollisions(coObjects, coEvents);
 
-		if (coEvents.size() == 0)
-		{
-			/*x += dx;
-			y += dy;*/
-		}
-		else
-		{
 			float min_tx, min_ty, nx = 0, ny;
 			float rdx = 0;
 			float rdy = 0;
@@ -117,7 +108,7 @@ void CBullet::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 void CBullet::Render()
 {
-	int ani = -1;
+	int ani = BULLET_ANI_FIRE_RIGHT;
 
 	if (state == BULLET_STATE_FIRE) {
 		if (vx > 0) ani = BULLET_ANI_FIRE_RIGHT;

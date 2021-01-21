@@ -58,7 +58,7 @@ void CCamera::Update(DWORD dt)
 	case MAP_1_4:
 	{
 		if (isMoving)
-			position.x += 0.03f * dt;
+			position.x += CAMERA_X_SPEED * dt;
 		else
 		{
 			// Update camera to follow mario
@@ -115,21 +115,6 @@ void CCamera::Update(DWORD dt)
 		SetPosition(GetPosition().x, bottomMap - GetHeight() / 2);
 	}
 
-}
-
-D3DXVECTOR3 CCamera::GetPosition()
-{
-	return position;
-}
-
-int CCamera::GetWidth()
-{
-	return width;
-}
-
-int CCamera::GetHeight()
-{
-	return height;
 }
 
 RECT CCamera::GetBound()
