@@ -53,8 +53,7 @@ void CEnemy::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 	CGameObject::Update(dt, coObjects);
 
-	x += dx;
-	y += dy;	
+	MoveThrough(OBJ_MOVE_XY);
 
 	// Fall
 	if (y > CCamera::GetInstance()->GetTopMap() + CCamera::GetInstance()->GetHeightMap())

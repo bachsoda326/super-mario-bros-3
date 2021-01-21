@@ -40,7 +40,7 @@ void CPiranha::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjs)
 {
 	CGameObject::Update(dt, coObjs);
 		
-	y += dy;
+	MoveThrough(OBJ_MOVE_Y);
 
 	if (state == PIRANHA_STATE_DIE)
 	{

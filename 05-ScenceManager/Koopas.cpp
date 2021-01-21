@@ -23,7 +23,7 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	UpdateDirection();
 
 	// Simple fall down
-	if (type != KOOPAS_RED_WING)
+	if (!CGame::GetInstance()->GetCurrentScene()->GetIsObjStop() && type != KOOPAS_RED_WING)
 	{
 		if (type == KOOPAS_GREEN_WING)
 			vy += KOOPAS_WING_GRAVITY * dt;

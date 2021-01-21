@@ -52,7 +52,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	CGameObject::Update(dt);
 
 	// Simple fall down
-	if (state != MARIO_STATE_PIPE)
+	if (!CGame::GetInstance()->GetCurrentScene()->GetIsObjStop() && state != MARIO_STATE_PIPE)
 		vy += MARIO_GRAVITY * dt;
 
 	// Max jump
@@ -65,8 +65,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	// Die
 	if (state == MARIO_STATE_DIE)
 	{
-		x += dx;
-		y += dy;
+		MoveThrough(OBJ_MOVE_XY);
 
 		DecreasePower();
 
@@ -142,6 +141,12 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	if (!isOnGround && state != MARIO_STATE_FLY && state != MARIO_STATE_RUNJUMP)
 	{
 		DecreasePower();
+	}
+	// Transform end
+	if (isTransform && GetTickCount() - transform_start > 500)
+	{
+		isTransform = false;
+		CGame::GetInstance()->GetCurrentScene()->SetObjStop(false);
 	}
 
 	if (kick_start != 0)
@@ -307,8 +312,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	// No collision occured, proceed normally
 	if (coEvents.size() == 0)
 	{
-		x += dx;
-		y += dy;
+		MoveThrough(OBJ_MOVE_XY);
 
 		if (vy != 0)
 		{
@@ -461,15 +465,14 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			if (dynamic_cast<CCloudTooth*>(e->obj))
 			{
 				if (state == MARIO_STATE_FLY || e->nx != 0)
-					x += dx;
+					MoveThrough(OBJ_MOVE_X);
 				if (e->ny > 0)
-					y += dy;
+					MoveThrough(OBJ_MOVE_Y);
 			}
 			// Bullet
 			else if (dynamic_cast<CBullet*>(e->obj))
 			{
-				x += dx;
-				y += dy;
+				MoveThrough(OBJ_MOVE_XY);
 
 				/*CBullet* bullet = dynamic_cast<CBullet*>(e->obj);
 
@@ -481,8 +484,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			// Piranha
 			else if (dynamic_cast<CPiranha*>(e->obj))
 			{
-				x += dx;
-				y += dy;
+				MoveThrough(OBJ_MOVE_XY);
 
 				/*CPiranha* piranha = dynamic_cast<CPiranha*>(e->obj);
 
@@ -495,7 +497,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			else if (dynamic_cast<CBox*>(e->obj))
 			{
 				if (e->nx != 0)
-					x += dx;
+					MoveThrough(OBJ_MOVE_X);
 			}
 			// Warp pipe
 			else if (dynamic_cast<CWarpPipe*>(e->obj))
@@ -550,8 +552,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			// Goomba
 			else if (dynamic_cast<CGoomba*>(e->obj)) // if e->obj is Goomba 
 			{
-				x += dx;
-				y += dy;
+				MoveThrough(OBJ_MOVE_XY);
 
 				CGoomba* goomba = dynamic_cast<CGoomba*>(e->obj);
 
@@ -573,8 +574,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			// Para Goomba
 			else if (dynamic_cast<CParaGoomba*>(e->obj)) // if e->obj is ParaGoomba 
 			{
-				x += dx;
-				y += dy;
+				MoveThrough(OBJ_MOVE_XY);
 
 				CParaGoomba* para = dynamic_cast<CParaGoomba*>(e->obj);
 
@@ -608,8 +608,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			// Koopas
 			else if (dynamic_cast<CKoopas*>(e->obj)) // if e->obj is CKoopas 
 			{
-				x += dx;
-				y += dy;
+				MoveThrough(OBJ_MOVE_XY);
 
 				CKoopas* koopas = dynamic_cast<CKoopas*>(e->obj);
 
@@ -871,7 +870,9 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 void CMario::Render()
 {
 	int ani = -1;
-	if (state == MARIO_STATE_DIE)
+	if (isTransform)
+		ani = MARIO_ANI_TRANSFORM;
+	else if (state == MARIO_STATE_DIE)
 		ani = MARIO_ANI_SMALL_DIE;
 	else if (level == MARIO_LEVEL_BIG)
 	{
@@ -1467,14 +1468,22 @@ void CMario::Hurt()
 	{
 		if (level > MARIO_LEVEL_BIG)
 		{
+			// Transform, stop other objs
+			isTransform = true;
 			SetState(MARIO_STATE_IDLE);
 			level = MARIO_LEVEL_BIG;
+			transform_start = GetTickCount();
+			CGame::GetInstance()->GetCurrentScene()->SetObjStop(true);
 			StartUntouchable();
 		}
 		else if (level > MARIO_LEVEL_SMALL)
 		{
+			// Transform, stop other objs
+			isTransform = true;
 			SetState(MARIO_STATE_IDLE);
 			level = MARIO_LEVEL_SMALL;
+			transform_start = GetTickCount();
+			CGame::GetInstance()->GetCurrentScene()->SetObjStop(true);
 			StartUntouchable();
 		}
 		else
@@ -1510,15 +1519,19 @@ void CMario::EatMushRoom(CMushRoom* mushroom, vector<LPGAMEOBJECT>* coObjs)
 	switch (mushroom->type)
 	{
 	case MUSHROOM_TYPE_RED:
+		eat_item_start = GetTickCount();
+		SetState(MARIO_STATE_EAT_ITEM);
+		AddPoint(POINT_TYPE_1000);
+		mushroom->Dead();
+		mushroom->DeleteBehindObjs(coObjs);
 		if (level == MARIO_LEVEL_SMALL)
 		{
-			eat_item_start = GetTickCount();
-			SetState(MARIO_STATE_EAT_ITEM);
-			AddPoint(POINT_TYPE_1000);
-			mushroom->Dead();
-			mushroom->DeleteBehindObjs(coObjs);
+			// Transform, stop other objs
+			isTransform = true;
 			y -= MARIO_BIG_BBOX_HEIGHT - MARIO_SMALL_BBOX_HEIGHT;
 			level = MARIO_LEVEL_BIG;
+			transform_start = GetTickCount();
+			CGame::GetInstance()->GetCurrentScene()->SetObjStop(true);
 		}
 		break;
 	case MUSHROOM_TYPE_1_UP:
@@ -1538,9 +1551,16 @@ void CMario::EatLeaf(CLeaf* leaf, vector<LPGAMEOBJECT>* coObjs)
 	AddPoint(POINT_TYPE_1000);
 	leaf->Dead();
 	leaf->DeleteFrontObjs(coObjs);
-	if (level == MARIO_LEVEL_SMALL)
-		y -= MARIO_BIG_BBOX_HEIGHT - MARIO_SMALL_BBOX_HEIGHT;
-	level = MARIO_LEVEL_RACCOON;
+	if (level != MARIO_LEVEL_RACCOON)
+	{
+		// Transform, stop other objs
+		isTransform = true;
+		if (level == MARIO_LEVEL_SMALL)
+			y -= MARIO_BIG_BBOX_HEIGHT - MARIO_SMALL_BBOX_HEIGHT;
+		level = MARIO_LEVEL_RACCOON;
+		transform_start = GetTickCount();
+		CGame::GetInstance()->GetCurrentScene()->SetObjStop(true);
+	}
 }
 
 void CMario::EatCoin(CCoin* coin, vector<LPGAMEOBJECT>* coObjs)
@@ -1550,7 +1570,6 @@ void CMario::EatCoin(CCoin* coin, vector<LPGAMEOBJECT>* coObjs)
 	coin->Dead();
 	coin->DeleteObjs(coObjs);
 }
-
 
 void CMario::OnIntersect(CGameObject* obj, vector<LPGAMEOBJECT>* coObjs)
 {

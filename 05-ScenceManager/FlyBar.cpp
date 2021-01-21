@@ -23,13 +23,13 @@ void CFlyBar::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 	CGameObject::Update(dt, coObjects);
 
-	x += dx;
-	y += dy;
+	MoveThrough(OBJ_MOVE_XY);
 
 	// Simple fall down
 	if (state == FLY_BAR_STATE_FALL)
 	{
-		vy += FLY_BAR_GRAVITY * dt;
+		if (!CGame::GetInstance()->GetCurrentScene()->GetIsObjStop())
+			vy += FLY_BAR_GRAVITY * dt;
 		/*CMario* mario = ((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetPlayer();
 		mario->vy = vy;*/
 	}		

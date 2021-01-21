@@ -330,6 +330,30 @@ void CGameObject::AddPoint(int types)
 	((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetPlayer()->AddPointFactor();
 }
 
+void CGameObject::MoveThrough(int move)
+{
+	if (!CGame::GetInstance()->GetCurrentScene()->GetIsObjStop())
+	{
+		switch (move)
+		{
+		case OBJ_MOVE_X:
+			x += dx;
+			break;
+		case OBJ_MOVE_Y:
+			y += dy;
+			break;
+		case OBJ_MOVE_XY:
+			x += dx;
+			y += dy;
+			break;
+		default:
+			x += dx;
+			y += dy;
+			break;
+		}
+	}
+}
+
 void CGameObject::UpdateDirection()
 {
 	if (vx >= 0)

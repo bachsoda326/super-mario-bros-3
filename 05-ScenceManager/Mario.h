@@ -53,6 +53,7 @@
 //#define MARIO_ANI_DIE				8
 
 // ANIMATION SMALL MARIO
+#define MARIO_ANI_TRANSFORM					154
 #define MARIO_ANI_SMALL_IDLE_LEFT			0
 #define MARIO_ANI_SMALL_IDLE_RIGHT			1
 #define MARIO_ANI_SMALL_WALKING_LEFT		2
@@ -244,9 +245,8 @@
 #define MARIO_SMALL_BBOX_HEIGHT 16
 #define MARIO_PIPE_DOWN_HEIGHT  7
 
-#define MARIO_UNTOUCHABLE_TIME	3000
+#define MARIO_UNTOUCHABLE_TIME	3500
 #define MARIO_RUN_TIME			3000
-
 
 class CMario : public CGameObject
 {
@@ -265,6 +265,7 @@ class CMario : public CGameObject
 
 	void SetBoundingBox();
 public:
+	DWORD transform_start;
 	DWORD run_start;
 	DWORD kick_start;
 	DWORD skid_start;
@@ -280,6 +281,7 @@ public:
 	DWORD canJump_start;
 
 	/*bool isPreventMoveX = false;*/
+	bool isTransform = false;
 	bool isOnGround = false;
 	bool canJump = true;
 	bool canRepeatJump = true;
@@ -321,7 +323,7 @@ public:
 	void EatLeaf(CLeaf* leaf, vector<LPGAMEOBJECT>* coObjs);
 	void EatCoin(CCoin* coin, vector<LPGAMEOBJECT>* coObjs);
 
-	// Giao nhau vs các obj
+	// Intersert with objs
 	void OnIntersect(CGameObject* obj, vector<LPGAMEOBJECT>* coObjs);
 	bool isColTail(CGameObject* obj);
 

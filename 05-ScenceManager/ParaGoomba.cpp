@@ -22,10 +22,13 @@ void CParaGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	if (!isActive || isDead) return;
 
 	// Simple fall down
-	if (state != PARA_GOOMBA_STATE_DIE_REVERSE)
-		vy += PARA_GOOMBA_GRAVITY * dt;
-	else
-		vy += ENEMY_GRAVITY * dt;
+	if (!CGame::GetInstance()->GetCurrentScene()->GetIsObjStop())
+	{
+		if (state != PARA_GOOMBA_STATE_DIE_REVERSE)
+			vy += PARA_GOOMBA_GRAVITY * dt;
+		else
+			vy += ENEMY_GRAVITY * dt;
+	}
 
 	if (state == PARA_GOOMBA_STATE_DIE && GetTickCount() - die_start > GOOMBA_DIE_TIME)
 	{

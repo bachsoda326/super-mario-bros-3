@@ -150,6 +150,7 @@
     <ClCompile Include="Portal.cpp" />
     <ClCompile Include="PSwitch.cpp" />
     <ClCompile Include="QuestionBrick.cpp" />
+    <ClCompile Include="TitleBackGround.cpp" />
     <ClCompile Include="TitleScene.cpp" />
     <ClCompile Include="WorldStation.cpp" />
     <ClCompile Include="TileMap.cpp" />
@@ -198,6 +199,7 @@
     <ClInclude Include="PSwitch.h" />
     <ClInclude Include="QuestionBrick.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="TitleBackGround.h" />
     <ClInclude Include="TitleScene.h" />
     <ClInclude Include="WorldStation.h" />
     <ClInclude Include="TileMap.h" />

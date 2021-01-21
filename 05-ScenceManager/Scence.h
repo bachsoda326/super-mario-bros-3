@@ -17,6 +17,8 @@ protected:
 	int id;
 	LPCWSTR sceneFilePath;
 
+	bool isObjStop = false;
+
 public:
 	CScene(int id, LPCWSTR filePath);
 
@@ -30,6 +32,8 @@ public:
 	virtual void Render() = 0; 
 
 	int GetSceneId() { return id; }
+	bool GetIsObjStop() { return isObjStop; }
+	void SetObjStop(bool isStop) { isObjStop = isStop; }
 };
 typedef CScene * LPSCENE;
 

@@ -22,7 +22,8 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	if (!isActive || isDead) return;
 
 	// Simple fall down
-	vy += ENEMY_GRAVITY * dt;
+	if (!CGame::GetInstance()->GetCurrentScene()->GetIsObjStop())
+		vy += ENEMY_GRAVITY * dt;
 
 	// Jumped die
 	if (state == GOOMBA_STATE_DIE && GetTickCount() - die_start > GOOMBA_DIE_TIME)

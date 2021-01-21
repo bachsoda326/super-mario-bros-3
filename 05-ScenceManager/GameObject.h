@@ -13,6 +13,10 @@ using namespace std;
 
 #define ID_TEX_BBOX -100		// special texture to draw object bounding box
 #define DEFLECT_Y	4
+// Others
+#define OBJ_MOVE_X			1
+#define OBJ_MOVE_Y			2
+#define OBJ_MOVE_XY			3
 
 class CGameObject; 
 typedef CGameObject * LPGAMEOBJECT;
@@ -119,6 +123,7 @@ public:
 	void DeleteFrontObjs(vector<LPGAMEOBJECT>* coObjects);
 	void DeleteBehindObjs(vector<LPGAMEOBJECT>* coObjects, bool isDeleteThis = true);
 	void AddPoint(int type = -1);
+	void MoveThrough(int move);
 
 	void UpdateDirection();
 	void Dead();

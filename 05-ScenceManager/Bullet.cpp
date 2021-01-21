@@ -20,8 +20,7 @@ void CBullet::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	CGameObject::Update(dt, coObjects);
 	UpdateDirection();
 
-	x += dx;
-	y += dy;
+	MoveThrough(OBJ_MOVE_XY);
 	
 	CMario* mario = ((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetPlayer();
 	float distanceX = abs((x + BULLET_BBOX_WIDTH / 2) - (mario->x + MARIO_BIG_BBOX_WIDTH / 2));
@@ -54,7 +53,8 @@ void CBullet::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		}
 		
 		// Simple fall down
-		vy += BULLET_GRAVITY * dt;				
+		if (!CGame::GetInstance()->GetCurrentScene()->GetIsObjStop())
+			vy += BULLET_GRAVITY * dt;				
 		
 		if (state != BULLET_STATE_EXPLODE)
 		{
