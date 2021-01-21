@@ -166,8 +166,8 @@ void CParaGoomba::SetState(int state)
 	{
 		CGameObject::SetState(PARA_GOOMBA_STATE_WALKING);
 
-		vy = 0;
 		vx = -((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetPlayer()->nx * PARA_GOOMBA_WALKING_SPEED;
+		vy = 0;
 		if (level == PARA_GOOMBA_LEVEL_WING)
 			wing_walk_start = GetTickCount();
 		return;
@@ -176,14 +176,7 @@ void CParaGoomba::SetState(int state)
 	CGameObject::SetState(state);
 
 	switch (state)
-	{
-	/*case ENEMY_STATE_RESPAWN:
-		state = PARA_GOOMBA_STATE_WALKING;
-		vy = 0;
-		vx = ((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetPlayer()->nx * PARA_GOOMBA_WALKING_SPEED;
-		if (level == PARA_GOOMBA_LEVEL_WING)
-			wing_walk_start = GetTickCount();
-		break;*/
+	{	
 	case PARA_GOOMBA_STATE_WALKING:
 		vy = 0;
 		if (level == PARA_GOOMBA_LEVEL_WING)

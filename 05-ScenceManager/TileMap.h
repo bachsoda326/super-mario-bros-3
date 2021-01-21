@@ -5,7 +5,8 @@
 
 using namespace std;
 
-#define CELL_SIZE 150
+#define CELL_SIZE	150
+#define TILE_SIZE	16
 
 class CTileMap
 {

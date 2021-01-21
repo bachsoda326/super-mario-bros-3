@@ -530,6 +530,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 							SetState(MARIO_STATE_PIPE);
 							pipe_down_start = GetTickCount();
 							y += MARIO_PIPE_DOWN_HEIGHT;
+							camera->SetIsMoving(false);
 						}
 						break;
 					case WARPPIPE_TYPE_UP:

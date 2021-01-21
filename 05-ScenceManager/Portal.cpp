@@ -24,7 +24,7 @@ void CPortal::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjs)
 	y += dy;
 
 	// Change cards
-	if (state == PORTAL_STATE_NORMAL && GetTickCount() - change_start > 100)
+	if (state == PORTAL_STATE_NORMAL && GetTickCount() - change_start > PORTAL_CHANGE_CARD_TIME)
 	{
 		if (idCard == SPRITE_CARD_MUSHROOM_ID)
 			idCard = SPRITE_CARD_STAR_ID;
@@ -43,7 +43,7 @@ void CPortal::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjs)
 		}
 	}
 
-	if (end_start != 0 && GetTickCount() - end_start > 3000)
+	if (end_start != 0 && GetTickCount() - end_start > PORTAL_END_SCENE_TIME)
 	{
 		CGame::GetInstance()->SwitchScene(scene_id);
 	}
@@ -53,7 +53,7 @@ void CPortal::Render()
 {
 	if (state != PORTAL_STATE_DONE)
 	{
-		int ani = -1;
+		int ani = PORTAL_ANI_CARDS;
 
 		switch (state)
 		{
@@ -76,7 +76,7 @@ void CPortal::Render()
 			default:
 				break;
 			}
-			animation_set->at(ani)->Render(x + 5, y);
+			animation_set->at(ani)->Render(x + PORTAL_DISTANCE_X, y);
 			break;		
 		default:
 			break;
@@ -84,8 +84,8 @@ void CPortal::Render()
 	}
 	else
 	{		
-		congratSpr->DrawSprite(35, 10);
-		cardSpr->DrawSprite(207, 54);
+		congratSpr->DrawSprite(CONGRAT_X, CONGRAT_Y);
+		cardSpr->DrawSprite(CONGRAT_CARD_X, CONGRAT_CARD_Y);
 	}
 
 	//RenderBoundingBox();
@@ -98,7 +98,7 @@ void CPortal::SetState(int state)
 	switch (state)
 	{
 	case PORTAL_STATE_PICK_CARD:
-		vy = -0.08f;
+		vy = -PORTAL_Y_SPEED;
 		break;
 	case PORTAL_STATE_DONE:		
 		cardSpr = CSprites::GetInstance()->Get(idCard);

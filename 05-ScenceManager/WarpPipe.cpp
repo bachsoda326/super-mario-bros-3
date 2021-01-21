@@ -6,7 +6,8 @@ CWarpPipe::CWarpPipe(float x, float y, int r, int b, int type, float tele_x, flo
 {
 	mRight = r;
 	mBottom = b;
-	this->type = type;	
+	this->type = type;
+	// Init Piranha
 	if (this->type == PIRANHA_NOR || this->type == PIRANHA_FIRE || this->type == PIRANHA_FIRE_RED)
 	{
 		piranha = new CPiranha(type, x + PIRANHA_BBOX_WIDTH / 2, y);

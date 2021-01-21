@@ -4,7 +4,7 @@ CWorldHammer::CWorldHammer(float left, float right)
 {
 	x_left = left;
 	x_right = right;
-	vx = 0.01f;
+	vx = WORLD_HAMMER_X_SPEED;
 }
 
 void CWorldHammer::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)

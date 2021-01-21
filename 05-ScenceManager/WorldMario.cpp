@@ -12,7 +12,7 @@ void CWorldMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	x += dx;
 	y += dy;
 
-	// Giao nhau vs các điểm map
+	// Intersect with World Station
 	for (int i = 0; i < coObjects->size(); i++)
 	{
 		if (AABBCheck(this, coObjects->at(i)))
@@ -68,7 +68,7 @@ void CWorldMario::GoLeft()
 {
 	if (curStation->canLeft && vx == 0 && vy == 0)
 	{
-		vx = -0.15f;
+		vx = -WORLD_MARIO_X_SPEED;
 	}
 }
 
@@ -76,7 +76,7 @@ void CWorldMario::GoTop()
 {
 	if (curStation->canTop && vx == 0 && vy == 0)
 	{
-		vy = -0.15f;
+		vy = -WORLD_MARIO_X_SPEED;
 	}
 }
 
@@ -84,7 +84,7 @@ void CWorldMario::GoRight()
 {
 	if (curStation->canRight && vx == 0 && vy == 0)
 	{
-		vx = 0.15f;
+		vx = WORLD_MARIO_X_SPEED;
 	}
 }
 
@@ -92,7 +92,7 @@ void CWorldMario::GoBottom()
 {
 	if (curStation->canBottom && vx == 0 && vy == 0)
 	{
-		vy = 0.15f;
+		vy = WORLD_MARIO_X_SPEED;
 	}
 }
 

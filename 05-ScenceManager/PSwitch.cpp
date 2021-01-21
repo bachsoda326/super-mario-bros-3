@@ -8,14 +8,14 @@ CPSwitch::CPSwitch(float x, float y)
 	SetAnimationSet(ani_set);
 
 	SetState(PSWITCH_STATE_NORMAL);
-	SetPosition(x, y - 16);
+	SetPosition(x, y - PSWITCH_BBOX_HEIGHT);
 
 	SetBoundingBox();
 }
 
 void CPSwitch::Render()
 {
-	int ani = -1;
+	int ani = PSWITCH_ANI_NORMAL;
 	switch (state)
 	{
 	case PSWITCH_STATE_NORMAL:

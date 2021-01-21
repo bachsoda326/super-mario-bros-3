@@ -1,18 +1,6 @@
 #pragma once
 #include "GameObject.h"
-
-#define POINT_ANI_SET		40
-
-#define POINT_TYPE_100		0
-#define POINT_TYPE_200		1
-#define POINT_TYPE_400		2
-#define POINT_TYPE_800		3
-#define POINT_TYPE_1000		4
-#define POINT_TYPE_2000		5
-#define POINT_TYPE_4000		6
-#define POINT_TYPE_8000		7
-#define POINT_TYPE_1_UP		8
-
+// Animation
 #define POINT_ANI_100		0
 #define POINT_ANI_200		1
 #define POINT_ANI_400		2
@@ -22,7 +10,21 @@
 #define POINT_ANI_4000		6
 #define POINT_ANI_8000		7
 #define POINT_ANI_1_UP		8
-
+// Type
+#define POINT_TYPE_100		0
+#define POINT_TYPE_200		1
+#define POINT_TYPE_400		2
+#define POINT_TYPE_800		3
+#define POINT_TYPE_1000		4
+#define POINT_TYPE_2000		5
+#define POINT_TYPE_4000		6
+#define POINT_TYPE_8000		7
+#define POINT_TYPE_1_UP		8
+// Speed
+#define POINT_Y_SPEED		0.04f
+// Time
+#define POINT_LAST_TIME		500
+// Others
 #define POINT_10			10
 #define POINT_50			50
 #define POINT_100			100
@@ -33,6 +35,7 @@
 #define POINT_2000			2000
 #define POINT_4000			4000
 #define POINT_8000			8000
+#define POINT_ANI_SET		40
 
 class CPoint : public CGameObject
 {

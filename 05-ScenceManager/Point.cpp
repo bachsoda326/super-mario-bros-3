@@ -9,7 +9,7 @@ CPoint::CPoint(float x, float y, int type)
 	this->type = type;
 	SetPosition(x, y);
 	appear_start = GetTickCount();
-	vy = -0.04f;
+	vy = -POINT_Y_SPEED;
 }
 
 void CPoint::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
@@ -17,10 +17,9 @@ void CPoint::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	CGameObject::Update(dt);
 	y += dy;
 	
-	if (appear_start != 0 && GetTickCount() - appear_start > 500)
+	if (appear_start != 0 && GetTickCount() - appear_start > POINT_LAST_TIME)
 	{
-		isDie = true;
-		isDead = true;
+		Dead();
 		DeleteFrontObjs(coObjects);
 		return;
 	}
@@ -28,7 +27,7 @@ void CPoint::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 void CPoint::Render()
 {
-	int ani = -1;
+	int ani = POINT_ANI_100;
 	switch (type)
 	{
 	case POINT_TYPE_100:

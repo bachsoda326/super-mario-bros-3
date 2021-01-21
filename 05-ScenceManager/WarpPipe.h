@@ -1,7 +1,7 @@
 #pragma once
 #include "GameObject.h"
 #include "Piranha.h"
-
+// Type
 #define WARPPIPE_TYPE_DOWN		3
 #define WARPPIPE_TYPE_UP		4
 #define WARPPIPE_TYPE_PLANE		5
