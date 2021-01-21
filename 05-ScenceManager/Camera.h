@@ -5,6 +5,7 @@
 #include "Constants.h"
 
 #define CAMERA_X_SPEED		0.03f
+#define CAMERA_DISTANCE_Y	24
 
 class CCamera
 {

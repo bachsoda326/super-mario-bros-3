@@ -15,8 +15,7 @@ CLeaf::CLeaf(float x, float y)
 	start_top = y - LEAF_BBOX_TOP_HIGH;
 	start_x = x;
 	SetPosition(x, y - LEAF_BBOX_WIDTH);
-
-	vy = -0.05f;
+	vy = -LEAF_Y_SPEED;
 
 	SetBoundingBox();
 }
@@ -36,9 +35,9 @@ void CLeaf::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		{
 			isInitialized = true;
 			isDie = false;
-			vx = -0.06f;
+			vx = -LEAF_X_SPEED;
+			vy = LEAF_Y_SPEED;
 			nx = -1;
-			vy = 0.05f;
 		}		
 	}
 	else 
@@ -49,53 +48,46 @@ void CLeaf::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		float bottomCamera = CCamera::GetInstance()->GetBound().bottom;
 		float width = CGame::GetInstance()->GetScreenWidth();
 		float height = CGame::GetInstance()->GetScreenHeight();
-
-		if (x + right - left + width / 4 <= leftCamera || x - width / 4 >= rightCamera || y + top - bottom + height / 8 <= topCamera || y - height / 8 >= bottomCamera - 24)
+		// Out of region
+		if (x + right - left + width / 4 <= leftCamera || x - width / 4 >= rightCamera || y + top - bottom + height / 8 <= topCamera || y - height / 8 >= bottomCamera - CAMERA_DISTANCE_Y)
 		{
 			Dead();
 			DeleteFrontObjs(coObjects);
 			return;
 		}
-
-		switch (((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetMap()->GetId())
+		// Fall
+		if (y > CCamera::GetInstance()->GetTopMap() + CCamera::GetInstance()->GetHeightMap())
 		{
-		case MAP_1_1:
-			if (y > HEIGHT_MAP_1_1)
-			{
-				Dead();
-				DeleteFrontObjs(coObjects);
-				return;
-			}
-			break;
-		default:
-			break;
+			Dead();
+			DeleteFrontObjs(coObjects);
+			return;
 		}
-
+		// When stop move in left/right edge
 		if (!isStop)
 		{
-			if (nx < 0 && x > start_x + LEAF_BBOX_WIDTH / 2 - 30 && x <= start_x + LEAF_BBOX_WIDTH / 2 - 20 || nx > 0 && x >= start_x - LEAF_BBOX_WIDTH / 2 + 20 && x < start_x - LEAF_BBOX_WIDTH / 2 + 30)
-				vy -= 0.008f;
-			else if (x < start_x + LEAF_BBOX_WIDTH / 2 - 30 || x > start_x - LEAF_BBOX_WIDTH / 2 + 30)
+			if (nx < 0 && x > start_x + LEAF_BBOX_WIDTH / 2 - LEAF_DISTANCE_X && x <= start_x + LEAF_BBOX_WIDTH / 2 - LEAF_DISTANCE_X_1 || nx > 0 && x >= start_x - LEAF_BBOX_WIDTH / 2 + LEAF_DISTANCE_X_1 && x < start_x - LEAF_BBOX_WIDTH / 2 + LEAF_DISTANCE_X)
+				vy -= LEAF_Y_UP_SPEED;
+			else if (x < start_x + LEAF_BBOX_WIDTH / 2 - LEAF_DISTANCE_X || x > start_x - LEAF_BBOX_WIDTH / 2 + LEAF_DISTANCE_X)
 			{
 				vx = 0;
 				vy = 0;
 				stopTime_start = GetTickCount();
 				isStop = true;
 				if (nx < 0)
-					x = start_x + LEAF_BBOX_WIDTH / 2 - 26;
+					x = start_x + LEAF_BBOX_WIDTH / 2 - LEAF_DISTANCE_X_2;
 				else
-					x = start_x - LEAF_BBOX_WIDTH / 2 + 26;
+					x = start_x - LEAF_BBOX_WIDTH / 2 + LEAF_DISTANCE_X_2;
 			}
 		}
+		// Move
 		else
 		{
-			if (GetTickCount() - stopTime_start > 50)
+			if (GetTickCount() - stopTime_start > LEAF_STOP_TIME)
 			{
-				stopTime_start = 0;				
-				
+				stopTime_start = 0;
 				nx = -nx;
-				vx = nx * 0.06f;
-				vy = 0.05f;
+				vx = nx * LEAF_X_SPEED;
+				vy = LEAF_Y_SPEED;
 				xReverse = !xReverse;
 				isStop = false;
 			}

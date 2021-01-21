@@ -20,9 +20,8 @@ CMushRoom::CMushRoom(float x, float y, int nx, int type)
 	this->type = type;
 	this->nx = nx;
 	this->start_bottom = y;
-	SetPosition(x, y);	
-
-	vy = -0.02f;
+	SetPosition(x, y);
+	vy = -MUSHROOM_Y_SPEED;
 
 	SetBoundingBox();
 }
@@ -33,9 +32,8 @@ void CMushRoom::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	CGameObject::Update(dt, coObjects);
 
 	x += dx;
-	y += dy;	
-
-	// not set to bottom yet
+	y += dy;
+	
 	if (!isInitialized)
 	{
 		isDie = true;
@@ -43,8 +41,8 @@ void CMushRoom::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		{
 			isInitialized = true;
 			isDie = false;
+			vx = nx * MUSHROOM_X_SPEED;
 			vy = 0;
-			vx = nx * 0.05f;
 		}		
 	}
 
@@ -56,65 +54,48 @@ void CMushRoom::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		float bottomCamera = CCamera::GetInstance()->GetBound().bottom;
 		float width = CGame::GetInstance()->GetScreenWidth();
 		float height = CGame::GetInstance()->GetScreenHeight();
-
-		if (x + right - left + width / 4 <= leftCamera || x - width / 4 >= rightCamera || y + top - bottom + height / 8 <= topCamera || y - height / 8 >= bottomCamera - 24)
+		// Out of region
+		if (x + right - left + width / 4 <= leftCamera || x - width / 4 >= rightCamera || y + top - bottom + height / 8 <= topCamera || y - height / 8 >= bottomCamera - CAMERA_DISTANCE_Y)
 		{
 			Dead();
 			DeleteBehindObjs(coObjects);
 			return;
 		}
-
-		switch (((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetMap()->GetId())
+		// Fall
+		if (y > CCamera::GetInstance()->GetTopMap() + CCamera::GetInstance()->GetHeightMap())
 		{
-		case MAP_1_1:
-			if (y > HEIGHT_MAP_1_1)
-			{
-				Dead();
-				DeleteBehindObjs(coObjects);
-				return;
-			}
-			break;
-		default:
-			break;
+			Dead();
+			DeleteBehindObjs(coObjects);
+			return;
 		}
-
 		// Simple fall down
-		vy += MUSHROOM_GRAVITY * dt;
-
-		vector<LPCOLLISIONEVENT> coEvents;
-		vector<LPCOLLISIONEVENT> coEventsResult;
-
-		coEvents.clear();
-
-		CalcPotentialCollisions(coObjects, coEvents);
-
-		// No collision occured, proceed normally
-		if (coEvents.size() == 0)
+		vy += MUSHROOM_GRAVITY * dt;		
+		
+		if (!isDie)
 		{
-			/*x += dx;
-			y += dy;*/
-		}
-		else
-		{
+			vector<LPCOLLISIONEVENT> coEvents;
+			vector<LPCOLLISIONEVENT> coEventsResult;
+
+			coEvents.clear();
+
+			CalcPotentialCollisions(coObjects, coEvents);
+
 			float min_tx, min_ty, nx = 0, ny;
 			float rdx = 0;
 			float rdy = 0;
 
-			// TODO: This is a very ugly designed function!!!!
 			FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny, rdx, rdy);
 
-			//
-			// Collision logic with other objects
-			//
+			// Col with objs
 			for (UINT i = 0; i < coEventsResult.size(); i++)
 			{
 				LPCOLLISIONEVENT e = coEventsResult[i];
-
+				// Stand-Y
 				if (ny < 0 && e->obj != NULL && (dynamic_cast<CGround*>(e->obj) || dynamic_cast<CWarpPipe*>(e->obj) || dynamic_cast<CBrick*>(e->obj) || dynamic_cast<CBox*>(e->obj) || dynamic_cast<CCloudTooth*>(e->obj)))
 				{
 					PreventMoveY(e->obj);
 				}
-
+				// Col-X
 				if (e->nx != 0)
 				{
 					if (dynamic_cast<CGround*>(e->obj) || dynamic_cast<CWarpPipe*>(e->obj) || dynamic_cast<CBrick*>(e->obj))
@@ -125,7 +106,7 @@ void CMushRoom::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				}
 			}
 
-			// clean up collision events
+			// Clean up collision events
 			for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
 		}
 	}	

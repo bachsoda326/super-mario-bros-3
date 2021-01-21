@@ -19,7 +19,7 @@ void CEnemy::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		if (!isActive)
 		{
 			// Respawn in region
-			if (xSpawn + right - left >= leftCamera && xSpawn <= rightCamera && ySpawn + top - bottom >= topCamera && ySpawn <= bottomCamera - 24)
+			if (xSpawn + right - left >= leftCamera && xSpawn <= rightCamera && ySpawn + top - bottom >= topCamera && ySpawn <= bottomCamera - CAMERA_DISTANCE_Y)
 			{
 				if (canActive)
 				{
@@ -27,7 +27,7 @@ void CEnemy::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					SetState(ENEMY_STATE_RESPAWN);
 				}
 			}
-			// CanActive when move out region
+			// CanActive when move out of region
 			else
 				canActive = true;
 			return;
@@ -36,7 +36,7 @@ void CEnemy::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		{
 			float width = CGame::GetInstance()->GetScreenWidth();
 			float height = CGame::GetInstance()->GetScreenHeight();
-			if (x + right - left + width / 4 <= leftCamera || x - width / 4 >= rightCamera || y + top - bottom + height / 4 <= topCamera || y - height / 8 >= bottomCamera - 24)
+			if (x + right - left + width / 4 <= leftCamera || x - width / 4 >= rightCamera || y + top - bottom + height / 4 <= topCamera || y - height / 8 >= bottomCamera - CAMERA_DISTANCE_Y)
 			{
 				isActive = false;
 				canActive = false;
@@ -56,7 +56,7 @@ void CEnemy::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	x += dx;
 	y += dy;	
 
-	// Fall then dead
+	// Fall
 	if (y > CCamera::GetInstance()->GetTopMap() + CCamera::GetInstance()->GetHeightMap())
 	{
 		Dead();

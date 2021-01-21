@@ -5,7 +5,6 @@
 #include "Game.h"
 #include "Portal.h"
 #include "Box.h"
-#include "Coin.h"
 #include "CloudTooth.h"
 #include "ParaGoomba.h"
 #include "BreakableBrick.h"
@@ -693,12 +692,33 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			{
 				/*x += dx;
 				y += dy;*/
+				CMushRoom* mushroom = dynamic_cast<CMushRoom*>(e->obj);
+				if (!mushroom->isDie)
+				{
+					EatMushRoom(mushroom, coObjects);
+				}
 			}
 			// Leaf
 			else if (dynamic_cast<CLeaf*>(e->obj))
 			{
 				/*x += dx;
 				y += dy;*/
+				CLeaf* leaf = dynamic_cast<CLeaf*>(e->obj);
+				if (!leaf->isDie)
+				{
+					EatLeaf(leaf, coObjects);
+				}
+			}
+			// Coin
+			else if (dynamic_cast<CCoin*>(e->obj))
+			{
+				/*x += dx;
+				y += dy;*/
+				CCoin* coin = dynamic_cast<CCoin*>(e->obj);
+				if (!coin->isDie)
+				{
+					EatCoin(coin, coObjects);
+				}
 			}
 			// Question Brick
 			else if (dynamic_cast<CQuestionBrick*>(e->obj))
@@ -804,20 +824,6 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					}
 				}
 			}
-			// Coin
-			else if (dynamic_cast<CCoin*>(e->obj))
-			{
-				/*x += dx;
-				y += dy;*/				
-				CCoin* coin = dynamic_cast<CCoin*>(e->obj);
-				if (!coin->isDie)
-				{
-					CPlayerInfo::GetInstance()->AdjustScore(POINT_50);
-					CPlayerInfo::GetInstance()->AdjustMoney(MONEY_1);
-					coin->Dead();
-					coin->DeleteObjs(coObjects);
-				}
-			}
 			// P Switch
 			else if (dynamic_cast<CPSwitch*>(e->obj))
 			{
@@ -847,7 +853,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						SetState(MARIO_STATE_WALKING);
 					}
 			}*/
-			if (state == MARIO_STATE_PREPARE_RUN || state == MARIO_STATE_RUN)
+			if (isOnGround && (state == MARIO_STATE_PREPARE_RUN || state == MARIO_STATE_RUN))
 			{
 				if (!dynamic_cast<CBox*>(e->obj) && !dynamic_cast<CGoomba*>(e->obj) && !dynamic_cast<CKoopas*>(e->obj) && e->nx != 0)
 				{
@@ -1498,6 +1504,53 @@ void CMario::DecreasePower()
 	}
 }
 
+void CMario::EatMushRoom(CMushRoom* mushroom, vector<LPGAMEOBJECT>* coObjs)
+{
+	switch (mushroom->type)
+	{
+	case MUSHROOM_TYPE_RED:
+		if (level == MARIO_LEVEL_SMALL)
+		{
+			eat_item_start = GetTickCount();
+			SetState(MARIO_STATE_EAT_ITEM);
+			AddPoint(POINT_TYPE_1000);
+			mushroom->Dead();
+			mushroom->DeleteBehindObjs(coObjs);
+			y -= MARIO_BIG_BBOX_HEIGHT - MARIO_SMALL_BBOX_HEIGHT;
+			level = MARIO_LEVEL_BIG;
+		}
+		break;
+	case MUSHROOM_TYPE_1_UP:
+		AddPoint(POINT_TYPE_1_UP);
+		mushroom->Dead();
+		mushroom->DeleteBehindObjs(coObjs);
+		break;
+	default:
+		break;
+	}
+}
+
+void CMario::EatLeaf(CLeaf* leaf, vector<LPGAMEOBJECT>* coObjs)
+{
+	eat_item_start = GetTickCount();
+	SetState(MARIO_STATE_EAT_ITEM);
+	AddPoint(POINT_TYPE_1000);
+	leaf->Dead();
+	leaf->DeleteFrontObjs(coObjs);
+	if (level == MARIO_LEVEL_SMALL)
+		y -= MARIO_BIG_BBOX_HEIGHT - MARIO_SMALL_BBOX_HEIGHT;
+	level = MARIO_LEVEL_RACCOON;
+}
+
+void CMario::EatCoin(CCoin* coin, vector<LPGAMEOBJECT>* coObjs)
+{
+	CPlayerInfo::GetInstance()->AdjustScore(POINT_50);
+	CPlayerInfo::GetInstance()->AdjustMoney(MONEY_1);
+	coin->Dead();
+	coin->DeleteObjs(coObjs);
+}
+
+
 void CMario::OnIntersect(CGameObject* obj, vector<LPGAMEOBJECT>* coObjs)
 {
 	// Fly Bar
@@ -1597,37 +1650,28 @@ void CMario::OnIntersect(CGameObject* obj, vector<LPGAMEOBJECT>* coObjs)
 		else if (dynamic_cast<CMushRoom*>(obj))
 		{
 			CMushRoom* mushroom = dynamic_cast<CMushRoom*>(obj);
-			switch (mushroom->type)
+			if (!mushroom->isDie)
 			{
-			case MUSHROOM_TYPE_RED:
-				if (level == MARIO_LEVEL_SMALL)
-				{
-					eat_item_start = GetTickCount();
-					SetState(MARIO_STATE_EAT_ITEM);
-					AddPoint(POINT_TYPE_1000);
-					mushroom->DeleteBehindObjs(coObjs);
-					y -= MARIO_BIG_BBOX_HEIGHT - MARIO_SMALL_BBOX_HEIGHT;
-					level = MARIO_LEVEL_BIG;
-				}
-				break;
-			case MUSHROOM_TYPE_1_UP:
-				mushroom->DeleteBehindObjs(coObjs);
-				AddPoint(POINT_TYPE_1_UP);
-				break;
-			default:
-				break;
+				EatMushRoom(mushroom, coObjs);
 			}
 		}
 		// Leaf
 		else if (dynamic_cast<CLeaf*>(obj))
 		{
 			CLeaf* leaf = dynamic_cast<CLeaf*>(obj);
-			eat_item_start = GetTickCount();
-			SetState(MARIO_STATE_EAT_ITEM);
-			AddPoint(POINT_TYPE_1000);
-			leaf->DeleteFrontObjs(coObjs);
-			y -= MARIO_BIG_BBOX_HEIGHT - MARIO_SMALL_BBOX_HEIGHT;
-			level = MARIO_LEVEL_RACCOON;
+			if (!leaf->isDie)
+			{
+				EatLeaf(leaf, coObjs);
+			}
+		}
+		// Coin
+		else if (dynamic_cast<CCoin*>(obj))
+		{
+			CCoin* coin = dynamic_cast<CCoin*>(obj);
+			if (!coin->isDie)
+			{
+				EatCoin(coin, coObjs);
+			}
 		}
 		// Question Brick
 		else if (dynamic_cast<CQuestionBrick*>(obj))
@@ -1720,18 +1764,6 @@ void CMario::OnIntersect(CGameObject* obj, vector<LPGAMEOBJECT>* coObjs)
 					}
 					canHit = false;
 				}
-			}
-		}
-		// Coin
-		else if (dynamic_cast<CCoin*>(obj))
-		{			
-			CCoin* coin = dynamic_cast<CCoin*>(obj);
-			if (!coin->isDie)
-			{
-				CPlayerInfo::GetInstance()->AdjustScore(POINT_50);
-				CPlayerInfo::GetInstance()->AdjustMoney(MONEY_1);
-				coin->Dead();
-				coin->DeleteObjs(coObjs);
 			}
 		}
 	}

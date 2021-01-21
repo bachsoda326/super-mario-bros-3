@@ -6,6 +6,7 @@
 #include "Bullet.h"
 #include "QuestionBrick.h"
 #include "Koopas.h"
+#include "Coin.h"
 
 #define MARIO_WALKING_SPEED		0.1f 
 #define MARIO_PREPARE_RUN_SPEED		0.15f
@@ -289,7 +290,7 @@ public:
 	bool canHit = true;
 	bool canMultiScoreLand = false;
 	bool canMultiScoreJump = false;
-	bool isToPipeDown = false;
+	bool isToPipeDown = true;
 	bool isOnOtherMap = false;
 	//bool canDuck = false;
 
@@ -316,6 +317,10 @@ public:
 	void Hurt();
 	void IncreasePower();
 	void DecreasePower();
+	void EatMushRoom(CMushRoom* mushroom, vector<LPGAMEOBJECT>* coObjs);
+	void EatLeaf(CLeaf* leaf, vector<LPGAMEOBJECT>* coObjs);
+	void EatCoin(CCoin* coin, vector<LPGAMEOBJECT>* coObjs);
+
 	// Giao nhau vs các obj
 	void OnIntersect(CGameObject* obj, vector<LPGAMEOBJECT>* coObjs);
 	bool isColTail(CGameObject* obj);
