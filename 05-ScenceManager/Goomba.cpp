@@ -24,6 +24,7 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	// Simple fall down
 	vy += ENEMY_GRAVITY * dt;
 
+	// Jumped die
 	if (state == GOOMBA_STATE_DIE && GetTickCount() - die_start > GOOMBA_DIE_TIME)
 	{
 		isDead = true;
@@ -43,23 +44,24 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		float rdx = 0;
 		float rdy = 0;
 
-		// TODO: This is a very ugly designed function!!!!
 		FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny, rdx, rdy);
 
-		// Collision logic with other objects		
+		// Col logic with other objs	
 		for (UINT i = 0; i < coEventsResult.size(); i++)
 		{
 			LPCOLLISIONEVENT e = coEventsResult[i];
-
+			
+			// Stand-Y ground
 			if (ny < 0 && e->obj != NULL && !dynamic_cast<CEnemy*>(e->obj))
 			{
 				PreventMoveY(e->obj);
 			}
 
-			// If isDie, do not coll-X
+			// If isDie, do not col-X
 			if (isDie) 
 				return;
 
+			// Col-X
 			if (e->nx != 0)
 			{
 				// Ground
@@ -88,7 +90,7 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				}
 			}
 		}
-		// clean up collision events
+		// Clean up collision events
 		for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
 	}
 }
@@ -137,11 +139,7 @@ void CGoomba::SetState(int state)
 		break;
 	case GOOMBA_STATE_WALKING:
 		vx = -GOOMBA_WALKING_SPEED;
-		break;
-	/*case ENEMY_STATE_RESPAWN:
-		state = GOOMBA_STATE_WALKING;
-		vx = -((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetPlayer()->nx * GOOMBA_WALKING_SPEED;
-		break;*/
+		break;	
 	}
 }
 

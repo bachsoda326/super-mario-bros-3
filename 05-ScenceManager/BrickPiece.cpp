@@ -1,4 +1,5 @@
 #include "BrickPiece.h"
+#include "Camera.h"
 
 CBrickPiece::CBrickPiece()
 {
@@ -18,9 +19,9 @@ void CBrickPiece::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	x += dx;
 	y += dy;
 
-	if (y + BRICK_PIECE_SIZE > 432)
+	if (y > CCamera::GetInstance()->GetTopMap() + CCamera::GetInstance()->GetHeightMap())
 	{
-		isDead = true;
+		Dead();
 		DeleteFrontObjs(coObjects);
 	}
 }

@@ -1,6 +1,9 @@
 #pragma once
 #include <vector>
 
+#define LIFE_1		1
+#define MONEY_1		1
+
 using std::vector;
 
 class CPlayerInfo

@@ -9,9 +9,11 @@ void CBrick::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	isColLeft = false;
 	isColRight = false;
+
 	// Intersect with objs
 	for (int i = 0; i < coObjects->size(); i++)
 	{
+		// Check if col with other bricks
 		if (!coObjects->at(i)->isDie && dynamic_cast<CBrick*>(coObjects->at(i)))
 		{
 			if (this == coObjects->at(i))

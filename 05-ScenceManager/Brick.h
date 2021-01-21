@@ -1,11 +1,11 @@
 #pragma once
 #include "GameObject.h"
-
-#define BRICK_BBOX_WIDTH  16
-#define BRICK_BBOX_HEIGHT 16
-
-#define BRICK_NORMAL 0
-#define BRICK_ITEM 1
+// BBox
+#define BRICK_BBOX_WIDTH	16
+#define BRICK_BBOX_HEIGHT	16
+// Type
+#define BRICK_NORMAL		0
+#define BRICK_ITEM			1
 
 class CBrick : public CGameObject
 {
@@ -14,9 +14,9 @@ class CBrick : public CGameObject
 
 	void SetBoundingBox();
 public:
-	float start_x = -1;			// initial position of question brick
+	float start_x = -1;			// Init position of brick
 	float start_y = -1;
-	bool isUp = false;
+	bool isUp = false;			// Use for col with Koopas when Mario jump to hit this
 
 	CBrick();
 

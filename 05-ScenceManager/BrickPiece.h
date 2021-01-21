@@ -1,11 +1,10 @@
 #pragma once
 #include "GameObject.h"
-
-#define BRICK_PIECE_ANI_SET	35
-
-#define BRICK_PIECE_SIZE	10
-
-
+// Animation
+#define BRICK_PIECE_ANI_SET			35
+// BBox
+#define BRICK_PIECE_SIZE			10
+// Speed
 #define BRICK_PIECE_HIGH_SPEED_X	0.1f
 #define BRICK_PIECE_LOW_SPEED_X		0.08f
 #define BRICK_PIECE_HIGH_SPEED_Y	0.3f

@@ -3,6 +3,7 @@
 #include "PSwitch.h"
 #include "BrickPiece.h"
 #include "PlayerInfo.h"
+#include "Point.h"
 
 CBreakableBrick::CBreakableBrick(int type)
 {
@@ -16,24 +17,27 @@ void CBreakableBrick::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	CBrick::Update(dt, coObjects);
 
+	// Check when Brick to Coin
 	if (coin_start == 0 && type == BREAKABLE_BRICK_TYPE_COIN && ((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->isBrickToCoin)
 	{
 		SetState(BREAKABLE_BRICK_STATE_COIN);
 		coin_start = GetTickCount();
 	}
-
-	if (coin_start != 0 && (GetTickCount() - coin_start) > 5000)
+	// Coin to Brick again
+	if (coin_start != 0 && (GetTickCount() - coin_start) > BREAKABLE_BRICK_TIME)
 	{
 		((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->isBrickToCoin = false;
 		SetState(BREAKABLE_BRICK_STATE_NORMAL);
 		coin_start = 0;
 	}
 
-	if (break_start != 0 && (GetTickCount() - break_start) > 5000)
+	// Break
+	if (break_start != 0 && (GetTickCount() - break_start) > BREAKABLE_BRICK_TIME)
 	{
 		DeleteFrontObjs(coObjects);
 	}
 
+	// Logic with multi coin type
 	if (state == BREAKABLE_BRICK_STATE_HIT_MULTI_COIN)
 	{
 		CGameObject::Update(dt, coObjects);
@@ -64,7 +68,7 @@ void CBreakableBrick::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 void CBreakableBrick::Render()
 {
-	int ani = -1;
+	int ani = BREAKABLE_BRICK_ANI_NORMAL;
 	switch (state)
 	{
 	case BREAKABLE_BRICK_STATE_NORMAL: case BREAKABLE_BRICK_STATE_BREAK: case BREAKABLE_BRICK_STATE_HIT_MULTI_COIN:
@@ -96,7 +100,7 @@ void CBreakableBrick::SetState(int state)
 		isDead = true;
 		break_start = GetTickCount();
 
-		for (int i = 0; i < 4; i++)
+		for (int i = 0; i < BREAKABLE_BRICK_NUM_BRICK_PIECES; i++)
 		{
 			CBrickPiece* piece = new CBrickPiece();
 			piece->SetPosition(x, y);
@@ -123,23 +127,23 @@ void CBreakableBrick::SetState(int state)
 			}
 			CGame::GetInstance()->GetCurrentScene()->GetFrontObjs()->push_back(piece);
 		}
-		CPlayerInfo::GetInstance()->AdjustScore(10);
+		CPlayerInfo::GetInstance()->AdjustScore(POINT_10);
 
 		break;
 	case BREAKABLE_BRICK_STATE_1UP_MUSHROOM_LEFT:
-		obj = new CMushRoom(x, y, -1, MUSHROOM_TYPE_1_UP);
+		obj = new CMushRoom(x, y, MUSHROOM_LEFT, MUSHROOM_TYPE_1_UP);
 		CGame::GetInstance()->GetCurrentScene()->GetBehindObjs()->push_back(obj);
 		break;
 	case BREAKABLE_BRICK_STATE_1UP_MUSHROOM_RIGHT:
-		obj = new CMushRoom(x, y, 1, MUSHROOM_TYPE_1_UP);
+		obj = new CMushRoom(x, y, MUSHROOM_RIGHT, MUSHROOM_TYPE_1_UP);
 		CGame::GetInstance()->GetCurrentScene()->GetBehindObjs()->push_back(obj);
 		break;
 	case BREAKABLE_BRICK_STATE_HIT_MUSHROOM_LEFT:
-		obj = new CMushRoom(x, y, -1, MUSHROOM_TYPE_RED);
+		obj = new CMushRoom(x, y, MUSHROOM_LEFT, MUSHROOM_TYPE_RED);
 		CGame::GetInstance()->GetCurrentScene()->GetBehindObjs()->push_back(obj);
 		break;
 	case BREAKABLE_BRICK_STATE_HIT_MUSHROOM_RIGHT:
-		obj = new CMushRoom(x, y, 1, MUSHROOM_TYPE_RED);
+		obj = new CMushRoom(x, y, MUSHROOM_RIGHT, MUSHROOM_TYPE_RED);
 		CGame::GetInstance()->GetCurrentScene()->GetBehindObjs()->push_back(obj);
 		break;
 	case BREAKABLE_BRICK_STATE_HIT_LEAF:
@@ -152,7 +156,7 @@ void CBreakableBrick::SetState(int state)
 		{
 			start_x = x;
 			start_y = y;
-			CPlayerInfo::GetInstance()->AdjustMoney(1);
+			CPlayerInfo::GetInstance()->AdjustMoney(MONEY_1);
 		}		
 		CCoin* coin = new CCoin(start_x, start_y - COIN_BBOX_HEIGHT, true);
 		CGame::GetInstance()->GetCurrentScene()->GetBehindObjs()->push_back(coin);

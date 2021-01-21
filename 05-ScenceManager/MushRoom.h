@@ -13,6 +13,9 @@
 
 #define MUSHROOM_GRAVITY			0.001f
 
+#define MUSHROOM_LEFT		-1
+#define MUSHROOM_RIGHT		1
+
 class CMushRoom : public CGameObject
 {	
 	void SetBoundingBox();

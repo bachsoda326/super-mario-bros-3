@@ -250,44 +250,40 @@ void CGameObject::AddPoint(int types)
 		switch (scoreFactor)
 		{
 		case 0:
-			score = 100;
-			type = POINT_100;
+			score = POINT_100;
+			type = POINT_TYPE_100;
 			break;
 		case 1:
-			score = 200;
-			type = POINT_200;
+			score = POINT_200;
+			type = POINT_TYPE_200;
 			break;
 		case 2:
-			score = 400;
-			type = POINT_400;
+			score = POINT_400;
+			type = POINT_TYPE_400;
 			break;
 		case 3:
-			score = 800;
-			type = POINT_800;
+			score = POINT_800;
+			type = POINT_TYPE_800;
 			break;
 		case 4:
-			score = 1000;
-			type = POINT_1000;
+			score = POINT_1000;
+			type = POINT_TYPE_1000;
 			break;
 		case 5:
-			score = 2000;
-			type = POINT_2000;
+			score = POINT_2000;
+			type = POINT_TYPE_2000;
 			break;
 		case 6:
-			score = 4000;
-			type = POINT_4000;
+			score = POINT_4000;
+			type = POINT_TYPE_4000;
 			break;
 		case 7:
-			score = 8000;
-			type = POINT_8000;
-			break;
-			/*case POINT_1_UP:
-				score = 1000;
-				type = POINT_1_UP;
-				break;*/
+			score = POINT_8000;
+			type = POINT_TYPE_8000;
+			break;			
 		default:
-			score = 8000;
-			type = POINT_8000;
+			score = POINT_8000;
+			type = POINT_TYPE_8000;
 			break;
 		}
 	}
@@ -295,32 +291,32 @@ void CGameObject::AddPoint(int types)
 	{
 		switch (type)
 		{
-		case POINT_100:
-			score = 100;
+		case POINT_TYPE_100:
+			score = POINT_100;
 			break;
-		case POINT_200:
-			score = 200;
+		case POINT_TYPE_200:
+			score = POINT_200;
 			break;
-		case POINT_400:
-			score = 400;
+		case POINT_TYPE_400:
+			score = POINT_400;
 			break;
-		case POINT_800:
-			score = 800;
+		case POINT_TYPE_800:
+			score = POINT_800;
 			break;
-		case POINT_1000:
-			score = 1000;
+		case POINT_TYPE_1000:
+			score = POINT_1000;
 			break;
-		case POINT_2000:
-			score = 2000;
+		case POINT_TYPE_2000:
+			score = POINT_2000;
 			break;
-		case POINT_4000:
-			score = 4000;
+		case POINT_TYPE_4000:
+			score = POINT_4000;
 			break;
-		case POINT_8000:
-			score = 8000;
+		case POINT_TYPE_8000:
+			score = POINT_8000;
 			break;
-		case POINT_1_UP:
-			CPlayerInfo::GetInstance()->AdjustLife(1);
+		case POINT_TYPE_1_UP:
+			CPlayerInfo::GetInstance()->AdjustLife(LIFE_1);
 			break;
 		default:
 			score = 8000;

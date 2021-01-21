@@ -73,7 +73,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 		if (GetTickCount() - die_start > 3000)
 		{
-			CPlayerInfo::GetInstance()->AdjustLife(-1);
+			CPlayerInfo::GetInstance()->AdjustLife(-LIFE_1);
 			CGame::GetInstance()->SwitchScene(WORLD_MAP_1);
 		}
 
@@ -1596,7 +1596,7 @@ void CMario::OnIntersect(CGameObject* obj, vector<LPGAMEOBJECT>* coObjs)
 				{
 					eat_item_start = GetTickCount();
 					SetState(MARIO_STATE_EAT_ITEM);
-					AddPoint(POINT_1000);					
+					AddPoint(POINT_TYPE_1000);					
 					mushroom->DeleteBehindObjs(coObjs);
 					y -= MARIO_BIG_BBOX_HEIGHT - MARIO_SMALL_BBOX_HEIGHT;
 					level = MARIO_LEVEL_BIG;					
@@ -1604,7 +1604,7 @@ void CMario::OnIntersect(CGameObject* obj, vector<LPGAMEOBJECT>* coObjs)
 				break;
 			case MUSHROOM_TYPE_1_UP:
 				mushroom->DeleteBehindObjs(coObjs);
-				AddPoint(POINT_1_UP);
+				AddPoint(POINT_TYPE_1_UP);
 				break;
 			default:
 				break;
@@ -1616,7 +1616,7 @@ void CMario::OnIntersect(CGameObject* obj, vector<LPGAMEOBJECT>* coObjs)
 			CLeaf* leaf = dynamic_cast<CLeaf*>(obj);
 			eat_item_start = GetTickCount();
 			SetState(MARIO_STATE_EAT_ITEM);
-			AddPoint(POINT_1000);
+			AddPoint(POINT_TYPE_1000);
 			leaf->DeleteFrontObjs(coObjs);
 			y -= MARIO_BIG_BBOX_HEIGHT - MARIO_SMALL_BBOX_HEIGHT;
 			level = MARIO_LEVEL_RACCOON;
@@ -1665,7 +1665,7 @@ void CMario::OnIntersect(CGameObject* obj, vector<LPGAMEOBJECT>* coObjs)
 			{
 				if (state != MARIO_STATE_TAIL)
 				{
-					CPlayerInfo::GetInstance()->AdjustScore(50);
+					CPlayerInfo::GetInstance()->AdjustScore(POINT_50);
 					bBrick->DeleteObjs(coObjs);
 				}
 			}
@@ -1718,8 +1718,8 @@ void CMario::OnIntersect(CGameObject* obj, vector<LPGAMEOBJECT>* coObjs)
 		else if (dynamic_cast<CCoin*>(obj))
 		{
 			CCoin* coin = dynamic_cast<CCoin*>(obj);
-			CPlayerInfo::GetInstance()->AdjustScore(50);
-			CPlayerInfo::GetInstance()->AdjustMoney(1);
+			CPlayerInfo::GetInstance()->AdjustScore(POINT_50);
+			CPlayerInfo::GetInstance()->AdjustMoney(MONEY_1);
 			coin->DeleteObjs(coObjs);
 		}
 	}
