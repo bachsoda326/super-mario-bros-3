@@ -275,6 +275,9 @@ void CTitleScene::Load()
 
 	f.close();
 
+	bushSprs.push_back(CSprites::GetInstance()->Get(SPRITE_BUSH_LEFT_ID));
+	bushSprs.push_back(CSprites::GetInstance()->Get(SPRITE_BUSH_RIGHT_ID));
+
 	CTextures::GetInstance()->Add(ID_TEX_BBOX, L"textures\\bbox.png", D3DCOLOR_XRGB(255, 255, 255));
 }
 
@@ -348,6 +351,32 @@ void CTitleScene::Update(DWORD dt)
 		fallingObjs.clear();
 	}
 
+	// Show Koopas
+	if (isShowKoopas)
+	{
+		for (size_t i = 0; i < listKoopas.size(); i++)
+		{
+			if (listKoopas[i]->isDead)
+			{
+				if (i != listKoopas.size() - 1)
+				{
+					if (GetTickCount() - spawn_koopas_start > i * 1500)
+						listKoopas[i]->Alive();
+				}
+				else
+				{
+					if (GetTickCount() - spawn_koopas_start > i * 2500)
+					{
+						listKoopas[i]->Alive();
+						((CKoopas*)listKoopas[i])->SetIsFast(true);
+					}
+				}
+				//listKoopas[i]->isActive = true;
+			}
+		}
+		//listKoopas.clear();
+	}
+
 	/*backGround->Update(dt);*/
 	// Cal colliable objs
 	vector<LPGAMEOBJECT> coObjects;
@@ -383,6 +412,10 @@ void CTitleScene::Render()
 		mario->Render();
 	if (!lugi->isDead)
 		lugi->Render();
+	if (isShowBush)
+	{
+		bushSprs.at(1)->DrawSprite(230, 105);
+	}
 }
 
 void CTitleScene::Unload()
@@ -393,6 +426,7 @@ void CTitleScene::Unload()
 
 	fallingObjs.clear();
 	listKoopas.clear();
+	bushSprs.clear();
 	// objs
 	for (int i = 0; i < objects.size(); i++)
 		delete objects[i];
@@ -405,109 +439,163 @@ void CTitleScene::Unload()
 
 void CTitleScene::HandleMario()
 {
-	if (mario->x <= CCamera::GetInstance()->GetLeftMap() || mario->x >= CCamera::GetInstance()->GetRightMap() - 24)
+	if (!isShowKoopas && (mario->x < CCamera::GetInstance()->GetBound().left || mario->x > CCamera::GetInstance()->GetBound().right))
+	{
 		mario->vx = 0;
-	// Duck
-	if (mario->state == MARIO_STATE_DUCK && GetTickCount() - mario->duck_start > 300)
-	{
-		mario->SetState(MARIO_STATE_IDLE);
+		mario->isDie = true;
+		isShowBush = false;
+		isShowKoopas = true;
+		spawn_koopas_start = GetTickCount();
 	}
-	// Bonk
-	if (mario->state == MARIO_STATE_BONK && GetTickCount() - mario->bonk_start > 150)
+	// Handle Small Mario
+	if (mario->GetLevel() == MARIO_LEVEL_SMALL)
 	{
-		mario->SetState(MARIO_STATE_LOOKUP);
-	}
-	// Loop up
-	if (mario->state == MARIO_STATE_LOOKUP && GetTickCount() - mario->look_start > 1000)
-	{
-		mario->SetState(MARIO_STATE_JUMP_HIGH);
-		mario->vy = -0.4f;
-	}
-	// Wag after eat leaf
-	if (mario->state == MARIO_STATE_EAT_ITEM && mario->isTransform)
-	{
-		mario->vx = -0.08f;
-		mario->vy = 0;
-		mario->SetState(MARIO_STATE_WAG);
-		mario->wag_start = GetTickCount();
-	}
-	// Wag and hit Goomba
-	if (mario->state == MARIO_STATE_WAG)
-	{
-		if (GetTickCount() - mario->wag_start < 1800)
-			mario->SetState(MARIO_STATE_WAG);
-		else if (GetTickCount() - mario->wag_start >= 1800)
+		// First stand look Koopas 1
+		if (mario->state == MARIO_STATE_IDLE && mario->nx == 1 && look_koopas_2_start == 0)
 		{
-			mario->SetState(MARIO_STATE_JUMP_HIGH);
-			mario->vx = 0.01f;
-			mario->nx = 1;			
+			mario->nx = -1;
+			look_koopas_start = GetTickCount();
+		}	
+		// Look Koopas 1 done
+		if (look_koopas_start != 0 && GetTickCount() - look_koopas_start > 1000)
+		{
+			mario->nx = 1;
+			mario->SetState(MARIO_STATE_RUN);
+			look_koopas_start = 0;
 		}
-	}
-
-	if (mario->state == MARIO_STATE_JUMP_HIGH)
-	{
-		// Walk after hit Goomba
-		if (mario->isHitGoomba && mario->isOnGround)
+		// Look Koopas 2 done
+		if (look_koopas_2_start != 0 && GetTickCount() - look_koopas_2_start > 1500)
 		{
-			mario->SetState(MARIO_STATE_WALKING);
-			mario->vx = 0.04f;
-			mario->isHitGoomba = false;
-		}
-		if (lugi->isKickKoopas && koopas->state == KOOPAS_STATE_HIDE && mario->y + MARIO_BIG_BBOX_HEIGHT >= 220)
-		{
+			mario->nx = 1;
 			mario->SetState(MARIO_STATE_WALKING);
 			mario->vx = 0.05f;
-			mario->nx = 1;
-			mario->canHold = true;
+			isShowBush = true;
+			look_koopas_2_start = 0;
 		}
-	}
-	// End kick Koopas
-	if (mario->state == MARIO_STATE_KICK && kick_walk_start == 0  && GetTickCount() - mario->kick_start > 100)
-	{
-		kick_walk_start = GetTickCount();
-		mario->SetState(MARIO_STATE_WALKING);
-		mario->isKickKoopas = true;
-	}	
-	// Run Koopas
-	if (mario->state == MARIO_STATE_IDLE && lugi->isKickKoopas)
-	{
-		if (koopas->vx < 0 &&koopas->x - mario->x <= 100)
+		// Brake
+		if ((mario->state == MARIO_STATE_RUN || mario->state == MARIO_STATE_SKID) && mario->x >= 220)
 		{
-			mario->SetState(MARIO_STATE_WALKING);
-			mario->vx = -0.05f;
 			mario->nx = -1;
-		}		
-	}
-	// Jump Koopas
-	if (mario->state == MARIO_STATE_WALKING)
-	{
-		// End walk after kick Koopas
-		if (kick_walk_start != 0 && GetTickCount() - kick_walk_start > 1000)
-		{
-			mario->SetState(MARIO_STATE_IDLE);
-			kick_walk_start = 0;
-		}
-		if (lugi->isKickKoopas)
-		{
-			// Jump Koopas
-			if (koopas->state == KOOPAS_STATE_SPIN)
+			mario->SetState(MARIO_STATE_SKID);
+			mario->vx -= 0.002f;
+			if (mario->vx <= 0)
 			{
-				if (koopas->vx < 0 && koopas->x - mario->x <= 80)
-				{
-					mario->SetState(MARIO_STATE_JUMP_HIGH);
-					mario->vy = -0.2f;
-				}
+				mario->SetState(MARIO_STATE_WALKING);
+				mario->vx = -0.05f;
 			}
 		}
-		// Throw Koopas
-		if (mario->isHold && mario->x >= 100)
+		// Look Koopas 2
+		if (mario->state == MARIO_STATE_WALKING && mario->nx == -1 && mario->x <= 180)
 		{
-			mario->SetState(MARIO_STATE_KICK);
-			mario->kick_start = GetTickCount();
-			mario->koopas->SetState(KOOPAS_STATE_SPIN);
-			mario->koopas->vx = mario->nx * 0.15f;
-			mario->koopas = NULL;
-			mario->isHold = false;
+			mario->SetState(MARIO_STATE_IDLE);
+			look_koopas_2_start = GetTickCount();
+		}
+	}
+	else
+	{
+		// Duck
+		if (mario->state == MARIO_STATE_DUCK && GetTickCount() - mario->duck_start > 300)
+		{
+			mario->SetState(MARIO_STATE_IDLE);
+		}
+		// Bonk
+		if (mario->state == MARIO_STATE_BONK && GetTickCount() - mario->bonk_start > 150)
+		{
+			mario->SetState(MARIO_STATE_LOOKUP);
+		}
+		// Loop up
+		if (mario->state == MARIO_STATE_LOOKUP && GetTickCount() - mario->look_start > 1000)
+		{
+			mario->SetState(MARIO_STATE_JUMP_HIGH);
+			mario->vy = -0.4f;
+		}
+		// Wag after eat leaf
+		if (mario->state == MARIO_STATE_EAT_ITEM && mario->isTransform)
+		{
+			mario->vx = -0.08f;
+			mario->vy = 0;
+			mario->SetState(MARIO_STATE_WAG);
+			mario->wag_start = GetTickCount();
+		}
+		// Wag and hit Goomba
+		if (mario->state == MARIO_STATE_WAG)
+		{
+			if (GetTickCount() - mario->wag_start < 1800)
+				mario->SetState(MARIO_STATE_WAG);
+			else if (GetTickCount() - mario->wag_start >= 1800)
+			{
+				mario->SetState(MARIO_STATE_JUMP_HIGH);
+				mario->vx = 0.01f;
+				mario->nx = 1;
+			}
+		}
+
+		if (mario->state == MARIO_STATE_JUMP_HIGH)
+		{
+			// Walk after hit Goomba
+			if (mario->isHitGoomba && mario->isOnGround)
+			{
+				mario->SetState(MARIO_STATE_WALKING);
+				mario->vx = 0.04f;
+				mario->isHitGoomba = false;
+			}
+			// Walk after land jump
+			if (lugi->isKickKoopas && koopas->state == KOOPAS_STATE_HIDE && mario->y + MARIO_BIG_BBOX_HEIGHT >= 220)
+			{
+				mario->SetState(MARIO_STATE_WALKING);
+				mario->vx = 0.05f;
+				mario->nx = 1;
+				mario->canHold = true;
+			}
+		}
+		// End kick Koopas
+		if (mario->state == MARIO_STATE_KICK && kick_walk_start == 0 && GetTickCount() - mario->kick_start > 100)
+		{
+			kick_walk_start = GetTickCount();
+			mario->SetState(MARIO_STATE_WALKING);
+			mario->isKickKoopas = true;
+		}
+		// Run Koopas
+		if (mario->state == MARIO_STATE_IDLE && lugi->isKickKoopas)
+		{
+			if (koopas->vx < 0 && koopas->x - mario->x <= 100)
+			{
+				mario->SetState(MARIO_STATE_WALKING);
+				mario->vx = -0.05f;
+				mario->nx = -1;
+			}
+		}
+
+		if (mario->state == MARIO_STATE_WALKING)
+		{
+			// End walk after kick Koopas
+			if (kick_walk_start != 0 && GetTickCount() - kick_walk_start > 1000)
+			{
+				mario->SetState(MARIO_STATE_IDLE);
+				kick_walk_start = 0;
+			}
+			if (lugi->isKickKoopas)
+			{
+				// Jump Koopas
+				if (koopas->state == KOOPAS_STATE_SPIN)
+				{
+					if (koopas->vx < 0 && koopas->x - mario->x <= 80)
+					{
+						mario->SetState(MARIO_STATE_JUMP_HIGH);
+						mario->vy = -0.2f;
+					}
+				}
+			}
+			// Throw Koopas
+			if (mario->isHold && mario->x >= 100)
+			{
+				mario->SetState(MARIO_STATE_KICK);
+				mario->kick_start = GetTickCount();
+				mario->koopas->SetState(KOOPAS_STATE_SPIN);
+				mario->koopas->vx = mario->nx * 0.15f;
+				mario->koopas = NULL;
+				mario->isHold = false;
+			}
 		}
 	}
 }

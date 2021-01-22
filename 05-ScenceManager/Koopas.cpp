@@ -45,7 +45,7 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	else
 		mario = ((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetPlayer();
 
-	if (isDie && mario != NULL)
+	if (!isActive || (isDie && mario != NULL))
 		mario->canMultiScoreLand = false;
 
 	// Koopas when being holded by Mario
@@ -208,7 +208,7 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				}
 			}
 			// Koopas		
-			else if (dynamic_cast<CKoopas*>(e->obj))
+			else if (dynamic_cast<CKoopas*>(e->obj) && !isOnTitleScene)
 			{
 				CKoopas* koopas = dynamic_cast<CKoopas*>(e->obj);
 				if (e->nx != 0 && !(state == KOOPAS_STATE_SPIN || state == KOOPAS_STATE_HOLD) && !(koopas->state == KOOPAS_STATE_SPIN || koopas->state == KOOPAS_STATE_HOLD))
@@ -441,7 +441,17 @@ void CKoopas::SetState(int state)
 					vx = -((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetPlayer()->nx * KOOPAS_WALKING_WING_SPEED;
 				}
 				else
-					vx = -((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetPlayer()->nx * KOOPAS_WALKING_SPEED;
+				{
+					if (isOnTitleScene)
+					{
+						if (isFast)
+							vx = 2 * KOOPAS_WALKING_SPEED;
+						else
+							vx = KOOPAS_WALKING_SPEED;
+					}
+					else
+						vx = -((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetPlayer()->nx * KOOPAS_WALKING_SPEED;
+				}
 			}
 		}
 		return;

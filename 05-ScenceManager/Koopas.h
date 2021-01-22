@@ -56,6 +56,7 @@ class CKoopas : public CEnemy
 	DWORD shake_start = 0;
 
 	bool isShaking = false;
+	bool isFast = false;
 
 	float yMin = -1, yMax = -1;
 
@@ -71,6 +72,7 @@ public:
 	void GetBoundingBox(float& left, float& top, float& right, float& bottom);
 
 	void SetFlyRegion(float min, float max);
+	void SetIsFast(bool fast) { isFast = fast; }
 
 	void UpdateDirection();
 

@@ -427,9 +427,9 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					canJumpHigher = false;
 				}
 			}
-			else if (ny > 0 && !dynamic_cast<CFlyBar*>(e->obj) && !dynamic_cast<CCoin*>(e->obj) && !dynamic_cast<CLeaf*>(e->obj) && !dynamic_cast<CBullet*>(e->obj) && !dynamic_cast<CMushRoom*>(e->obj) && !dynamic_cast<CCloudTooth*>(e->obj) && !dynamic_cast<CKoopas*>(e->obj) && !dynamic_cast<CGoomba*>(e->obj))
+			else if (ny > 0 && !dynamic_cast<CBox*>(e->obj) && !dynamic_cast<CWarpPipe*>(e->obj) && !dynamic_cast<CFlyBar*>(e->obj) && !dynamic_cast<CCoin*>(e->obj) && !dynamic_cast<CLeaf*>(e->obj) && !dynamic_cast<CBullet*>(e->obj) && !dynamic_cast<CMushRoom*>(e->obj) && !dynamic_cast<CCloudTooth*>(e->obj) && !dynamic_cast<CKoopas*>(e->obj) && !dynamic_cast<CGoomba*>(e->obj))
 			{
-				if (!((dynamic_cast<CBreakableBrick*>(e->obj) && e->obj->GetState() == BREAKABLE_BRICK_STATE_COIN) || ((dynamic_cast<CWarpPipe*>(e->obj)/* && state == MARIO_STATE_PIPE*/))))
+				if (!(dynamic_cast<CBreakableBrick*>(e->obj) && e->obj->GetState() == BREAKABLE_BRICK_STATE_COIN))
 				{
 					vy = 0;
 					canJump = false;
@@ -505,6 +505,8 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			{
 				if (e->nx != 0)
 					MoveThrough(OBJ_MOVE_X);
+				if (e->ny > 0)
+					MoveThrough(OBJ_MOVE_Y);
 			}
 			// Warp pipe
 			else if (dynamic_cast<CWarpPipe*>(e->obj))
@@ -1384,7 +1386,10 @@ void CMario::SetState(int state)
 		vy = -0.08f;
 		break;
 	case MARIO_STATE_RUN:
-		vx = nx * MARIO_RUN_SPEED;
+		if (isOnTitleScene)
+			vx = nx * MARIO_RUN_SPEED / 2;
+		else
+			vx = nx * MARIO_RUN_SPEED;
 		break;
 	case MARIO_STATE_PIPE:
 		vx = 0;

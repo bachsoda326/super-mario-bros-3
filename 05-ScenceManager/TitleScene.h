@@ -4,6 +4,9 @@
 #include "Game.h"
 #include "TitleBackGround.h"
 
+#define SPRITE_BUSH_LEFT_ID		90005
+#define SPRITE_BUSH_RIGHT_ID	90006
+
 class CTitleScene : public CScene
 {
 protected:
@@ -24,14 +27,16 @@ protected:
 	CKoopas* koopas;
 	vector<LPGAMEOBJECT> fallingObjs;
 	vector<LPGAMEOBJECT> listKoopas;
+	vector<LPSPRITE> bushSprs;
 
 	DWORD lugi_jump_start;
 	DWORD kick_walk_start;
+	DWORD look_koopas_start;
+	DWORD look_koopas_2_start;
+	DWORD spawn_koopas_start;
 
 	bool isShowBush = false;
-	bool isShowMenu = false;
-	bool isHitGoomba = false;
-	bool isKickKoopas = false;
+	bool isShowKoopas = false;
 
 	void _ParseSection_TEXTURES(string line);
 	void _ParseSection_SPRITES(string line);
