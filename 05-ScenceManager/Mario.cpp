@@ -53,10 +53,15 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 	// Simple fall down
 	if (!CGame::GetInstance()->GetCurrentScene()->GetIsObjStop() && state != MARIO_STATE_PIPE)
-		vy += MARIO_GRAVITY * dt;
+	{
+		if (isOnTitleScene)
+			vy += 0.0005 * dt;
+		else
+			vy += MARIO_GRAVITY * dt;
+	}
 
 	// Max jump
-	if (vy <= -0.2f)
+	if (!isOnTitleScene && vy <= -0.2f)
 	{
 		vy = -0.2f;
 		canJumpHigher = false;
@@ -843,6 +848,17 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					}
 				}
 			}
+			// Lugi
+			else if (dynamic_cast<CMario*>(e->obj))
+			{
+				if (e->ny < 0)
+				{
+					CMario* mario = dynamic_cast<CMario*>(e->obj);
+					vy = -0.42f;
+					mario->SetState(MARIO_STATE_DUCK);
+					mario->duck_start = GetTickCount();
+				}
+			}
 
 			/*else if (!dynamic_cast<CGoomba*>(e->obj) && !dynamic_cast<CKoopas*>(e->obj))
 			{
@@ -1364,6 +1380,7 @@ void CMario::SetState(int state)
 			vy = -0.02f;
 		break;
 	case MARIO_STATE_DUCK:
+		vx = 0;
 		canAttack = false;
 		break;
 	case MARIO_STATE_END_SCENE:
@@ -1550,7 +1567,8 @@ void CMario::EatLeaf(CLeaf* leaf, vector<LPGAMEOBJECT>* coObjs)
 	SetState(MARIO_STATE_EAT_ITEM);
 	AddPoint(POINT_TYPE_1000);
 	leaf->Dead();
-	leaf->DeleteFrontObjs(coObjs);
+	if (!leaf->isOnTitleScene)
+		leaf->DeleteFrontObjs(coObjs);
 	if (level != MARIO_LEVEL_RACCOON)
 	{
 		// Transform, stop other objs

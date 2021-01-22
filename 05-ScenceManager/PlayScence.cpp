@@ -711,6 +711,8 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 		break;
 	case DIK_V:
 		CGame::GetInstance()->SwitchScene(TITLE_SCREEN);
+		CCamera::GetInstance()->SetPosition(CGame::GetInstance()->GetScreenWidth() / 2, CGame::GetInstance()->GetScreenHeight() / 2);
+		CCamera::GetInstance()->SetMapSize(LEFT_TITLE_SCENE - 24, TOP_TITLE_SCENE - 50, RIGHT_TITLE_SCENE + 24, BOTTOM_TITLE_SCENE, WIDTH_TITLE_SCENE, HEIGHT_TITLE_SCENE);
 		break;
 	case DIK_NUMPAD9:
 		switch (map->GetId())

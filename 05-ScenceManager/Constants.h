@@ -42,6 +42,7 @@
 #define WIDTH_OTHER_MAP_1_4		512
 #define HEIGHT_OTHER_MAP_1_4	192
 
+// World map 1
 #define WORLD_MAP_1				100
 #define LEFT_WORLD_MAP_1		0
 #define TOP_WORLD_MAP_1			0
@@ -49,3 +50,12 @@
 #define BOTTOM_WORLD_MAP_1		176
 #define WIDTH_WORLD_MAP_1		256
 #define HEIGHT_WORLD_MAP_1		176
+
+// Title scene
+#define TITLE_SCENE				0
+#define LEFT_TITLE_SCENE		0
+#define TOP_TITLE_SCENE			0
+#define RIGHT_TITLE_SCENE		305
+#define BOTTOM_TITLE_SCENE		264
+#define WIDTH_TITLE_SCENE		305
+#define HEIGHT_TITLE_SCENE		264

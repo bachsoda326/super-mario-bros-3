@@ -361,6 +361,8 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 void CKoopas::Render()
 {
 	int ani = KOOPAS_ANI_WALKING_LEFT;
+	if (type == KOOPAS_HIDE)
+		ani = KOOPAS_ANI_HIDE;
 	if (type == KOOPAS_GREEN_WING || type == KOOPAS_RED_WING)
 	{
 		if (vx > 0)

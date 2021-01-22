@@ -368,6 +368,12 @@ void CGameObject::Dead()
 	isDead = true;
 }
 
+void CGameObject::Alive()
+{
+	isDie = false;
+	isDead = false;
+}
+
 
 void CGameObject::RenderBoundingBox()
 {

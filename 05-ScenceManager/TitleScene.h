@@ -4,13 +4,6 @@
 #include "Game.h"
 #include "TitleBackGround.h"
 
-#define SPRITE_TITLE_BACKGROUND_ID		90001
-#define SPRITE_TITLE_ARROW_ID			90101
-#define ANIMATION_NUM_3_ID				90201
-
-#define ONE_PLAYER_TYPE		1
-#define TWO_PLAYER_TYPE		2
-
 class CTitleScene : public CScene
 {
 protected:
@@ -25,18 +18,21 @@ protected:
 	CTitleBackGround* backGround;
 	vector<LPSPRITE> bushSprs;*/
 
-	LPSPRITE backgroundSpr = NULL;
-	LPSPRITE onePlayerArrowSpr = NULL;
-	LPSPRITE twoPlayerArrowSpr = NULL;
-	LPANIMATION num3Ani = NULL;
-		
-	int playType = ONE_PLAYER_TYPE;
+	CMario* mario;
+	CMario* lugi;
+	CTitleBackGround* backGround;
+	vector<LPGAMEOBJECT> fallingObjs;
+	vector<LPGAMEOBJECT> listKoopas;
+
+	DWORD lugi_jump_start;
+
 	bool isShowBush = false;
 	bool isShowMenu = false;
 
 	void _ParseSection_TEXTURES(string line);
 	void _ParseSection_SPRITES(string line);
 	void _ParseSection_ANIMATIONS(string line);
+	void _ParseSection_ANIMATION_SETS(string line);
 	void _ParseSection_OBJECTS(string line);
 
 public:
@@ -45,10 +41,11 @@ public:
 	virtual void Load();
 	virtual void Update(DWORD dt);
 	virtual void Render();
-	virtual void Unload();	
-
-	void SetPlayType(int num) { playType = num; }
-	int GetPlayType() { return playType; }
+	virtual void Unload();
+	
+	CTitleBackGround* GetBackGround() { return backGround; }
+	void HandleMario();
+	void HandleLugi();
 };
 
 class CTitleSceneKeyHandler : public CScenceKeyHandler

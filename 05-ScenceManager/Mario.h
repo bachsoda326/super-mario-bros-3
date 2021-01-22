@@ -279,6 +279,10 @@ public:
 	DWORD pipe_down_start;
 	DWORD die_start;
 	DWORD canJump_start;
+	// For Title Scene
+	DWORD duck_start;
+	DWORD head_hit_start;
+	DWORD look_start;
 
 	/*bool isPreventMoveX = false;*/
 	bool isTransform = false;

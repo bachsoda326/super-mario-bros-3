@@ -3,6 +3,10 @@
 
 CLeaf::CLeaf()
 {
+	vx = -LEAF_X_SPEED;
+	vy = LEAF_Y_SPEED;
+	nx = -1;
+
 	SetBoundingBox();
 }
 
@@ -52,14 +56,16 @@ void CLeaf::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		if (x + right - left + width / 4 <= leftCamera || x - width / 4 >= rightCamera || y + top - bottom + height / 8 <= topCamera || y - height / 8 >= bottomCamera - CAMERA_DISTANCE_Y)
 		{
 			Dead();
-			DeleteFrontObjs(coObjects);
+			if (!isOnTitleScene)
+				DeleteFrontObjs(coObjects);
 			return;
 		}
 		// Fall
 		if (y > CCamera::GetInstance()->GetTopMap() + CCamera::GetInstance()->GetHeightMap())
 		{
 			Dead();
-			DeleteFrontObjs(coObjects);
+			if (!isOnTitleScene)
+				DeleteFrontObjs(coObjects);
 			return;
 		}
 		// When stop move in left/right edge

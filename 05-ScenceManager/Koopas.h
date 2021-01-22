@@ -40,6 +40,7 @@
 #define KOOPAS_RED						2
 #define KOOPAS_GREEN_WING				3
 #define KOOPAS_RED_WING					4
+#define KOOPAS_HIDE						5
 // Time
 #define KOOPAS_SHAKE_TIME				1000
 #define KOOPAS_HIDE_TIME				5000

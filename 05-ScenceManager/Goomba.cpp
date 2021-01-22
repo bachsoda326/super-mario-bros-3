@@ -56,6 +56,8 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			if (ny < 0 && e->obj != NULL && !dynamic_cast<CEnemy*>(e->obj))
 			{
 				PreventMoveY(e->obj);
+				if (isOnTitleScene)
+					vx = - GOOMBA_WALKING_SPEED;
 			}
 
 			// If isDie, do not col-X
@@ -115,8 +117,8 @@ void CGoomba::SetState(int state)
 	if (state == ENEMY_STATE_RESPAWN)
 	{
 		CGameObject::SetState(GOOMBA_STATE_WALKING);
-
-		vx = -((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetPlayer()->nx * GOOMBA_WALKING_SPEED;
+		if (!isOnTitleScene)
+			vx = -((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetPlayer()->nx * GOOMBA_WALKING_SPEED;
 		return;
 	}
 

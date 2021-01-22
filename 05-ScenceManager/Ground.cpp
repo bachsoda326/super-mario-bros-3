@@ -9,7 +9,7 @@ CGround::CGround(int r, int b)
 }
 
 void CGround::Render()
-{
+{	
 	RenderBoundingBox();
 }
 

@@ -19,7 +19,7 @@ void CEnemy::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		if (!isActive)
 		{
 			// Respawn in region
-			if (xSpawn + right - left >= leftCamera && xSpawn <= rightCamera && ySpawn + top - bottom >= topCamera && ySpawn <= bottomCamera - CAMERA_DISTANCE_Y)
+			if (xSpawn + right - left >= leftCamera && xSpawn <= rightCamera && ySpawn + bottom - top >= topCamera && ySpawn <= bottomCamera - CAMERA_DISTANCE_Y)
 			{
 				if (canActive)
 				{

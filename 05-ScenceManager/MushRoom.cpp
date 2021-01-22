@@ -58,14 +58,16 @@ void CMushRoom::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		if (x + right - left + width / 4 <= leftCamera || x - width / 4 >= rightCamera || y + top - bottom + height / 8 <= topCamera || y - height / 8 >= bottomCamera - CAMERA_DISTANCE_Y)
 		{
 			Dead();
-			DeleteBehindObjs(coObjects);
+			if (!isOnTitleScene)
+				DeleteBehindObjs(coObjects);
 			return;
 		}
 		// Fall
 		if (y > CCamera::GetInstance()->GetTopMap() + CCamera::GetInstance()->GetHeightMap())
 		{
 			Dead();
-			DeleteBehindObjs(coObjects);
+			if (!isOnTitleScene)
+				DeleteBehindObjs(coObjects);
 			return;
 		}
 		// Simple fall down
@@ -94,6 +96,8 @@ void CMushRoom::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				if (ny < 0 && e->obj != NULL && (dynamic_cast<CGround*>(e->obj) || dynamic_cast<CWarpPipe*>(e->obj) || dynamic_cast<CBrick*>(e->obj) || dynamic_cast<CBox*>(e->obj) || dynamic_cast<CCloudTooth*>(e->obj)))
 				{
 					PreventMoveY(e->obj);
+					if (isOnTitleScene)
+						vx = this->nx * MUSHROOM_X_SPEED;
 				}
 				// Col-X
 				if (e->nx != 0)
@@ -114,7 +118,7 @@ void CMushRoom::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 void CMushRoom::Render()
 {
-	int ani = -1;
+	int ani = MUSHROOM_TYPE_RED;
 	switch (type)
 	{
 	case MUSHROOM_TYPE_RED:

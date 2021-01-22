@@ -88,6 +88,8 @@ public:
 	void SetBoundingBox() {};
 
 public: 
+	bool isOnTitleScene = false;
+
 	void SetId(int id) { this->id = id; }
 	void SetRespawnPosition(float x, float y) { this->xSpawn = x, this->ySpawn = y; }
 	void SetPosition(float x, float y) { this->x = x, this->y = y; }
@@ -127,6 +129,7 @@ public:
 
 	void UpdateDirection();
 	void Dead();
+	void Alive();
 
 	CGameObject();
 
