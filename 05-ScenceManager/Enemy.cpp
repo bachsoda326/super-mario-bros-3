@@ -32,7 +32,7 @@ void CEnemy::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				canActive = true;
 			return;
 		}
-		else
+		else if (!isOnTitleScene)
 		{
 			float width = CGame::GetInstance()->GetScreenWidth();
 			float height = CGame::GetInstance()->GetScreenHeight();

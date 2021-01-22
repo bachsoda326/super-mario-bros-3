@@ -220,14 +220,16 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				SetState(MARIO_STATE_RUNJUMP);
 		}
 	}
-
-	if ((GetTickCount() - wag_start) < 300)
+	if (!isOnTitleScene)
 	{
-		SetState(MARIO_STATE_WAG);
-	}
-	else if (state == MARIO_STATE_WAG)
-	{
-		SetState(MARIO_STATE_JUMP_HIGH);
+		if ((GetTickCount() - wag_start) < 300)
+		{
+			SetState(MARIO_STATE_WAG);
+		}
+		else if (state == MARIO_STATE_WAG)
+		{
+			SetState(MARIO_STATE_JUMP_HIGH);
+		}
 	}
 	if ((GetTickCount() - fly_start) < 300)
 	{
@@ -569,6 +571,8 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						canMultiScoreJump = true;
 						goomba->SetState(GOOMBA_STATE_DIE);
 						vy = -MARIO_JUMP_DEFLECT_SPEED;
+						if (isOnTitleScene)
+							isHitGoomba = true;
 					}
 					/*else if (state != MARIO_STATE_TAIL && e->nx != 0)
 					{
@@ -892,6 +896,10 @@ void CMario::Render()
 		ani = MARIO_ANI_SMALL_DIE;
 	else if (level == MARIO_LEVEL_BIG)
 	{
+		if (state == MARIO_STATE_BONK)
+			ani = MARIO_ANI_BIG_BONK_LEFT;
+		if (state == MARIO_STATE_LOOKUP)
+			ani = MARIO_ANI_BIG_LOOKUP_LEFT;
 		if (state == MARIO_STATE_END_SCENE)
 		{
 			if (isOnGround)
@@ -1340,6 +1348,12 @@ void CMario::SetState(int state)
 
 	switch (state)
 	{
+	case MARIO_STATE_BONK:
+		bonk_start = GetTickCount();
+		break;
+	case MARIO_STATE_LOOKUP:
+		look_start = GetTickCount();
+		break;
 		/*case MARIO_STATE_WALKING_RIGHT:
 			vx = MARIO_WALKING_SPEED;
 			nx = 1;
@@ -1483,28 +1497,43 @@ void CMario::Hurt()
 {
 	if (untouchable == 0)
 	{
-		if (level > MARIO_LEVEL_BIG)
-		{
-			// Transform, stop other objs
-			isTransform = true;
-			SetState(MARIO_STATE_IDLE);
-			level = MARIO_LEVEL_BIG;
-			transform_start = GetTickCount();
-			CGame::GetInstance()->GetCurrentScene()->SetObjStop(true);
-			StartUntouchable();
-		}
-		else if (level > MARIO_LEVEL_SMALL)
+		if (isOnTitleScene)
 		{
 			// Transform, stop other objs
 			isTransform = true;
 			SetState(MARIO_STATE_IDLE);
 			level = MARIO_LEVEL_SMALL;
+			y += MARIO_BIG_BBOX_HEIGHT - MARIO_SMALL_BBOX_HEIGHT;
 			transform_start = GetTickCount();
 			CGame::GetInstance()->GetCurrentScene()->SetObjStop(true);
 			StartUntouchable();
 		}
 		else
-			SetState(MARIO_STATE_DIE);
+		{
+			if (level > MARIO_LEVEL_BIG)
+			{
+				// Transform, stop other objs
+				isTransform = true;
+				SetState(MARIO_STATE_IDLE);
+				level = MARIO_LEVEL_BIG;
+				transform_start = GetTickCount();
+				CGame::GetInstance()->GetCurrentScene()->SetObjStop(true);
+				StartUntouchable();
+			}
+			else if (level > MARIO_LEVEL_SMALL)
+			{
+				// Transform, stop other objs
+				isTransform = true;
+				SetState(MARIO_STATE_IDLE);
+				level = MARIO_LEVEL_SMALL;
+				y += MARIO_BIG_BBOX_HEIGHT - MARIO_SMALL_BBOX_HEIGHT;
+				transform_start = GetTickCount();
+				CGame::GetInstance()->GetCurrentScene()->SetObjStop(true);
+				StartUntouchable();
+			}
+			else
+				SetState(MARIO_STATE_DIE);
+		}
 	}
 }
 

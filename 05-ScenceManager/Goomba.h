@@ -15,12 +15,14 @@
 #define GOOMBA_WALKING_SPEED		0.035f
 // Time
 #define GOOMBA_DIE_TIME				300
+#define GOOMBA_WAIT_WALK_TIME		1000
 
 class CGoomba : public CEnemy
 {	
 	void SetBoundingBox(); 
 public:
 	DWORD die_start = 0;
+	DWORD walk_start = 0;
 
 	CGoomba();
 

@@ -21,13 +21,17 @@ protected:
 	CMario* mario;
 	CMario* lugi;
 	CTitleBackGround* backGround;
+	CKoopas* koopas;
 	vector<LPGAMEOBJECT> fallingObjs;
 	vector<LPGAMEOBJECT> listKoopas;
 
 	DWORD lugi_jump_start;
+	DWORD kick_walk_start;
 
 	bool isShowBush = false;
 	bool isShowMenu = false;
+	bool isHitGoomba = false;
+	bool isKickKoopas = false;
 
 	void _ParseSection_TEXTURES(string line);
 	void _ParseSection_SPRITES(string line);
@@ -44,6 +48,8 @@ public:
 	virtual void Unload();
 	
 	CTitleBackGround* GetBackGround() { return backGround; }
+	CMario* GetMario() { return mario; }
+	CMario* GetLugi() { return lugi; }
 	void HandleMario();
 	void HandleLugi();
 };

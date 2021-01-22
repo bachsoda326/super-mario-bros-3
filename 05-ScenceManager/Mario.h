@@ -38,6 +38,8 @@
 #define MARIO_STATE_EAT_ITEM			116
 #define MARIO_STATE_PIPE				117
 #define MARIO_STATE_END_SCENE			118
+#define MARIO_STATE_BONK				119
+#define MARIO_STATE_LOOKUP				120
 #define MARIO_STATE_DIE					999
 
 //#define MARIO_ANI_BIG_IDLE_RIGHT		0
@@ -281,7 +283,7 @@ public:
 	DWORD canJump_start;
 	// For Title Scene
 	DWORD duck_start;
-	DWORD head_hit_start;
+	DWORD bonk_start;
 	DWORD look_start;
 
 	/*bool isPreventMoveX = false;*/
@@ -298,6 +300,8 @@ public:
 	bool canMultiScoreJump = false;
 	bool isToPipeDown = true;
 	bool isOnOtherMap = false;
+	bool isHitGoomba = false;
+	bool isKickKoopas = false;
 	//bool canDuck = false;
 
 	vector<CBullet*> *bullets;

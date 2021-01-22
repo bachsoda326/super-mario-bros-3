@@ -32,6 +32,12 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		DeleteObjs(coObjects);
 		return;
 	}
+	// Goomba wait to walk in TitleScene
+	if (walk_start != 0 && GetTickCount() - walk_start > GOOMBA_WAIT_WALK_TIME)
+	{
+		vx = -GOOMBA_WALKING_SPEED;
+		walk_start = 0;
+	}
 
 	if (state != GOOMBA_STATE_DIE_REVERSE)
 	{
@@ -56,8 +62,8 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			if (ny < 0 && e->obj != NULL && !dynamic_cast<CEnemy*>(e->obj))
 			{
 				PreventMoveY(e->obj);
-				if (isOnTitleScene)
-					vx = - GOOMBA_WALKING_SPEED;
+				if (isOnTitleScene && walk_start == 0)
+					walk_start = GetTickCount();
 			}
 
 			// If isDie, do not col-X

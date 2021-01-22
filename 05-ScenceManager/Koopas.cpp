@@ -3,6 +3,7 @@
 #include "Game.h"
 #include "PlayScence.h"
 #include "PSwitch.h"
+#include "TitleScene.h"
 
 CKoopas::CKoopas(int type)
 {
@@ -29,11 +30,22 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			vy += KOOPAS_WING_GRAVITY * dt;
 		else
 			vy += ENEMY_GRAVITY * dt;
-	}	
+	}
 
-	CMario* mario = ((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetPlayer();
+	CMario* mario = NULL;
+	if (isOnTitleScene)
+	{
+		CMario* holdMario = ((CTitleScene*)CGame::GetInstance()->GetCurrentScene())->GetMario();
+		CMario* holdLugi = ((CTitleScene*)CGame::GetInstance()->GetCurrentScene())->GetLugi();
+		if (holdMario->koopas != NULL)
+			mario = holdMario;
+		else if (holdLugi->koopas != NULL)
+			mario = holdLugi;
+	}
+	else
+		mario = ((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetPlayer();
 
-	if (isDie)
+	if (isDie && mario != NULL)
 		mario->canMultiScoreLand = false;
 
 	// Koopas when being holded by Mario
@@ -60,47 +72,50 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		}
 	}
 	// Wake up after a period
-	if (/*state == KOOPAS_STATE_SHAKE*/isShaking == true)
+	if (!isOnTitleScene)
 	{
-		if (state == KOOPAS_STATE_HIDE || state == KOOPAS_STATE_HOLD)
+		if (/*state == KOOPAS_STATE_SHAKE*/isShaking == true)
 		{
-			if (GetTickCount() - shake_start > KOOPAS_SHAKE_TIME)
+			if (state == KOOPAS_STATE_HIDE || state == KOOPAS_STATE_HOLD)
 			{
-				isShaking = false;
-				SetState(KOOPAS_STATE_WALKING);
-				y -= KOOPAS_BBOX_HEIGHT - KOOPAS_BBOX_HEIGHT_HIDE;
-
-				if (mario != NULL)
+				if (GetTickCount() - shake_start > KOOPAS_SHAKE_TIME)
 				{
-					mario->canHold = false;
-					mario->koopas = NULL;
-					mario->isHold = false;
+					isShaking = false;
+					SetState(KOOPAS_STATE_WALKING);
+					y -= KOOPAS_BBOX_HEIGHT - KOOPAS_BBOX_HEIGHT_HIDE;
+
+					if (mario != NULL)
+					{
+						mario->canHold = false;
+						mario->koopas = NULL;
+						mario->isHold = false;
+					}
 				}
 			}
 		}
-	}
-	else
-	{
-		if (state == KOOPAS_STATE_HIDE || state == KOOPAS_STATE_HOLD)
+		else
 		{
-			if (mario->isHold)
+			if (state == KOOPAS_STATE_HIDE || state == KOOPAS_STATE_HOLD)
 			{
-				if (GetTickCount() - hide_start > KOOPAS_HIDE_HOLD_TIME)
+				if (mario->isHold)
 				{
-					/*SetState(KOOPAS_STATE_SHAKE);*/
-					isShaking = true;
-					shake_start = GetTickCount();
-					hide_start = 0;
+					if (GetTickCount() - hide_start > KOOPAS_HIDE_HOLD_TIME)
+					{
+						/*SetState(KOOPAS_STATE_SHAKE);*/
+						isShaking = true;
+						shake_start = GetTickCount();
+						hide_start = 0;
+					}
 				}
-			}
-			else
-			{
-				if (GetTickCount() - hide_start > KOOPAS_HIDE_TIME)
+				else
 				{
-					//SetState(KOOPAS_STATE_SHAKE);
-					isShaking = true;
-					shake_start = GetTickCount();
-					hide_start = 0;
+					if (GetTickCount() - hide_start > KOOPAS_HIDE_TIME)
+					{
+						//SetState(KOOPAS_STATE_SHAKE);
+						isShaking = true;
+						shake_start = GetTickCount();
+						hide_start = 0;
+					}
 				}
 			}
 		}
@@ -155,7 +170,14 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			{
 				if (!dynamic_cast<CCoin*>(e->obj) && !dynamic_cast<CLeaf*>(e->obj) && !dynamic_cast<CMushRoom*>(e->obj) && !dynamic_cast<CEnemy*>(e->obj))
 				{
-					if (!(dynamic_cast<CBreakableBrick*>(e->obj) && e->obj->GetState() == BREAKABLE_BRICK_STATE_COIN || dynamic_cast<CPSwitch*>(e->obj) && e->obj->GetState() == PSWITCH_STATE_HIT))
+					if (dynamic_cast<CMario*>(e->obj) && e->ny < 0)
+					{
+						vx = -0.03f;
+						vy = -0.1f;
+						CMario* mario = dynamic_cast<CMario*>(e->obj);
+						mario->SetState(MARIO_STATE_BONK);
+					}
+					else if (!(dynamic_cast<CBreakableBrick*>(e->obj) && e->obj->GetState() == BREAKABLE_BRICK_STATE_COIN || dynamic_cast<CPSwitch*>(e->obj) && e->obj->GetState() == PSWITCH_STATE_HIT))
 					{
 						if (type == KOOPAS_GREEN_WING)
 						{
@@ -166,7 +188,7 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						{
 							PreventMoveY(e->obj);
 
-							if (state == KOOPAS_STATE_HIDE && yReverse == true)
+							if (state == KOOPAS_STATE_HIDE /*&& yReverse == true*/)
 							{
 								vx = 0;
 							}
@@ -373,7 +395,7 @@ void CKoopas::Render()
 	else if (type == KOOPAS_GREEN)
 		xReverse = false;
 	if (type == KOOPAS_GREEN_WING || type == KOOPAS_RED_WING)
-	{		
+	{
 		ani = KOOPAS_ANI_WING;
 	}
 	else if (state == KOOPAS_STATE_HIDE || state == KOOPAS_STATE_HOLD || state == KOOPAS_STATE_DIE) {
@@ -397,22 +419,30 @@ void CKoopas::SetState(int state)
 {
 	if (state == ENEMY_STATE_RESPAWN)
 	{
-		CGameObject::SetState(KOOPAS_STATE_WALKING);
-
 		yReverse = false;
-		if (type == KOOPAS_GREEN_WING)
-			vx = -((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetPlayer()->nx * KOOPAS_WALKING_WING_SPEED;
-		else if (type == KOOPAS_RED_WING)
-			vy = KOOPAS_WING_Y_SPEED;
+		if (type == KOOPAS_HIDE)
+		{
+			CGameObject::SetState(KOOPAS_STATE_HIDE);
+			vx = 0;
+		}
 		else
 		{
-			if (vxSpawn == KOOPAS_WALKING_WING_SPEED)
-			{
-				type = KOOPAS_GREEN_WING;
+			CGameObject::SetState(KOOPAS_STATE_WALKING);
+
+			if (type == KOOPAS_GREEN_WING)
 				vx = -((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetPlayer()->nx * KOOPAS_WALKING_WING_SPEED;
-			}
+			else if (type == KOOPAS_RED_WING)
+				vy = KOOPAS_WING_Y_SPEED;
 			else
-				vx = -((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetPlayer()->nx * KOOPAS_WALKING_SPEED;
+			{
+				if (vxSpawn == KOOPAS_WALKING_WING_SPEED)
+				{
+					type = KOOPAS_GREEN_WING;
+					vx = -((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetPlayer()->nx * KOOPAS_WALKING_WING_SPEED;
+				}
+				else
+					vx = -((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetPlayer()->nx * KOOPAS_WALKING_SPEED;
+			}
 		}
 		return;
 	}
