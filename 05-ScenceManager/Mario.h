@@ -265,6 +265,7 @@
 #define MARIO_DEFLECT_TAIL_TOP				17
 #define MARIO_DEFLECT_TAIL_BOTTOM			2
 #define MARIO_DEFLECT_TAIL_WIDTH			9
+#define MARIO_NUM_BULLETS					2
 
 
 class CMario : public CGameObject

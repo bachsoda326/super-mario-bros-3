@@ -40,6 +40,8 @@ void CEnemy::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			{
 				isActive = false;
 				canActive = false;
+				if (dynamic_cast<CKoopas*>(this) && ((CKoopas*)this)->isMultiScoreLand)
+					((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetPlayer()->canMultiScoreLand = false;
 				SetPosition(xSpawn, ySpawn);
 				// Back to grid if Koopas is holded and release far
 				if (!isInGrid)
@@ -58,6 +60,8 @@ void CEnemy::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	// Fall
 	if (y > CCamera::GetInstance()->GetTopMap() + CCamera::GetInstance()->GetHeightMap())
 	{
+		if (dynamic_cast<CKoopas*>(this) && ((CKoopas*)this)->isMultiScoreLand)
+			((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetPlayer()->canMultiScoreLand = false;
 		Dead();
 		DeleteObjs(coObjects);
 	}	

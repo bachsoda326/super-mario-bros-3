@@ -63,6 +63,7 @@ class CKoopas : public CEnemy
 	void SetBoundingBox();
 public:
 	int type;
+	bool isMultiScoreLand = false;
 
 	CKoopas(int type);
 

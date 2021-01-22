@@ -25,7 +25,7 @@ CMario::CMario(float x, float y) : CGameObject()
 	this->y = y;
 
 	bullets = new vector<CBullet*>();
-	for (int i = 0; i < 2; i++)
+	for (int i = 0; i < MARIO_NUM_BULLETS; i++)
 	{
 		CBullet* bullet = new CBullet();
 		//bullet->SetAnimationSet(ani_set);
@@ -47,7 +47,8 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	int heightMap = camera->GetHeightMap();
 	CPlayScene* scene = (CPlayScene*)CGame::GetInstance()->GetCurrentScene();
 
-	//DebugOut(L"VY: %f\n", vy);
+	DebugOut(L"MULTI SCORE JUMP: %d\n", canMultiScoreJump);
+	DebugOut(L"MULTI SCORE LAND: %d\n", canMultiScoreLand);
 	CGameObject::Update(dt);
 
 	// Simple fall down

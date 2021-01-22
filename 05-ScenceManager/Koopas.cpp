@@ -480,6 +480,7 @@ void CKoopas::SetState(int state)
 		break;
 	case KOOPAS_STATE_SPIN:
 		((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetPlayer()->canMultiScoreLand = true;
+		isMultiScoreLand = true;
 		break;
 	case KOOPAS_STATE_WALKING:
 		yReverse = false;
