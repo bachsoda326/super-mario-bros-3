@@ -415,7 +415,11 @@ void CWorldMapSceneKeyHandler::OnKeyDown(int KeyCode)
 	{
 		int sceneId = mario->GetCurrentStation()->GetSceneId();
 		if (sceneId == MAP_1_1 || sceneId == MAP_1_4 || sceneId == WORLD_MAP_1)
+		{
+			if (sceneId == MAP_1_4)
+				CCamera::GetInstance()->SetIsMoving(true);
 			CGame::GetInstance()->SwitchScene(sceneId);
+		}
 	}
 	break;
 	default:

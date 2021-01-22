@@ -2,12 +2,12 @@
 #include <iostream>
 #include <fstream>
 
-#define SCENE_SECTION_UNKNOWN -1
-#define SCENE_SECTION_TEXTURES 2
-#define SCENE_SECTION_SPRITES 3
-#define SCENE_SECTION_ANIMATIONS 4
+#define SCENE_SECTION_UNKNOWN			-1
+#define SCENE_SECTION_TEXTURES			2
+#define SCENE_SECTION_SPRITES			3
+#define SCENE_SECTION_ANIMATIONS		4
 #define SCENE_SECTION_ANIMATION_SETS	5
-#define SCENE_SECTION_OBJECTS	6
+#define SCENE_SECTION_OBJECTS			6
 
 #define OBJECT_TYPE_MARIO				0
 #define OBJECT_TYPE_BRICK				1
@@ -27,14 +27,14 @@
 #define OBJECT_TYPE_TITLE_BACKGROUND	16
 #define OBJECT_TYPE_LUGI				17
 
-#define MAX_SCENE_LINE 1024
+#define MAX_SCENE_LINE					1024
 
 CTitleScene::CTitleScene(int id, LPCWSTR filePath) :
 	CScene(id, filePath)
 {
 	key_handler = new CTitleSceneKeyHandler(this);
 	CCamera::GetInstance()->SetPosition(CGame::GetInstance()->GetScreenWidth() / 2, CGame::GetInstance()->GetScreenHeight() / 2);
-	CCamera::GetInstance()->SetMapSize(LEFT_TITLE_SCENE - 48, TOP_TITLE_SCENE - 50, RIGHT_TITLE_SCENE + 48, BOTTOM_TITLE_SCENE, WIDTH_TITLE_SCENE, HEIGHT_TITLE_SCENE);
+	CCamera::GetInstance()->SetMapSize(LEFT_TITLE_SCENE, TOP_TITLE_SCENE, RIGHT_TITLE_SCENE, BOTTOM_TITLE_SCENE, WIDTH_TITLE_SCENE, HEIGHT_TITLE_SCENE);
 }
 
 void CTitleScene::_ParseSection_TEXTURES(string line)
@@ -87,8 +87,6 @@ void CTitleScene::_ParseSection_ANIMATIONS(string line)
 	vector<string> tokens = split(line);
 
 	if (tokens.size() < 3) return; // skip invalid lines - an animation must at least has 1 frame and 1 frame time
-
-	//DebugOut(L"--> %s\n",ToWSTR(line).c_str());
 
 	LPANIMATION ani = new CAnimation();
 
@@ -288,7 +286,7 @@ void CTitleScene::Update(DWORD dt)
 
 	float leftCamera = CCamera::GetInstance()->GetBound().left;
 	float rightCamera = CCamera::GetInstance()->GetBound().right;
-
+	// Koopas not col when out of region
 	if (koopas->x < leftCamera - 2 * KOOPAS_BBOX_WIDTH)
 	{
 		koopas->vx = 0;
@@ -301,7 +299,7 @@ void CTitleScene::Update(DWORD dt)
 		koopas->x = rightCamera + KOOPAS_BBOX_WIDTH;
 		koopas->isDie = true;
 	}
-
+	// Koopas move to behind Mario
 	if (mario->GetLevel() > MARIO_LEVEL_SMALL && lugi->isKickKoopas && koopas->x > rightCamera)
 	{
 		koopas->SetPosition(leftCamera, koopas->y);
@@ -320,12 +318,12 @@ void CTitleScene::Update(DWORD dt)
 	// Begin scene 2:
 	if (backGround->isScene2Begin)
 	{
-		mario->vx = -0.07f;
-		lugi->vx = 0.07f;
-		if (lugi->x >= 90)
+		mario->vx = -LUGI_SCENE1_X_SPEED;
+		lugi->vx = LUGI_SCENE1_X_SPEED;
+		if (lugi->x >= LUGI_SCENE1_X_JUMP)
 		{
 			lugi->SetState(MARIO_STATE_JUMP_HIGH);
-			lugi->vy = -0.22f;
+			lugi->vy = -LUGI_SCENE1_Y_SPEED;
 			backGround->isScene2Begin = false;
 		}
 		/*else if (lugi->state == MARIO_STATE_JUMP_HIGH)
@@ -333,14 +331,15 @@ void CTitleScene::Update(DWORD dt)
 			backGround->isScene2Begin = false;
 		}*/
 	}
+	// Lugi touch top
 	if (lugi->y < 0 && lugi->state == MARIO_STATE_JUMP_HIGH)
 	{
-		lugi->vx = 0.07f;
+		lugi->vx = LUGI_SCENE1_X_SPEED;
 		backGround->isScene3Begin = true;
 		backGround->isScene2Begin = false;
 	}
 
-	// End scene 3
+	// End scene3: Obj fall
 	if (backGround->isScene3End)
 	{
 		for (size_t i = 0; i < fallingObjs.size(); i++)
@@ -360,18 +359,17 @@ void CTitleScene::Update(DWORD dt)
 			{
 				if (i != listKoopas.size() - 1)
 				{
-					if (GetTickCount() - spawn_koopas_start > i * 1500)
+					if (GetTickCount() - spawn_koopas_start > i * KOOPAS_SPAWN_TIME)
 						listKoopas[i]->Alive();
 				}
 				else
 				{
-					if (GetTickCount() - spawn_koopas_start > i * 2500)
+					if (GetTickCount() - spawn_koopas_start > i * KOOPAS_SPAWN_TIME_2)
 					{
 						listKoopas[i]->Alive();
 						((CKoopas*)listKoopas[i])->SetIsFast(true);
 					}
-				}
-				//listKoopas[i]->isActive = true;
+				}				
 			}
 		}
 		//listKoopas.clear();
@@ -414,7 +412,7 @@ void CTitleScene::Render()
 		lugi->Render();
 	if (isShowBush)
 	{
-		bushSprs.at(1)->DrawSprite(230, 105);
+		bushSprs.at(1)->DrawSprite(BUSH_X, BUSH_Y);
 	}
 }
 
@@ -422,6 +420,7 @@ void CTitleScene::Unload()
 {
 	mario = NULL;
 	lugi = NULL;
+	koopas = NULL;
 	backGround = NULL;
 
 	fallingObjs.clear();
@@ -439,6 +438,7 @@ void CTitleScene::Unload()
 
 void CTitleScene::HandleMario()
 {
+	// Check when show Koopas
 	if (!isShowKoopas && (mario->x < CCamera::GetInstance()->GetBound().left || mario->x > CCamera::GetInstance()->GetBound().right))
 	{
 		mario->vx = 0;
@@ -457,62 +457,63 @@ void CTitleScene::HandleMario()
 			look_koopas_start = GetTickCount();
 		}	
 		// Look Koopas 1 done
-		if (look_koopas_start != 0 && GetTickCount() - look_koopas_start > 1000)
+		if (look_koopas_start != 0 && GetTickCount() - look_koopas_start > LOOK_KOOPAS_TIME)
 		{
 			mario->nx = 1;
 			mario->SetState(MARIO_STATE_RUN);
 			look_koopas_start = 0;
 		}
 		// Look Koopas 2 done
-		if (look_koopas_2_start != 0 && GetTickCount() - look_koopas_2_start > 1500)
+		if (look_koopas_2_start != 0 && GetTickCount() - look_koopas_2_start > LOOK_KOOPAS_TIME_2)
 		{
 			mario->nx = 1;
 			mario->SetState(MARIO_STATE_WALKING);
-			mario->vx = 0.05f;
+			mario->vx = LUGI_X_SPEED;
 			isShowBush = true;
 			look_koopas_2_start = 0;
 		}
 		// Brake
-		if ((mario->state == MARIO_STATE_RUN || mario->state == MARIO_STATE_SKID) && mario->x >= 220)
+		if ((mario->state == MARIO_STATE_RUN || mario->state == MARIO_STATE_SKID) && mario->x >= MARIO_SKID_X)
 		{
 			mario->nx = -1;
 			mario->SetState(MARIO_STATE_SKID);
-			mario->vx -= 0.002f;
+			mario->vx -= MARIO_SKID_SPEED;
 			if (mario->vx <= 0)
 			{
 				mario->SetState(MARIO_STATE_WALKING);
-				mario->vx = -0.05f;
+				mario->vx = -LUGI_X_SPEED;
 			}
 		}
 		// Look Koopas 2
-		if (mario->state == MARIO_STATE_WALKING && mario->nx == -1 && mario->x <= 180)
+		if (mario->state == MARIO_STATE_WALKING && mario->nx == -1 && mario->x <= MARIO_LOOK_KOOPAS_X)
 		{
 			mario->SetState(MARIO_STATE_IDLE);
 			look_koopas_2_start = GetTickCount();
 		}
 	}
+	// Handle Bigger Mario
 	else
 	{
 		// Duck
-		if (mario->state == MARIO_STATE_DUCK && GetTickCount() - mario->duck_start > 300)
+		if (mario->state == MARIO_STATE_DUCK && GetTickCount() - mario->duck_start > MARIO_DUCK_TIME)
 		{
 			mario->SetState(MARIO_STATE_IDLE);
 		}
 		// Bonk
-		if (mario->state == MARIO_STATE_BONK && GetTickCount() - mario->bonk_start > 150)
+		if (mario->state == MARIO_STATE_BONK && GetTickCount() - mario->bonk_start > MARIO_BONK_TIME)
 		{
 			mario->SetState(MARIO_STATE_LOOKUP);
 		}
 		// Loop up
-		if (mario->state == MARIO_STATE_LOOKUP && GetTickCount() - mario->look_start > 1000)
+		if (mario->state == MARIO_STATE_LOOKUP && GetTickCount() - mario->look_start > MARIO_LOOKUP_TIME)
 		{
 			mario->SetState(MARIO_STATE_JUMP_HIGH);
-			mario->vy = -0.4f;
+			mario->vy = -MARIO_EAT_LEAF_Y_SPEED;
 		}
 		// Wag after eat leaf
 		if (mario->state == MARIO_STATE_EAT_ITEM && mario->isTransform)
 		{
-			mario->vx = -0.08f;
+			mario->vx = -MARIO_EAT_LEAF_X_SPEED;
 			mario->vy = 0;
 			mario->SetState(MARIO_STATE_WAG);
 			mario->wag_start = GetTickCount();
@@ -520,12 +521,12 @@ void CTitleScene::HandleMario()
 		// Wag and hit Goomba
 		if (mario->state == MARIO_STATE_WAG)
 		{
-			if (GetTickCount() - mario->wag_start < 1800)
+			if (GetTickCount() - mario->wag_start < MARIO_WAG_TIME)
 				mario->SetState(MARIO_STATE_WAG);
-			else if (GetTickCount() - mario->wag_start >= 1800)
+			else if (GetTickCount() - mario->wag_start >= MARIO_WAG_TIME)
 			{
 				mario->SetState(MARIO_STATE_JUMP_HIGH);
-				mario->vx = 0.01f;
+				mario->vx = MARIO_SCENE1_X_SPEED;
 				mario->nx = 1;
 			}
 		}
@@ -536,20 +537,20 @@ void CTitleScene::HandleMario()
 			if (mario->isHitGoomba && mario->isOnGround)
 			{
 				mario->SetState(MARIO_STATE_WALKING);
-				mario->vx = 0.04f;
+				mario->vx = MARIO_SCENE1_X_SPEED_1;
 				mario->isHitGoomba = false;
 			}
 			// Walk after land jump
-			if (lugi->isKickKoopas && koopas->state == KOOPAS_STATE_HIDE && mario->y + MARIO_BIG_BBOX_HEIGHT >= 220)
+			if (lugi->isKickKoopas && koopas->state == KOOPAS_STATE_HIDE && mario->y + MARIO_BIG_BBOX_HEIGHT >= GROUND_Y)
 			{
 				mario->SetState(MARIO_STATE_WALKING);
-				mario->vx = 0.05f;
+				mario->vx = LUGI_X_SPEED;
 				mario->nx = 1;
 				mario->canHold = true;
 			}
 		}
 		// End kick Koopas
-		if (mario->state == MARIO_STATE_KICK && kick_walk_start == 0 && GetTickCount() - mario->kick_start > 100)
+		if (mario->state == MARIO_STATE_KICK && kick_walk_start == 0 && GetTickCount() - mario->kick_start > MARIO_KICK_TIME)
 		{
 			kick_walk_start = GetTickCount();
 			mario->SetState(MARIO_STATE_WALKING);
@@ -558,10 +559,10 @@ void CTitleScene::HandleMario()
 		// Run Koopas
 		if (mario->state == MARIO_STATE_IDLE && lugi->isKickKoopas)
 		{
-			if (koopas->vx < 0 && koopas->x - mario->x <= 100)
+			if (koopas->vx < 0 && koopas->x - mario->x <= MARIO_RUN_KOOPAS_X)
 			{
 				mario->SetState(MARIO_STATE_WALKING);
-				mario->vx = -0.05f;
+				mario->vx = -LUGI_X_SPEED;
 				mario->nx = -1;
 			}
 		}
@@ -569,7 +570,7 @@ void CTitleScene::HandleMario()
 		if (mario->state == MARIO_STATE_WALKING)
 		{
 			// End walk after kick Koopas
-			if (kick_walk_start != 0 && GetTickCount() - kick_walk_start > 1000)
+			if (kick_walk_start != 0 && GetTickCount() - kick_walk_start > MARIO_KICK_WALK_TIME)
 			{
 				mario->SetState(MARIO_STATE_IDLE);
 				kick_walk_start = 0;
@@ -579,20 +580,20 @@ void CTitleScene::HandleMario()
 				// Jump Koopas
 				if (koopas->state == KOOPAS_STATE_SPIN)
 				{
-					if (koopas->vx < 0 && koopas->x - mario->x <= 80)
+					if (koopas->vx < 0 && koopas->x - mario->x <= MARIO_JUMP_KOOPAS_X)
 					{
 						mario->SetState(MARIO_STATE_JUMP_HIGH);
-						mario->vy = -0.2f;
+						mario->vy = -MARIO_MAX_Y_SPEED;
 					}
 				}
 			}
 			// Throw Koopas
-			if (mario->isHold && mario->x >= 100)
+			if (mario->isHold && mario->x >= MARIO_RUN_KOOPAS_X)
 			{
 				mario->SetState(MARIO_STATE_KICK);
 				mario->kick_start = GetTickCount();
 				mario->koopas->SetState(KOOPAS_STATE_SPIN);
-				mario->koopas->vx = mario->nx * 0.15f;
+				mario->koopas->vx = mario->nx * KOOPAS_LUGI_KICK_SPEED;
 				mario->koopas = NULL;
 				mario->isHold = false;
 			}
@@ -603,13 +604,13 @@ void CTitleScene::HandleMario()
 void CTitleScene::HandleLugi()
 {
 	float rightCamera = CCamera::GetInstance()->GetBound().right;
-
+	// Lugi not col when reach edge map
 	if (lugi->x <= CCamera::GetInstance()->GetLeftMap() || lugi->x + MARIO_BIG_BBOX_WIDTH >= CCamera::GetInstance()->GetRightMap())
 	{
 		lugi->vx = 0;
 		lugi->isDie = true;
 	}
-
+	// Begin scene 3: jump->walk
 	if (lugi->state == MARIO_STATE_JUMP_HIGH && lugi->isOnGround && backGround->isScene3Begin)
 	{
 		lugi->SetState(MARIO_STATE_WALKING);
@@ -623,31 +624,31 @@ void CTitleScene::HandleLugi()
 		lugi->SetKoopas(koopas);
 		lugi->isHold = true;
 		koopas->SetState(KOOPAS_STATE_HOLD);	
-		lugi->vx = -0.05f;
+		lugi->vx = -LUGI_X_SPEED;
 		lugi->nx = -1;
 		mario->isKickKoopas = false;
 	}
 	// Kick Koopas
-	if (lugi->isHold && lugi->x <= 270)
+	if (lugi->isHold && lugi->x <= LUGI_KICK_KOOPAS_X)
 	{
 		lugi->SetState(MARIO_STATE_KICK);
 		lugi->kick_start = GetTickCount();
 		lugi->koopas->SetState(KOOPAS_STATE_SPIN);
-		lugi->koopas->vx = lugi->nx * 0.15f;
+		lugi->koopas->vx = lugi->nx * KOOPAS_LUGI_KICK_SPEED;
 		lugi->koopas = NULL;
 		lugi->isHold = false;
 	}
 	// End Kick Koopas
-	if (lugi->state == MARIO_STATE_KICK && GetTickCount() - lugi->kick_start > 100)
+	if (lugi->state == MARIO_STATE_KICK && GetTickCount() - lugi->kick_start > MARIO_KICK_TIME)
 	{
 		lugi->SetState(MARIO_STATE_IDLE);
 		lugi->isKickKoopas = true;
 	}
 	// Run away form Koopas
-	if (lugi->state == MARIO_STATE_IDLE && koopas->state == KOOPAS_STATE_SPIN && koopas->vx > 0 && lugi->x - koopas->x <= 80)
+	if (lugi->state == MARIO_STATE_IDLE && koopas->state == KOOPAS_STATE_SPIN && koopas->vx > 0 && lugi->x - koopas->x <= LUGI_RUN_KOOPAS_X)
 	{
 		lugi->SetState(MARIO_STATE_WALKING);
-		lugi->vx = 0.1f;
+		lugi->vx = MARIO_WALKING_SPEED;
 		lugi->nx = 1;
 	}
 }

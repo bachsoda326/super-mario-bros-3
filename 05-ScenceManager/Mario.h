@@ -7,54 +7,32 @@
 #include "QuestionBrick.h"
 #include "Koopas.h"
 #include "Coin.h"
+// State
+#define MARIO_STATE_IDLE					0
+#define MARIO_STATE_WALKING					100
+#define MARIO_STATE_JUMP_HIGH				101
+#define MARIO_STATE_JUMP_SHORT				102
+#define MARIO_STATE_PREPARE_RUN				103
+#define MARIO_STATE_RUN						104
+#define MARIO_STATE_RUNJUMP					105
+#define MARIO_STATE_FLY						106
+#define MARIO_STATE_KICK					107
+#define MARIO_STATE_SKID					108
+#define MARIO_STATE_DUCK					109
+#define MARIO_STATE_WAG						110
+#define MARIO_STATE_IDLE_HOLD				111
+#define MARIO_STATE_TAIL					112
+#define MARIO_STATE_SHOT					113
+#define MARIO_STATE_JUMP_SHOT				114
+#define MARIO_STATE_RUNJUMP_SHOT			115
+#define MARIO_STATE_EAT_ITEM				116
+#define MARIO_STATE_PIPE					117
+#define MARIO_STATE_END_SCENE				118
+#define MARIO_STATE_BONK					119
+#define MARIO_STATE_LOOKUP					120
+#define MARIO_STATE_DIE						999
 
-#define MARIO_WALKING_SPEED		0.1f 
-#define MARIO_PREPARE_RUN_SPEED		0.15f
-#define MARIO_RUN_SPEED		0.2f 
-//0.1f
-#define MARIO_JUMP_HIGH_SPEED_Y		0.02f
-#define MARIO_JUMP_SHORT_SPEED_Y	0.27f
-#define MARIO_JUMP_DEFLECT_SPEED 0.2f
-#define MARIO_GRAVITY			0.001f
-#define MARIO_DIE_DEFLECT_SPEED	 0.5f
-
-#define MARIO_STATE_IDLE				0
-#define MARIO_STATE_WALKING				100
-#define MARIO_STATE_JUMP_HIGH			101
-#define MARIO_STATE_JUMP_SHORT			102
-#define MARIO_STATE_PREPARE_RUN			103
-#define MARIO_STATE_RUN					104
-#define MARIO_STATE_RUNJUMP				105
-#define MARIO_STATE_FLY					106
-#define MARIO_STATE_KICK				107
-#define MARIO_STATE_SKID				108
-#define MARIO_STATE_DUCK				109
-#define MARIO_STATE_WAG					110
-#define MARIO_STATE_IDLE_HOLD			111
-#define MARIO_STATE_TAIL				112
-#define MARIO_STATE_SHOT				113
-#define MARIO_STATE_JUMP_SHOT			114
-#define MARIO_STATE_RUNJUMP_SHOT		115
-#define MARIO_STATE_EAT_ITEM			116
-#define MARIO_STATE_PIPE				117
-#define MARIO_STATE_END_SCENE			118
-#define MARIO_STATE_BONK				119
-#define MARIO_STATE_LOOKUP				120
-#define MARIO_STATE_DIE					999
-
-//#define MARIO_ANI_BIG_IDLE_RIGHT		0
-//#define MARIO_ANI_BIG_IDLE_LEFT			1
-//#define MARIO_ANI_SMALL_IDLE_RIGHT		2
-//#define MARIO_ANI_SMALL_IDLE_LEFT			3
-//
-//#define MARIO_ANI_BIG_WALKING_RIGHT			4
-//#define MARIO_ANI_BIG_WALKING_LEFT			5
-//#define MARIO_ANI_SMALL_WALKING_RIGHT		6
-//#define MARIO_ANI_SMALL_WALKING_LEFT		7
-//
-//#define MARIO_ANI_DIE				8
-
-// ANIMATION SMALL MARIO
+// Animation Small
 #define MARIO_ANI_TRANSFORM					154
 #define MARIO_ANI_SMALL_IDLE_LEFT			0
 #define MARIO_ANI_SMALL_IDLE_RIGHT			1
@@ -91,7 +69,7 @@
 #define MARIO_ANI_SMALL_RUN_HOLD_LEFT		157
 #define MARIO_ANI_SMALL_RUN_HOLD_RIGHT		158
 
-// ANIMATION BIG MARIO
+// Animation Big
 #define MARIO_ANI_BIG_IDLE_LEFT				26
 #define MARIO_ANI_BIG_IDLE_RIGHT			27
 #define MARIO_ANI_BIG_WALKING_LEFT			28
@@ -141,7 +119,7 @@
 #define MARIO_ANI_BIG_RUN_HOLD_LEFT			161
 #define MARIO_ANI_BIG_RUN_HOLD_RIGHT		162
 
-//ANIMATION FIRE MARIO
+// Animation Fire
 #define MARIO_ANI_FIRE_IDLE_LEFT			66
 #define MARIO_ANI_FIRE_IDLE_RIGHT			67
 #define MARIO_ANI_FIRE_WALKING_LEFT			68
@@ -183,7 +161,7 @@
 #define MARIO_ANI_FIRE_RUN_HOLD_LEFT		169
 #define MARIO_ANI_FIRE_RUN_HOLD_RIGHT		170
 
-//ANIMATION RACCOON MARIO
+// Animation Raccoon
 #define MARIO_ANI_RACCOON_IDLE_LEFT			98
 #define MARIO_ANI_RACCOON_IDLE_RIGHT		99
 #define MARIO_ANI_RACCOON_WAG_LEFT			102
@@ -231,24 +209,63 @@
 #define MARIO_ANI_RACCOON_RUN_HOLD_LEFT		165
 #define MARIO_ANI_RACCOON_RUN_HOLD_RIGHT	166
 
+// Level
+#define	MARIO_LEVEL_SMALL					1
+#define	MARIO_LEVEL_BIG						2
+#define	MARIO_LEVEL_RACCOON					3
+#define	MARIO_LEVEL_FIRE					4
+// BBox
+#define MARIO_TAIL_BBOX_WIDTH				14
+#define MARIO_NON_TAIL_BBOX_HEIGHT			16
+#define MARIO_BIG_BBOX_WIDTH				15
+#define MARIO_BIG_BBOX_HEIGHT				27
+#define MARIO_BIG_BBOX_HEIGHT_DUCK			18
+#define MARIO_SMALL_BBOX_WIDTH				16
+#define MARIO_SMALL_BBOX_HEIGHT				16
+#define MARIO_PIPE_DOWN_HEIGHT				7
+// Time
+#define MARIO_UNTOUCHABLE_TIME				3500
+#define MARIO_RUN_TIME						3000
+#define MARIO_DIE_TIME						3000
+#define MARIO_TRANSFORM_TIME				500
+#define MARIO_KICK_TIME						100
+#define MARIO_TAIL_TIME						210
+#define MARIO_FIRE_BULLET_TIME				150
+#define MARIO_WAG_FLY_TIME					300
+#define MARIO_FLY_LIMIT_TIME				5000
+#define MARIO_PIPE_DOWN_TIME				1000
+#define MARIO_PIPE_UP_TIME					1500
+#define MARIO_PIPE_UP_TIME_2				2500
+#define MARIO_PIPE_UP_TIME_3				1000
+#define MARIO_EAT_ITEM_TIME					1
+#define MARIO_POWER_INCREASE_TIME			170
+#define MARIO_POWER_DECREASE_TIME			300
+// Speed
+#define MARIO_GRAVITY						0.001f
+#define MARIO_TITLE_SCENE_GRAVITY			0.0005f
+#define MARIO_WALKING_SPEED					0.1f 
+#define MARIO_PREPARE_RUN_SPEED				0.15f
+#define MARIO_RUN_SPEED						0.2f 
+#define MARIO_JUMP_HIGH_SPEED_Y				0.02f
+#define MARIO_JUMP_SHORT_SPEED_Y			0.27f
+#define MARIO_JUMP_DEFLECT_SPEED			0.2f
+#define MARIO_DIE_DEFLECT_SPEED				0.5f
+#define MARIO_MAX_Y_SPEED					0.2f
+#define MARIO_JUMP_LUGI_Y_SPEED				0.42f
+#define MARIO_WAG_Y_SPEED					0.05f
+#define MARIO_FLY_Y_SPEED					0.08f
+#define MARIO_PIPE_Y_SPEED					0.02f
+#define MARIO_DEFLECT_SPEED					0.4f
+#define MARIO_JUMP_Y_SPEED					0.15f
+#define MARIO_INCREASE_X_SPEED				0.005f
+#define MARIO_DECREASE_X_SPEED				0.004f
+#define MARIO_CAN_SKID_X_SPEED				0.07f
+#define MARIO_INCREASE_RUN_X_SPEED			0.0015f
+// Others
+#define MARIO_DEFLECT_TAIL_TOP				17
+#define MARIO_DEFLECT_TAIL_BOTTOM			2
+#define MARIO_DEFLECT_TAIL_WIDTH			9
 
-#define	MARIO_LEVEL_SMALL		1
-#define	MARIO_LEVEL_BIG			2
-#define	MARIO_LEVEL_RACCOON		3
-#define	MARIO_LEVEL_FIRE		4
-
-#define MARIO_TAIL_BBOX_WIDTH		14
-#define MARIO_NON_TAIL_BBOX_HEIGHT	16
-#define MARIO_BIG_BBOX_WIDTH		15
-#define MARIO_BIG_BBOX_HEIGHT		27
-#define MARIO_BIG_BBOX_HEIGHT_DUCK	18
-
-#define MARIO_SMALL_BBOX_WIDTH  16
-#define MARIO_SMALL_BBOX_HEIGHT 16
-#define MARIO_PIPE_DOWN_HEIGHT  7
-
-#define MARIO_UNTOUCHABLE_TIME	3500
-#define MARIO_RUN_TIME			3000
 
 class CMario : public CGameObject
 {
@@ -261,7 +278,7 @@ class CMario : public CGameObject
 	int pointFactor = 0;
 
 	float start_x;			// initial position of Mario at scene
-	float start_y; 
+	float start_y;
 	float pipe_tele_x;
 	float pipe_tele_y;
 
@@ -304,11 +321,11 @@ public:
 	bool isKickKoopas = false;
 	//bool canDuck = false;
 
-	vector<CBullet*> *bullets;
-	CKoopas	*koopas;
+	vector<CBullet*>* bullets;
+	CKoopas* koopas;
 
 	CMario(float x = 0.0f, float y = 0.0f);
-	virtual void Update(DWORD dt, vector<LPGAMEOBJECT> *colliable_objects = NULL);
+	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects = NULL);
 	virtual void Render();
 
 	void SetState(int state);
@@ -335,5 +352,5 @@ public:
 	void OnIntersect(CGameObject* obj, vector<LPGAMEOBJECT>* coObjs);
 	bool isColTail(CGameObject* obj);
 
-	virtual void GetBoundingBox(float &left, float &top, float &right, float &bottom);
+	virtual void GetBoundingBox(float& left, float& top, float& right, float& bottom);
 };

@@ -31,13 +31,12 @@ void CMushRoom::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	if (isDead) return;
 	CGameObject::Update(dt, coObjects);
 
-	x += dx;
-	y += dy;
+	MoveThrough(OBJ_MOVE_XY);
 	
 	if (!isInitialized)
 	{
 		isDie = true;
-		if (bottom > 0 && bottom <= start_bottom)
+		if (bottom > 0 && y + MUSHROOM_BBOX_HEIGHT <= start_bottom)
 		{
 			isInitialized = true;
 			isDie = false;

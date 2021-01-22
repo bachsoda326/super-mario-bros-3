@@ -50,29 +50,29 @@ struct CCollisionEvent
 class CGameObject
 {
 public:
-	int id;
+	int id = -1;
 	// List cells contain this obj
 	vector<int> listCellIndex;
 
 	// Respawn obj
-	float xSpawn;
-	float ySpawn;
-	float x; 
-	float y;
+	float xSpawn = 0;
+	float ySpawn = 0;
+	float x = 0; 
+	float y = 0;
 
-	float dx;	// dx = vx*dt
-	float dy;	// dy = vy*dt
+	float dx = 0;	// dx = vx*dt
+	float dy = 0;	// dy = vy*dt
 
-	float vxSpawn;
-	float vx;
-	float vy;
+	float vxSpawn = 0;
+	float vx = 0;
+	float vy = 0;
 
-	float left, top, right, bottom;
+	float left = 0, top = 0, right = 0, bottom = 0;
 
-	int nx;
-	int colX, colY;
+	int nx = 0;
+	int colX = 0, colY = 0;
 
-	int state;
+	int state = 0;
 	bool isInGrid = true;
 	bool isActive = true;
 	bool canActive = true;
@@ -83,7 +83,7 @@ public:
 
 	DWORD dt; 
 
-	LPANIMATION_SET animation_set;
+	LPANIMATION_SET animation_set = NULL;
 
 	void SetBoundingBox() {};
 

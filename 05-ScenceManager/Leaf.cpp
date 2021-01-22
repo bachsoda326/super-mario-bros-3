@@ -29,8 +29,7 @@ void CLeaf::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	if (isDead) return;
 	CGameObject::Update(dt, coObjects);
 
-	x += dx;
-	y += dy;
+	MoveThrough(OBJ_MOVE_XY);
 	
 	if (!isInitialized)
 	{
