@@ -23,25 +23,26 @@ CWorldMapScene::CWorldMapScene(int id, LPCWSTR filePath) :
 	See scene1.txt, scene2.txt for detail format specification
 */
 
-#define SCENE_SECTION_UNKNOWN -1
-#define SCENE_SECTION_TEXTURES 2
-#define SCENE_SECTION_SPRITES 3
-#define SCENE_SECTION_ANIMATIONS 4
+#define SCENE_SECTION_UNKNOWN			-1
+#define SCENE_SECTION_TEXTURES			2
+#define SCENE_SECTION_SPRITES			3
+#define SCENE_SECTION_ANIMATIONS		4
 #define SCENE_SECTION_ANIMATION_SETS	5
-#define SCENE_SECTION_OBJECTS	6
-#define SCENE_SECTION_MAP 7
+#define SCENE_SECTION_OBJECTS			6
+#define SCENE_SECTION_MAP				7
 
-#define OBJECT_TYPE_MARIO			0
-#define OBJECT_TYPE_CASTLE_HELP		1
-#define	OBJECT_TYPE_HAMMER			2
-#define OBJECT_TYPE_BUSH			3
-#define OBJECT_TYPE_STATION			4
+#define OBJECT_TYPE_MARIO				0
+#define OBJECT_TYPE_CASTLE_HELP			1
+#define	OBJECT_TYPE_HAMMER				2
+#define OBJECT_TYPE_BUSH				3
+#define OBJECT_TYPE_STATION				4
 
-#define OBJECT_TYPE_PORTAL	50
-#define OBJECT_TYPE_HUD		51
+#define OBJECT_TYPE_PORTAL				50
+#define OBJECT_TYPE_HUD					51
 
-#define MAX_SCENE_LINE 1024
+#define WOLRD_MAP_Y_DISTANCE			10
 
+#define MAX_SCENE_LINE					1024
 
 void CWorldMapScene::_ParseSection_TEXTURES(string line)
 {
@@ -332,7 +333,7 @@ void CWorldMapScene::Update(DWORD dt)
 	switch (map->GetId())
 	{
 	case WORLD_MAP_1:
-		CCamera::GetInstance()->SetPosition(WIDTH_WORLD_MAP_1 / 2, HEIGHT_WORLD_MAP_1 / 2 + 10);
+		CCamera::GetInstance()->SetPosition(WIDTH_WORLD_MAP_1 / 2, HEIGHT_WORLD_MAP_1 / 2 + WOLRD_MAP_Y_DISTANCE);
 		//CCamera::GetInstance()->SetPosition(CGame::GetInstance()->GetScreenWidth() / 2, CGame::GetInstance()->GetScreenHeight() / 2);
 	default:
 		break;
