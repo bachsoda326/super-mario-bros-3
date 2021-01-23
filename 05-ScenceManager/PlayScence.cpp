@@ -46,6 +46,7 @@ CPlayScene::CPlayScene(int id, LPCWSTR filePath) :
 #define OBJECT_TYPE_CLOUD_TOOTH			13
 #define OBJECT_TYPE_PARA_GOOMBA			14
 #define OBJECT_TYPE_FLY_BAR				15
+#define OBJECT_TYPE_BOOMERANG_BROS		16
 
 #define OBJECT_TYPE_PORTAL				50
 #define OBJECT_TYPE_HUD					51
@@ -257,9 +258,9 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	}
 	break;
 	case OBJECT_TYPE_PORTAL:
-	{		
+	{
 		int scene_id = atoi(tokens[5].c_str());
-		obj = new CPortal(x, y,scene_id);
+		obj = new CPortal(x, y, scene_id);
 	}
 	break;
 	case OBJECT_TYPE_COIN:	obj = new CCoin(); break;
@@ -270,7 +271,8 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		hud = new CHud();
 		break;
 	}
-	case OBJECT_TYPE_FLY_BAR: obj = new CFlyBar(); break;		
+	case OBJECT_TYPE_FLY_BAR: obj = new CFlyBar(); break;
+	case OBJECT_TYPE_BOOMERANG_BROS: obj = new CBoomerangBros(x); break;
 	default:
 		DebugOut(L"[ERR] Invalid object type: %d\n", object_type);
 		return;
@@ -326,7 +328,7 @@ void CPlayScene::_ParseSection_MAP(string line)
 void CPlayScene::_ParseSection_GRID(string line)
 {
 	vector<string> tokens = split(line);
-	
+
 	if (tokens.size() < 1) return;
 
 	switch (map->GetId())
@@ -452,7 +454,7 @@ void CPlayScene::Update(DWORD dt)
 	viewOtherObjs.clear();
 	viewObjs.clear();
 	viewAfterObjs.clear();
-	
+
 	grid->CalcColliableObjs(CCamera::GetInstance(), viewObjs, viewAfterObjs);
 	/*DebugOut(L"[Obj]: %d\n", viewObjs.size());
 	DebugOut(L"[AfterObj]: %d\n", viewAfterObjs.size());
@@ -528,7 +530,7 @@ void CPlayScene::Render()
 	viewOtherObjs.clear();
 	viewObjs.clear();
 	viewAfterObjs.clear();
-	
+
 	grid->CalcColliableObjs(CCamera::GetInstance(), viewObjs, viewAfterObjs);
 
 	// Render all objs: otherObjs -> objs -> Mario -> afterObjs
@@ -560,7 +562,7 @@ void CPlayScene::Render()
 	}
 
 	// skip the rest if scene was already unloaded (Mario::Update might trigger PlayScene::Unload)
-	if (player == NULL) return;	
+	if (player == NULL) return;
 
 	hud->Render();
 }
@@ -571,7 +573,7 @@ void CPlayScene::Render()
 void CPlayScene::Unload()
 {
 	// view objs	
-	viewOtherObjs.clear();	
+	viewOtherObjs.clear();
 	viewObjs.clear();
 	viewAfterObjs.clear();
 
@@ -588,7 +590,7 @@ void CPlayScene::Unload()
 	// objs
 	for (int i = 0; i < objects.size(); i++)
 		delete objects[i];
-	objects.clear();	
+	objects.clear();
 
 	delete player;
 	player = NULL;
@@ -619,7 +621,7 @@ void CPlayScene::ChangeMarioLocation(bool isOnOtherMap, bool isCameraStatic, flo
 	case MAP_1_1:
 		if (!isOnOtherMap)
 			CCamera::GetInstance()->SetMapSize(LEFT_MAP_1_1, TOP_MAP_1_1, RIGHT_MAP_1_1, BOTTOM_MAP_1_1, WIDTH_MAP_1_1, HEIGHT_MAP_1_1);
-		else		
+		else
 			CCamera::GetInstance()->SetMapSize(LEFT_OTHER_MAP_1_1, TOP_OTHER_MAP_1_1, RIGHT_OTHER_MAP_1_1, BOTTOM_OTHER_MAP_1_1, WIDTH_OTHER_MAP_1_1, HEIGHT_OTHER_MAP_1_1);
 		break;
 	case MAP_1_4:
@@ -640,7 +642,7 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 	CCamera* camera = CCamera::GetInstance();
 	CMario* mario = ((CPlayScene*)scence)->GetPlayer();
 	if (mario->state == MARIO_STATE_DIE || mario->state == MARIO_STATE_END_SCENE) return;
-	
+
 	switch (KeyCode)
 	{
 	case DIK_B:
@@ -668,19 +670,19 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 	case DIK_NUMPAD9:
 		switch (map->GetId())
 		{
-		case MAP_1_1:			
+		case MAP_1_1:
 			((CPlayScene*)scence)->ChangeMarioLocation(false, false, MARIO_1_1_X_9, MARIO_1_1_Y_9);
 			break;
 		case MAP_1_4:
 			break;
 		default:
 			break;
-		}		
+		}
 		break;
 	case DIK_NUMPAD1:
 		switch (map->GetId())
 		{
-		case MAP_1_1:			
+		case MAP_1_1:
 			((CPlayScene*)scence)->ChangeMarioLocation(false, true, MARIO_1_1_X_1, MARIO_1_1_Y_1);
 			break;
 		case MAP_1_4:
@@ -689,7 +691,7 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 			break;
 		default:
 			break;
-		}		
+		}
 		break;
 	case DIK_NUMPAD2:
 		switch (map->GetId())
@@ -717,7 +719,7 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 			break;
 		default:
 			break;
-		}		
+		}
 		break;
 	case DIK_NUMPAD4:
 		switch (map->GetId())
@@ -745,7 +747,7 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 			break;
 		default:
 			break;
-		}		
+		}
 		break;
 	case DIK_NUMPAD6:
 		switch (map->GetId())
@@ -759,7 +761,7 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 			break;
 		default:
 			break;
-		}		
+		}
 		break;
 	case DIK_NUMPAD7:
 		switch (map->GetId())
@@ -773,7 +775,7 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 			break;
 		default:
 			break;
-		}		
+		}
 		break;
 	case DIK_NUMPAD0:
 		switch (map->GetId())
@@ -787,7 +789,7 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 			break;
 		default:
 			break;
-		}		
+		}
 		break;
 	case DIK_S:
 		if (mario->canJump)
@@ -941,7 +943,7 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 	int state = mario->GetState();
 
 	// Disable control key when Mario die 
-	if (state == MARIO_STATE_DIE || state == MARIO_STATE_END_SCENE) 
+	if (state == MARIO_STATE_DIE || state == MARIO_STATE_END_SCENE)
 		return;
 
 	// Key Right
@@ -1082,13 +1084,13 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 		}
 		//mario->SetState(MARIO_STATE_IDLE);
 	}
-	
+
 	// Key S handle jump
 	if (game->IsKeyDown(DIK_S) && mario->canJump)
 	{
 		if (mario->canJumpHigher)
 		{
-			mario->vy -= MARIO_JUMP_HIGH_SPEED_Y;			
+			mario->vy -= MARIO_JUMP_HIGH_SPEED_Y;
 		}
 		if (abs(mario->vx) == MARIO_RUN_SPEED)
 			mario->SetState(MARIO_STATE_RUNJUMP);
@@ -1099,5 +1101,5 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 	if (game->IsKeyDown(DIK_DOWN) && mario->isOnGround && mario->GetLevel() != MARIO_LEVEL_SMALL && !mario->isHold)
 	{
 		mario->SetState(MARIO_STATE_DUCK);
-	}	
+	}
 }

@@ -10,7 +10,7 @@
 
 # name_file	tex_id	width	height
 [MAP]
-worldmap1.txt	100	256	176
+maps\worldmap1.txt	100	256	176
 
 # id	left	top	right	bottom	texture_id	xD	yD
 [SPRITES]

@@ -12,6 +12,7 @@
 #include "PlayScence.h"
 #include "PlayerInfo.h"
 #include "Point.h"
+#include "Boomerang.h"
 
 CMario::CMario(float x, float y) : CGameObject()
 {
@@ -46,9 +47,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	int bottomMap = camera->GetBottomMap();
 	int heightMap = camera->GetHeightMap();
 	CPlayScene* scene = (CPlayScene*)CGame::GetInstance()->GetCurrentScene();
-
-	DebugOut(L"MULTI SCORE JUMP: %d\n", canMultiScoreJump);
-	DebugOut(L"MULTI SCORE LAND: %d\n", canMultiScoreLand);
+	
 	CGameObject::Update(dt);
 
 	// Simple fall down
@@ -82,11 +81,11 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	}
 
 	// Mario when col edge map
-	if (x <= leftMap) 
+	if (x <= leftMap)
 		x = leftMap;
-	if (state == MARIO_STATE_FLY && y <= topMap) 
+	if (state == MARIO_STATE_FLY && y <= topMap)
 		y = topMap;
-	if (state != MARIO_STATE_END_SCENE && x + MARIO_BIG_BBOX_WIDTH >= rightMap) 
+	if (state != MARIO_STATE_END_SCENE && x + MARIO_BIG_BBOX_WIDTH >= rightMap)
 		x = rightMap - MARIO_BIG_BBOX_WIDTH;
 	if (!isOnOtherMap)
 	{
@@ -168,7 +167,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		{
 			kick_start = 0;
 		}
-	}	
+	}
 
 	// Tail
 	if (tail_start != 0)
@@ -304,7 +303,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	if ((GetTickCount() - eat_item_start) < MARIO_EAT_ITEM_TIME)
 	{
 		SetState(MARIO_STATE_EAT_ITEM);
-	}	
+	}
 
 	// No collision occured, proceed normally
 	if (coEvents.size() == 0)
@@ -325,7 +324,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		float rdy = 0;
 
 		FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny, rdx, rdy);
-		colX = nx;		
+		colX = nx;
 
 		x += min_tx * dx + nx * MARIO_DEFLECT_SPEED;
 		y += min_ty * dy + ny * MARIO_DEFLECT_SPEED;
@@ -390,7 +389,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					canJumpHigher = false;
 				}
 			}
-			
+
 			if (dynamic_cast<CEnemy*>(e->obj))
 			{
 				canJump = true;
@@ -521,7 +520,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						vy = -MARIO_JUMP_DEFLECT_SPEED;
 						if (isOnTitleScene)
 							isHitGoomba = true;
-					}					
+					}
 				}
 			}
 			// Para Goomba
@@ -530,7 +529,6 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				MoveThrough(OBJ_MOVE_XY);
 
 				CParaGoomba* para = dynamic_cast<CParaGoomba*>(e->obj);
-
 				if (!para->isDie)
 				{
 					if (e->ny < 0)
@@ -541,7 +539,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						else
 							para->SetState(PARA_GOOMBA_STATE_DIE);
 						vy = -MARIO_JUMP_DEFLECT_SPEED;
-					}					
+					}
 				}
 			}
 			// Koopas
@@ -549,7 +547,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			{
 				MoveThrough(OBJ_MOVE_XY);
 
-				CKoopas* koopas = dynamic_cast<CKoopas*>(e->obj);				
+				CKoopas* koopas = dynamic_cast<CKoopas*>(e->obj);
 				if (e->ny < 0)
 				{
 					canMultiScoreJump = true;
@@ -597,6 +595,27 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						}
 					}
 				}
+			}
+			// Boomerang Bros
+			else if (dynamic_cast<CBoomerangBros*>(e->obj))
+			{
+				MoveThrough(OBJ_MOVE_XY);
+
+				CBoomerangBros* bros = dynamic_cast<CBoomerangBros*>(e->obj);
+				if (!bros->isDie)
+				{
+					if (e->ny < 0)
+					{
+						canMultiScoreJump = true;
+						bros->SetState(BOOMERANGBROS_STATE_DIE);
+						vy = -MARIO_JUMP_DEFLECT_SPEED;
+					}
+				}
+			}
+			// Boomerang
+			else if (dynamic_cast<CBoomerang*>(e->obj))
+			{
+				MoveThrough(OBJ_MOVE_XY);				
 			}
 			// Portal
 			else if (dynamic_cast<CPortal*>(e->obj))
@@ -772,7 +791,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					mario->duck_start = GetTickCount();
 				}
 			}
-			
+
 			// If running and hit ground-type -> walk
 			if (isOnGround && (state == MARIO_STATE_PREPARE_RUN || state == MARIO_STATE_RUN))
 			{
@@ -1254,7 +1273,7 @@ void CMario::SetState(int state)
 		break;
 	case MARIO_STATE_LOOKUP:
 		look_start = GetTickCount();
-		break;		
+		break;
 	case MARIO_STATE_JUMP_SHORT:
 		vy = -MARIO_JUMP_SHORT_SPEED_Y;
 		break;
@@ -1304,7 +1323,7 @@ void CMario::GetBoundingBox(float& left, float& top, float& right, float& bottom
 		top = y;
 
 	if (level == MARIO_LEVEL_BIG || level == MARIO_LEVEL_RACCOON || level == MARIO_LEVEL_FIRE)
-	{		
+	{
 		left = x;
 		right = left + MARIO_BIG_BBOX_WIDTH;
 		if (state == MARIO_STATE_DUCK)
@@ -1330,7 +1349,7 @@ void CMario::SetBoundingBox()
 		top = y;
 
 	if (level == MARIO_LEVEL_BIG || level == MARIO_LEVEL_RACCOON || level == MARIO_LEVEL_FIRE)
-	{		
+	{
 		left = x;
 		right = left + MARIO_BIG_BBOX_WIDTH;
 		if (state == MARIO_STATE_DUCK)
@@ -1575,6 +1594,25 @@ void CMario::OnIntersect(CGameObject* obj, vector<LPGAMEOBJECT>* coObjs)
 			}
 			else if (goomba->colY != -1)
 				Hurt();
+		}
+		// Boomerang Bros
+		else if (dynamic_cast<CBoomerangBros*>(obj))
+		{
+			CBoomerangBros* bros = dynamic_cast<CBoomerangBros*>(obj);
+			if (state == MARIO_STATE_TAIL)
+			{
+				bros->vx = nx * ENEMY_DIE_X_SPEED;
+				bros->vy = -ENEMY_DIE_TAIL_Y_SPEED;
+				bros->SetState(BOOMERANGBROS_STATE_DIE);
+				canHit = false;
+			}
+			else if (bros->colY != -1)
+				Hurt();
+		}
+		// Boomerang
+		else if (dynamic_cast<CBoomerang*>(obj))
+		{
+			Hurt();
 		}
 		// Bullet Enemy
 		else if (dynamic_cast<CBullet*>(obj))

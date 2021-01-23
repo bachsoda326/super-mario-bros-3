@@ -10,10 +10,10 @@
 #include "BrickPiece.h"
 #include "Point.h"
 
-CGame * CGame::__instance = NULL;
+CGame* CGame::__instance = NULL;
 
 /*
-	Initialize DirectX, create a Direct3D device for rendering within the window, initial Sprite library for 
+	Initialize DirectX, create a Direct3D device for rendering within the window, initial Sprite library for
 	rendering 2D images
 	- hInst: Application instance handle
 	- hWnd: Application window handle
@@ -22,7 +22,7 @@ void CGame::Init(HWND hWnd)
 {
 	LPDIRECT3D9 d3d = Direct3DCreate9(D3D_SDK_VERSION);
 
-	this->hWnd = hWnd;									
+	this->hWnd = hWnd;
 
 	D3DPRESENT_PARAMETERS d3dpp;
 
@@ -65,7 +65,7 @@ void CGame::Init(HWND hWnd)
 }
 
 /*
-	Utility function to wrap LPD3DXSPRITE::Draw 
+	Utility function to wrap LPD3DXSPRITE::Draw
 */
 void CGame::Draw(float x, float y, LPDIRECT3DTEXTURE9 texture, int left, int top, int right, int bottom, int xD, int yD, bool xReverse, bool yReverse, int alpha)
 {
@@ -73,20 +73,22 @@ void CGame::Draw(float x, float y, LPDIRECT3DTEXTURE9 texture, int left, int top
 	float xNew = floor(x - xD - CCamera::GetInstance()->GetPosition().x + GetScreenWidth() / 2);
 	float yNew = floor(y - yD - CCamera::GetInstance()->GetPosition().y + GetScreenHeight() / 2);
 	D3DXVECTOR3 p(xNew, yNew, 0);
-	
+
 	RECT r;
 	r.left = left;
 	r.top = top;
 	r.right = right;
 	r.bottom = bottom;
-		
+
 	if (xReverse || yReverse)
 	{
 		D3DXVECTOR2 scale;
+		float fx = 1, fy = 1;
 		if (xReverse)
-			scale = D3DXVECTOR2(-1, 1);
-		else if (yReverse)
-			scale = D3DXVECTOR2(1, -1);
+			fx = -1;
+		if (yReverse)
+			fy = -1;
+		scale = D3DXVECTOR2(fx, fy);
 		D3DXVECTOR2 center = D3DXVECTOR2(xNew + (right - left) / 2, yNew + (bottom - top) / 2);
 		D3DXMATRIX oldMatrix, newMatrix;
 
@@ -113,7 +115,7 @@ void CGame::Draw(float x, float y, LPDIRECT3DTEXTURE9 texture, int left, int top
 }
 
 void CGame::DrawSprite(float x, float y, LPDIRECT3DTEXTURE9 texture, int left, int top, int right, int bottom, int alpha)
-{	
+{
 	D3DXVECTOR3 p(x, y, 0);
 
 	RECT r;
@@ -121,8 +123,8 @@ void CGame::DrawSprite(float x, float y, LPDIRECT3DTEXTURE9 texture, int left, i
 	r.top = top;
 	r.right = right;
 	r.bottom = bottom;
-	
-	spriteHandler->Draw(texture, &r, NULL, &p, D3DCOLOR_ARGB(alpha, 255, 255, 255));	
+
+	spriteHandler->Draw(texture, &r, NULL, &p, D3DCOLOR_ARGB(alpha, 255, 255, 255));
 }
 
 int CGame::IsKeyDown(int KeyCode)
@@ -149,7 +151,7 @@ void CGame::InitKeyboard()
 	hr = di->CreateDevice(GUID_SysKeyboard, &didv, NULL);
 
 	// TO-DO: put in exception handling
-	if (hr != DI_OK) 
+	if (hr != DI_OK)
 	{
 		DebugOut(L"[ERROR] CreateDevice failed!\n");
 		return;
@@ -199,7 +201,7 @@ void CGame::InitKeyboard()
 
 void CGame::ProcessKeyboard()
 {
-	HRESULT hr; 
+	HRESULT hr;
 
 	// Collect all key states first
 	hr = didv->GetDeviceState(sizeof(keyStates), keyStates);
@@ -209,8 +211,8 @@ void CGame::ProcessKeyboard()
 		if ((hr == DIERR_INPUTLOST) || (hr == DIERR_NOTACQUIRED))
 		{
 			HRESULT h = didv->Acquire();
-			if (h==DI_OK)
-			{ 
+			if (h == DI_OK)
+			{
 				DebugOut(L"[INFO] Keyboard re-acquired!\n");
 			}
 			else return;
@@ -222,7 +224,7 @@ void CGame::ProcessKeyboard()
 		}
 	}
 
-	keyHandler->KeyState((BYTE *)&keyStates);
+	keyHandler->KeyState((BYTE*)&keyStates);
 
 
 
@@ -260,17 +262,17 @@ CGame::~CGame()
 	Source: GameDev.net
 */
 void CGame::SweptAABB(
-	float ml, float mt,	float mr, float mb,			
-	float dx, float dy,			
+	float ml, float mt, float mr, float mb,
+	float dx, float dy,
 	float sl, float st, float sr, float sb,
-	float &t, float &nx, float &ny)
+	float& t, float& nx, float& ny)
 {
 
 	float dx_entry, dx_exit, tx_entry, tx_exit;
 	float dy_entry, dy_exit, ty_entry, ty_exit;
 
-	float t_entry; 
-	float t_exit; 
+	float t_entry;
+	float t_exit;
 
 	t = -1.0f;			// no collision
 	nx = ny = 0;
@@ -291,13 +293,13 @@ void CGame::SweptAABB(
 
 	if (dx > 0)
 	{
-		dx_entry = sl - mr; 
+		dx_entry = sl - mr;
 		dx_exit = sr - ml;
 	}
 	else if (dx < 0)
 	{
 		dx_entry = sr - ml;
-		dx_exit = sl- mr;
+		dx_exit = sl - mr;
 	}
 
 
@@ -322,7 +324,7 @@ void CGame::SweptAABB(
 		tx_entry = dx_entry / dx;
 		tx_exit = dx_exit / dx;
 	}
-	
+
 	if (dy == 0)
 	{
 		ty_entry = -99999.0f;
@@ -333,26 +335,26 @@ void CGame::SweptAABB(
 		ty_entry = dy_entry / dy;
 		ty_exit = dy_exit / dy;
 	}
-	
 
-	if (  (tx_entry < 0.0f && ty_entry < 0.0f) || tx_entry > 1.0f || ty_entry > 1.0f) return;
+
+	if ((tx_entry < 0.0f && ty_entry < 0.0f) || tx_entry > 1.0f || ty_entry > 1.0f) return;
 
 	t_entry = max(tx_entry, ty_entry);
 	t_exit = min(tx_exit, ty_exit);
-	
-	if (t_entry > t_exit) return; 
 
-	t = t_entry; 
+	if (t_entry > t_exit) return;
+
+	t = t_entry;
 
 	if (tx_entry > ty_entry)
 	{
 		ny = 0.0f;
 		dx > 0 ? nx = -1.0f : nx = 1.0f;
 	}
-	else 
+	else
 	{
 		nx = 0.0f;
-		dy > 0?ny = -1.0f:ny = 1.0f;
+		dy > 0 ? ny = -1.0f : ny = 1.0f;
 	}
 
 }
@@ -364,7 +366,7 @@ bool CGame::AABBCheck(float left1, float top1, float right1, float bottom1, floa
 }
 
 void CGame::CalcViewObjs(vector<LPGAMEOBJECT>* viewObjs, vector<LPGAMEOBJECT> objs)
-{	
+{
 	float cx, cy;
 	/*player->GetPosition(cx, cy);*/
 	CCamera::GetInstance()->GetPosition();
@@ -384,8 +386,8 @@ void CGame::CalcViewObjs(vector<LPGAMEOBJECT>* viewObjs, vector<LPGAMEOBJECT> ob
 	float gridLeft = xTopLeftCell * CELL_SIZE;
 	float gridTop = yTopLeftCell * CELL_SIZE;
 	float gridRight = xBotRightCell * CELL_SIZE + CELL_SIZE;
-	float gridBottom = yBotRightCell * CELL_SIZE + CELL_SIZE;	
-		
+	float gridBottom = yBotRightCell * CELL_SIZE + CELL_SIZE;
+
 	for (size_t i = 0; i < objs.size(); i++)
 	{
 		if (dynamic_cast<CBullet*>(objs.at(i)) || dynamic_cast<CBrickPiece*>(objs.at(i)) || dynamic_cast<CPoint*>(objs.at(i)) || dynamic_cast<CMario*>(objs.at(i)))
@@ -405,7 +407,7 @@ void CGame::CalcViewObjs(vector<LPGAMEOBJECT>* viewObjs, vector<LPGAMEOBJECT> ob
 	}
 }
 
-CGame *CGame::GetInstance()
+CGame* CGame::GetInstance()
 {
 	if (__instance == NULL) __instance = new CGame();
 	return __instance;
@@ -485,13 +487,13 @@ void CGame::Load(LPCWSTR gameFile)
 		//
 		switch (section)
 		{
-			case GAME_FILE_SECTION_SETTINGS: _ParseSection_SETTINGS(line); break;
-			case GAME_FILE_SECTION_SCENES: _ParseSection_SCENES(line); break;
+		case GAME_FILE_SECTION_SETTINGS: _ParseSection_SETTINGS(line); break;
+		case GAME_FILE_SECTION_SCENES: _ParseSection_SCENES(line); break;
 		}
 	}
 	f.close();
 
-	DebugOut(L"[INFO] Loading game file : %s has been loaded successfully\n",gameFile);
+	DebugOut(L"[INFO] Loading game file : %s has been loaded successfully\n", gameFile);
 
 	SwitchScene(current_scene);
 }
@@ -509,5 +511,5 @@ void CGame::SwitchScene(int scene_id)
 	current_scene = scene_id;
 	LPSCENE s = scenes[scene_id];
 	CGame::GetInstance()->SetKeyHandler(s->GetKeyEventHandler());
-	s->Load();	
+	s->Load();
 }

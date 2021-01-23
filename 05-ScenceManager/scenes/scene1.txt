@@ -20,7 +20,7 @@
 # name_file	tex_id	width	height
 [MAP]
 #--------------------------------------------------------------------
-map1-1.txt	1	2816	432
+maps\map1-1.txt	1	2816	432
 
 # id	left	top	right	bottom	texture_id	xD	yD
 [SPRITES]
@@ -1422,4 +1422,4 @@ ani_id	sprite1_id	time1	sprite2_id	time2
 # name_file
 [GRID]
 #---------------------------------------------------------------------
-map1-1_obj_grid.txt
+maps\map1-1_obj_grid.txt

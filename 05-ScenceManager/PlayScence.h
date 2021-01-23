@@ -18,6 +18,7 @@
 #include "CloudTooth.h"
 #include "ParaGoomba.h"
 #include "FlyBar.h"
+#include "BoomerangBros.h"
 #include "Hud.h"
 #include "Grid.h"
 

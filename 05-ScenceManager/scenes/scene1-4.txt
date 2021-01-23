@@ -19,7 +19,7 @@
 # name_file	tex_id	width	height
 [MAP]
 #--------------------------------------------------------------------
-map1-4.txt	2	2576	192
+maps\map1-4.txt	2	2576	192
 
 # id	left	top	right	bottom	texture_id	xD	yD
 [SPRITES]
@@ -1009,7 +1009,7 @@ ani_id	sprite1_id	time1	sprite2_id	time2
 # Throw
 60002	60003	100	60003	100
 # == BOOMERANG
-60051	60051	100	60052	100	60053	100	60054	100
+60051	60051	60	60052	60	60053	60	60054	60
 
 #
 # id	ani1	ani2	ani3
@@ -1249,6 +1249,9 @@ ani_id	sprite1_id	time1	sprite2_id	time2
 15	100	1776	96	42
 15	101	1792	176	42
 
+# === BOOMERANG BROS
+16	129	2132	140	43
+
 # === HUD
 51	-1	0	0	-1
 
@@ -1259,4 +1262,4 @@ ani_id	sprite1_id	time1	sprite2_id	time2
 # name_file
 [GRID]
 #---------------------------------------------------------------------
-map1-4_obj_grid.txt
+maps\map1-4_obj_grid.txt

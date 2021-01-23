@@ -2,7 +2,7 @@
 start	0
 #scene list
 [SCENES]
-0	titlescene.txt
-1	scene1.txt
-2	scene1-4.txt
-100	world1.txt
+0	scenes\titlescene.txt
+1	scenes\scene1.txt
+2	scenes\scene1-4.txt
+100	scenes\world1.txt

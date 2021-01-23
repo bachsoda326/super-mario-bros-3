@@ -3,6 +3,7 @@
 #include "Mario.h"
 #include "PlayScence.h"
 #include "PSwitch.h"
+#include "Boomerang.h"
 
 CBullet::CBullet()
 {
@@ -145,7 +146,7 @@ void CBullet::OnIntersect(CGameObject* obj, vector<LPGAMEOBJECT>* coObjs)
 {
 	if (!obj->isDie)
 	{
-		if (colX != 0 && !dynamic_cast<CBox*>(obj) && !dynamic_cast<CMushRoom*>(obj) && !dynamic_cast<CLeaf*>(obj) && !dynamic_cast<CMushRoom*>(obj) && !dynamic_cast<CCoin*>(obj))
+		if (colX != 0 && !dynamic_cast<CBox*>(obj) && !dynamic_cast<CMushRoom*>(obj) && !dynamic_cast<CLeaf*>(obj) && !dynamic_cast<CMushRoom*>(obj) && !dynamic_cast<CCoin*>(obj) && !dynamic_cast<CBoomerang*>(obj))
 		{			
 			SetState(BULLET_STATE_EXPLODE);
 		}
@@ -180,6 +181,18 @@ void CBullet::OnIntersect(CGameObject* obj, vector<LPGAMEOBJECT>* coObjs)
 			{
 				koopas->vx = nx * KOOPAS_DIE_X_SPEED;
 				koopas->SetState(KOOPAS_STATE_DIE);
+			}
+		}
+		else if (dynamic_cast<CBoomerangBros*>(obj))
+		{
+			SetState(BULLET_STATE_EXPLODE);
+
+			CBoomerangBros* bros = dynamic_cast<CBoomerangBros*>(obj);
+			if (!bros->isDie)
+			{
+				bros->vx = nx * ENEMY_DIE_X_SPEED;
+				bros->vy = -ENEMY_DIE_Y_SPEED;
+				bros->SetState(BOOMERANGBROS_STATE_DIE);
 			}
 		}
 		else if (dynamic_cast<CPiranha*>(obj))
